@@ -6,6 +6,8 @@
     <title>Kaizen Dental Academy - Coming Soon</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
+    <!-- Preload critical LCP image -->
+    <link rel="preload" as="image" href="logo.png" fetchpriority="high">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -120,7 +122,7 @@
         .logo-container {
             margin-top: 30px;
             margin-bottom: 20px;
-            animation: fadeInDown 1s ease-out;
+            /* Removed animation for faster LCP - logo should be visible immediately */
         }
 
         @keyframes fadeInDown {
@@ -136,13 +138,20 @@
 
         .logo-img {
             width: 210px;
-            height: auto;
+            height: 210px;
             margin: 0 auto;
             display: block;
-            filter: drop-shadow(0 0 15px rgba(240, 192, 36, 0.2));
-            animation: pulse 4s ease-in-out infinite;
-            will-change: transform, filter;
             transform: translateZ(0);
+            /* Filter and animation added after load via JS for faster LCP */
+        }
+        
+        .logo-img.enhanced {
+            filter: drop-shadow(0 0 15px rgba(240, 192, 36, 0.2));
+            will-change: transform, filter;
+        }
+        
+        .logo-img.animated {
+            animation: pulse 4s ease-in-out infinite;
         }
 
         @keyframes pulse {
@@ -429,6 +438,7 @@
 
             .logo-img {
                 width: 160px;
+                height: 160px;
             }
 
             .logo-container {
@@ -495,6 +505,7 @@
 
             .logo-img {
                 width: 130px;
+                height: 130px;
             }
 
             .kaizen-symbol {
@@ -580,7 +591,7 @@
     <div class="container">
         <!-- Logo -->
         <div class="logo-container">
-            <img src="logo.png" alt="Kaizen Dental Academy Logo" class="logo-img">
+            <img src="logo.png" alt="Kaizen Dental Academy Logo" class="logo-img" width="210" height="210" fetchpriority="high">
         </div>
 
         <!-- Text transformation animation -->
@@ -650,18 +661,43 @@
     </div>
 
     <script>
-        // Create floating particles
-        const particlesContainer = document.getElementById('particles');
-        const particleCount = 15;
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-            particle.style.animationDelay = Math.random() * 5 + 's';
-            particlesContainer.appendChild(particle);
+        // Optimize LCP - Add enhancements after logo loads
+        const logo = document.querySelector('.logo-img');
+        
+        function enhanceLogo() {
+            // Add filter and animation after LCP
+            requestAnimationFrame(() => {
+                logo.classList.add('enhanced');
+                requestAnimationFrame(() => {
+                    logo.classList.add('animated');
+                });
+            });
         }
+        
+        logo.addEventListener('load', enhanceLogo);
+        
+        // If logo already loaded (cached)
+        if (logo.complete) {
+            enhanceLogo();
+        }
+
+        // Create floating particles (deferred for better LCP)
+        function initParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Defer particle creation
+        requestAnimationFrame(initParticles);
 
         // Handle form submission with Google Sheets
         const form = document.getElementById('emailForm');
@@ -724,12 +760,13 @@
             });
         });
 
-        // Add parallax effect to logo on mouse move
-        document.addEventListener('mousemove', (e) => {
-            const logo = document.querySelector('.logo-img');
-            const x = (window.innerWidth - e.pageX) / 100;
-            const y = (window.innerHeight - e.pageY) / 100;
-            logo.style.transform = `translate(${x}px, ${y}px)`;
+        // Add parallax effect to logo on mouse move (deferred)
+        window.addEventListener('load', function() {
+            document.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth - e.pageX) / 100;
+                const y = (window.innerHeight - e.pageY) / 100;
+                logo.style.transform = `translate(${x}px, ${y}px)`;
+            });
         });
     </script>
 </body>
