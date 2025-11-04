@@ -361,16 +361,34 @@ if (enrollmentForm) {
             // Send both requests in parallel - each runs independently
             // This ensures both Make.com and Apps Script receive data even if one fails
             console.log('🚀 Starting parallel submission to both endpoints...');
+        console.log('🔗 Make.com webhook URL:', MAKE_WEBHOOK_URL);
+        console.log('🔗 Apps Script URL:', APPS_SCRIPT_URL);
             
             const makePromise = fetch(MAKE_WEBHOOK_URL, {
                 method: 'POST',
                 body: makeFormData
-            }).then(res => {
+                // DO NOT set Content-Type header - browser will set it automatically with boundary
+            }).then(async res => {
                 console.log('✅ Make.com webhook: Request sent successfully (Status:', res.status + ')');
-                return { success: true, source: 'Make.com' };
+                console.log('📡 Make.com response status:', res.status, res.statusText);
+                
+                // Try to read response (optional, but helpful for debugging)
+                try {
+                    const responseText = await res.text();
+                    console.log('📥 Make.com response:', responseText.substring(0, 200));
+                } catch (e) {
+                    console.log('ℹ️ Could not read Make.com response body');
+                }
+                
+                return { success: true, source: 'Make.com', status: res.status };
             }).catch(err => {
                 console.error('❌ Make.com webhook error:', err);
-                return { success: false, source: 'Make.com', error: err };
+                console.error('❌ Error details:', {
+                    name: err.name,
+                    message: err.message,
+                    stack: err.stack
+                });
+                return { success: false, source: 'Make.com', error: err.message || err.toString() };
             });
             
             const appsScriptPromise = fetch(APPS_SCRIPT_URL, {

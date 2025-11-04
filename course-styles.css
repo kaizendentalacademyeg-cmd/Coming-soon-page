@@ -697,6 +697,12 @@ html[lang="ar"] .curriculum-item:hover {
     grid-template-columns: 1fr 1fr;
     gap: 5rem;
     margin-top: 4rem;
+    align-items: start;
+}
+
+.enrollment-content > .enrollment-info {
+    position: sticky;
+    top: 100px;
 }
 
 .enrollment-info h3 {
@@ -733,6 +739,7 @@ html[lang="ar"] .curriculum-item:hover {
     border-radius: 30px;
     padding: 3rem;
     border: 1px solid rgba(198, 112, 17, 0.1);
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
     display: flex;
@@ -743,11 +750,84 @@ html[lang="ar"] .curriculum-item:hover {
 .enrollment-form .form-group,
 .enrollment-form .form-row {
     width: 100%;
+    max-width: 100%;
 }
 
 .enrollment-form .submit-btn {
     align-self: center;
     margin-top: 1rem;
+}
+
+/* WhatsApp Verification Section */
+.whatsapp-verification {
+    margin-top: 3rem;
+    padding: 2.5rem;
+    background: rgba(37, 211, 102, 0.1);
+    border: 2px solid rgba(37, 211, 102, 0.3);
+    border-radius: 20px;
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.whatsapp-verification-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: whatsappPulse 2s ease-in-out infinite;
+}
+
+.whatsapp-verification-icon svg {
+    width: 36px;
+    height: 36px;
+    color: #ffffff;
+}
+
+.whatsapp-verification h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.whatsapp-verification p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+.whatsapp-verification-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: #25D366;
+    color: #ffffff;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+}
+
+.whatsapp-verification-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6);
+    background: #20BA5A;
+}
+
+.whatsapp-verification-btn svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
 }
 
 /* Form Actions */
@@ -1212,9 +1292,19 @@ html[lang="ar"] .curriculum-item:hover {
         gap: 3rem;
     }
     
+    .enrollment-content > .enrollment-info {
+        position: static;
+    }
+    
     .enrollment-form {
         max-width: 600px;
         margin: 0 auto;
+        width: 100%;
+    }
+    
+    .whatsapp-verification {
+        max-width: 100%;
+        margin-top: 2rem;
     }
     
     .philosophy-visual {
