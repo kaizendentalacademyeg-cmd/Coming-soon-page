@@ -44,12 +44,57 @@ function doPost(e) {
     // ===== SAVE TO SHEET =====
     const ts = Utilities.formatDate(new Date(), TIMEZONE, 'yyyy-MM-dd HH:mm:ss');
     
-    sheet.appendRow([
+    // Check if a row with this email exists in the last 60 seconds (to match with Make.com data)
+    const dataRange = sheet.getDataRange();
+    const values = dataRange.getValues();
+    const emailColumnIndex = 3; // Email is in column D (index 3, 0-based)
+    
+    let existingRowIndex = -1;
+    const currentTime = new Date().getTime();
+    const sixtySecondsAgo = currentTime - (60 * 1000);
+    
+    // Search from bottom to top (most recent first)
+    for (let i = values.length - 1; i >= 1; i--) { // Skip header row (index 0)
+      const rowEmail = values[i][emailColumnIndex] ? values[i][emailColumnIndex].toString().trim().toLowerCase() : '';
+      const rowTimestamp = values[i][0] ? values[i][0].toString() : '';
+      
+      // Check if email matches and timestamp is recent (within last 60 seconds)
+      if (rowEmail === email.toLowerCase()) {
+        try {
+          // Try to parse timestamp and check if it's recent
+          const rowDate = new Date(rowTimestamp);
+          if (rowDate.getTime() > sixtySecondsAgo) {
+            existingRowIndex = i + 1; // +1 because sheet rows are 1-indexed
+            Logger.log('✅ Found existing row ' + existingRowIndex + ' with matching email');
+            break;
+          }
+        } catch (e) {
+          // If timestamp parsing fails, just check email match
+          // This handles the case where Make.com might have created the row first
+          existingRowIndex = i + 1;
+          Logger.log('✅ Found existing row ' + existingRowIndex + ' with matching email (timestamp check skipped)');
+          break;
+        }
+      }
+    }
+    
+    // Prepare row data
+    const rowData = [
       ts, firstName, lastName, email, phone, country,
       clinic, faculty, gradYear, moreInfo, fileLink
-    ]);
+    ];
     
-    Logger.log('✅ Data saved to sheet');
+    if (existingRowIndex > 0) {
+      // Update existing row
+      Logger.log('📝 Updating existing row ' + existingRowIndex);
+      sheet.getRange(existingRowIndex, 1, 1, rowData.length).setValues([rowData]);
+      Logger.log('✅ Data updated in existing row');
+    } else {
+      // Create new row
+      Logger.log('➕ Creating new row');
+      sheet.appendRow(rowData);
+      Logger.log('✅ Data saved to new row');
+    }
     
     // ===== SEND EMAIL =====
     const fullName = (firstName + ' ' + lastName).trim() || 'Participant';
