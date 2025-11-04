@@ -263,47 +263,73 @@ if (enrollmentForm) {
         }
         
         try {
-            // Send both requests in parallel
-            const [makeResponse, appsScriptResponse] = await Promise.all([
+            // Send both requests in parallel - each runs independently
+            // This ensures both Make.com and Apps Script receive data even if one fails
+            const [makeResult, appsScriptResult] = await Promise.allSettled([
                 // Request 1: Make.com webhook (with file)
                 fetch(MAKE_WEBHOOK_URL, {
                     method: 'POST',
                     body: makeFormData
+                }).then(res => {
+                    console.log('✅ Make.com webhook: Request sent successfully');
+                    return res;
+                }).catch(err => {
+                    console.error('❌ Make.com webhook error:', err);
+                    throw err;
                 }),
                 // Request 2: Apps Script (text only, use no-cors mode)
                 fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     body: appsScriptFormData,
                     mode: 'no-cors'  // Required for Apps Script
+                }).then(() => {
+                    console.log('✅ Apps Script: Request sent successfully');
+                }).catch(err => {
+                    console.error('❌ Apps Script error:', err);
+                    throw err;
                 })
             ]);
             
-            console.log('✅ Both requests sent successfully!');
-            console.log('📁 Make.com: Received data with file');
-            console.log('📊 Apps Script: Received text fields (Google Sheet + Email)');
-        
-            // Show elegant success message
-            showFormMessage(
-                'Thank you for enrolling! We have received your enrollment and payment confirmation. We will contact you shortly with course details.',
-                'success'
-            );
-        
-        // Reset form
-        enrollmentForm.reset();
-        
-            // Reset file input UI
-            if (transactionFileInput) {
-                const label = transactionFileInput.nextElementSibling;
-                const fileNameSpan = label.querySelector('.file-upload-name');
-                if (fileNameSpan) {
-                    fileNameSpan.textContent = '';
-                    fileNameSpan.style.display = 'none';
-                }
-                label.classList.remove('file-selected');
-            }
+            // Check results
+            const makeSuccess = makeResult.status === 'fulfilled';
+            const appsScriptSuccess = appsScriptResult.status === 'fulfilled';
             
-            // Scroll to top to see the message
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+            console.log('📊 Submission Results:');
+            console.log('  Make.com webhook:', makeSuccess ? '✅ Success' : '❌ Failed');
+            console.log('  Apps Script:', appsScriptSuccess ? '✅ Success' : '❌ Failed');
+            
+            // If at least one succeeded, show success message
+            // Both will attempt to send data independently
+            if (makeSuccess || appsScriptSuccess) {
+                console.log('✅ At least one endpoint received data successfully');
+                
+                // Show success message
+                showFormMessage(
+                    'Thank you for enrolling! We have received your enrollment and payment confirmation. We will contact you shortly with course details.',
+                    'success'
+                );
+                
+                // Reset form
+                enrollmentForm.reset();
+                
+                // Reset file input UI
+                if (transactionFileInput) {
+                    const label = transactionFileInput.nextElementSibling;
+                    const fileNameSpan = label.querySelector('.file-upload-name');
+                    if (fileNameSpan) {
+                        fileNameSpan.textContent = '';
+                        fileNameSpan.style.display = 'none';
+                    }
+                    label.classList.remove('file-selected');
+                }
+                
+                // Scroll to top to see the message
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                // Both failed
+                console.error('❌ Both endpoints failed');
+                throw new Error('Both submission endpoints failed');
+            }
             
         } catch (err) {
             console.error('❌ Submission error:', err);
