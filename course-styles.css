@@ -733,6 +733,21 @@ html[lang="ar"] .curriculum-item:hover {
     border-radius: 30px;
     padding: 3rem;
     border: 1px solid rgba(198, 112, 17, 0.1);
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.enrollment-form .form-group,
+.enrollment-form .form-row {
+    width: 100%;
+}
+
+.enrollment-form .submit-btn {
+    align-self: center;
+    margin-top: 1rem;
 }
 
 /* Form Actions */
@@ -1195,6 +1210,11 @@ html[lang="ar"] .curriculum-item:hover {
     .enrollment-content {
         grid-template-columns: 1fr;
         gap: 3rem;
+    }
+    
+    .enrollment-form {
+        max-width: 600px;
+        margin: 0 auto;
     }
     
     .philosophy-visual {

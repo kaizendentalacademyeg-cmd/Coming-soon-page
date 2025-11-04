@@ -55,6 +55,82 @@ if (mobileMenuToggle && navLinks) {
     });
 }
 
+// Floating Buttons - Adjust position to avoid footer
+const whatsappButton = document.querySelector('.whatsapp-float-btn');
+const pdfButton = document.querySelector('.floating-pdf-btn');
+const footer = document.querySelector('.footer');
+
+function adjustFloatingButtonPosition(button, defaultBottom) {
+    if (!button || !footer) return;
+    
+    const footerRect = footer.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const footerTop = footerRect.top;
+    
+    // If footer is visible (within viewport), adjust button position
+    if (footerTop < windowHeight && footerTop > 0) {
+        // Calculate how much space is available above footer
+        const availableSpace = footerTop - 100; // 100px padding from footer
+        
+        if (availableSpace < 100) {
+            // Not enough space, move button up
+            const offset = 100 - availableSpace + parseInt(defaultBottom);
+            button.style.bottom = `${Math.max(20, offset)}px`;
+        } else {
+            // Reset to default position
+            button.style.bottom = defaultBottom;
+        }
+    } else {
+        // Footer is not visible, button can be at default position
+        button.style.bottom = defaultBottom;
+    }
+}
+
+if ((whatsappButton || pdfButton) && footer) {
+    function adjustAllFloatingButtons() {
+        // Get default bottom values based on screen size
+        let whatsappDefault, pdfDefault;
+        if (window.innerWidth > 768) {
+            whatsappDefault = '30px';
+            pdfDefault = '30px';
+        } else if (window.innerWidth > 480) {
+            whatsappDefault = '20px';
+            pdfDefault = '20px';
+        } else {
+            whatsappDefault = '15px';
+            pdfDefault = '20px';
+        }
+        
+        // Adjust WhatsApp button (left side)
+        if (whatsappButton) {
+            adjustFloatingButtonPosition(whatsappButton, whatsappDefault);
+        }
+        
+        // Adjust PDF button (right side)
+        if (pdfButton) {
+            adjustFloatingButtonPosition(pdfButton, pdfDefault);
+        }
+    }
+    
+    // Adjust on scroll and resize
+    window.addEventListener('scroll', () => {
+        if (!navbarTicking) {
+            window.requestAnimationFrame(() => {
+                adjustAllFloatingButtons();
+                navbarTicking = false;
+            });
+            navbarTicking = true;
+        }
+    }, { passive: true });
+    
+    window.addEventListener('resize', () => {
+        adjustAllFloatingButtons();
+    });
+    
+    // Initial adjustment
+    adjustAllFloatingButtons();
+}
+
 // Enrollment Form Handler - All data sent to Make.com webhook
 // const MAKE_WEBHOOK_URL is defined inline in the form handler
 
