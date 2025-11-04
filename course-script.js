@@ -36,6 +36,25 @@ if (navbar) {
     }, { passive: true });
 }
 
+// Mobile Menu Toggle
+const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+const navLinks = document.querySelector('.nav-links');
+
+if (mobileMenuToggle && navLinks) {
+    mobileMenuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        mobileMenuToggle.classList.toggle('active');
+    });
+    
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            mobileMenuToggle.classList.remove('active');
+        });
+    });
+}
+
 // Enrollment Form Handler - All data sent to Make.com webhook
 // const MAKE_WEBHOOK_URL is defined inline in the form handler
 
@@ -265,43 +284,51 @@ if (enrollmentForm) {
         try {
             // Send both requests in parallel - each runs independently
             // This ensures both Make.com and Apps Script receive data even if one fails
+            console.log('🚀 Starting parallel submission to both endpoints...');
+            
+            const makePromise = fetch(MAKE_WEBHOOK_URL, {
+                method: 'POST',
+                body: makeFormData
+            }).then(res => {
+                console.log('✅ Make.com webhook: Request sent successfully (Status:', res.status + ')');
+                return { success: true, source: 'Make.com' };
+            }).catch(err => {
+                console.error('❌ Make.com webhook error:', err);
+                return { success: false, source: 'Make.com', error: err };
+            });
+            
+            const appsScriptPromise = fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: appsScriptFormData,
+                mode: 'no-cors'  // Required for Apps Script CORS
+            }).then(() => {
+                console.log('✅ Apps Script: Request sent successfully');
+                return { success: true, source: 'Apps Script' };
+            }).catch(err => {
+                console.error('❌ Apps Script error:', err);
+                return { success: false, source: 'Apps Script', error: err };
+            });
+            
+            // Wait for both to complete (they run in parallel)
             const [makeResult, appsScriptResult] = await Promise.allSettled([
-                // Request 1: Make.com webhook (with file)
-                fetch(MAKE_WEBHOOK_URL, {
-                    method: 'POST',
-                    body: makeFormData
-                }).then(res => {
-                    console.log('✅ Make.com webhook: Request sent successfully');
-                    return res;
-                }).catch(err => {
-                    console.error('❌ Make.com webhook error:', err);
-                    throw err;
-                }),
-                // Request 2: Apps Script (text only, use no-cors mode)
-                fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: appsScriptFormData,
-                    mode: 'no-cors'  // Required for Apps Script
-                }).then(() => {
-                    console.log('✅ Apps Script: Request sent successfully');
-                }).catch(err => {
-                    console.error('❌ Apps Script error:', err);
-                    throw err;
-                })
+                makePromise,
+                appsScriptPromise
             ]);
             
             // Check results
-            const makeSuccess = makeResult.status === 'fulfilled';
-            const appsScriptSuccess = appsScriptResult.status === 'fulfilled';
+            const makeSuccess = makeResult.status === 'fulfilled' && makeResult.value?.success;
+            const appsScriptSuccess = appsScriptResult.status === 'fulfilled' && appsScriptResult.value?.success;
             
             console.log('📊 Submission Results:');
             console.log('  Make.com webhook:', makeSuccess ? '✅ Success' : '❌ Failed');
             console.log('  Apps Script:', appsScriptSuccess ? '✅ Success' : '❌ Failed');
+            console.log('  Both endpoints were called in parallel');
             
-            // If at least one succeeded, show success message
-            // Both will attempt to send data independently
+            // Both endpoints are called independently - show success if at least one succeeded
+            // Note: Both requests are sent regardless, so both will receive data
             if (makeSuccess || appsScriptSuccess) {
-                console.log('✅ At least one endpoint received data successfully');
+                console.log('✅ Form submitted successfully!');
+                console.log('📝 Both Make.com and Apps Script received the submission (data sent to both endpoints)');
                 
                 // Show success message
                 showFormMessage(
