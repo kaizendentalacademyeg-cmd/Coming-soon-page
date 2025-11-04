@@ -798,43 +798,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Print Curriculum Feature
-function printCurriculum() {
-    window.print();
-}
-
-// Add print button (optional)
-const curriculumSection = document.querySelector('.curriculum');
-if (curriculumSection) {
-    const printBtn = document.createElement('button');
-    printBtn.textContent = 'Print Curriculum';
-    printBtn.className = 'print-curriculum-btn';
-    printBtn.style.cssText = `
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        background: var(--gradient);
-        color: var(--bg-color);
-        padding: 1rem 2rem;
-        border: none;
-        border-radius: 50px;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 10px 40px rgba(199, 113, 17, 0.4);
-        z-index: 100;
-        transition: all 0.3s ease;
-    `;
-    printBtn.addEventListener('click', printCurriculum);
-    printBtn.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-5px)';
-        this.style.boxShadow = '0 15px 50px rgba(199, 113, 17, 0.6)';
-    });
-    printBtn.addEventListener('mouseleave', function() {
-        this.style.transform = '';
-        this.style.boxShadow = '0 10px 40px rgba(199, 113, 17, 0.4)';
-    });
-    document.body.appendChild(printBtn);
-}
+// Print Curriculum Feature - REMOVED
 
 // Share Course Feature
 function shareCourse() {
