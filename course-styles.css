@@ -750,16 +750,14 @@ html[lang="ar"] .curriculum-item:hover {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     justify-content: center;
-    box-sizing: border-box;
 }
 
 .enrollment-form .form-group,
 .enrollment-form .form-row {
     width: 100%;
     max-width: 100%;
-    box-sizing: border-box;
 }
 
 .enrollment-form .submit-btn {
@@ -848,7 +846,6 @@ html[lang="ar"] .curriculum-item:hover {
     margin-bottom: 2rem;
     width: 100%;
     justify-items: stretch;
-    box-sizing: border-box;
 }
 
 .action-btn {
@@ -863,7 +860,6 @@ html[lang="ar"] .curriculum-item:hover {
     transition: var(--transition);
     border: 2px solid;
     font-size: 1rem;
-    box-sizing: border-box;
 }
 
 .action-btn svg {
@@ -1322,36 +1318,23 @@ html[lang="ar"] .curriculum-item:hover {
     }
     
     .philosophy-content,
-    .enrollment {
-        padding-left: 0;
-        padding-right: 0;
-    }
-    
-    .enrollment .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
     .enrollment-content {
         grid-template-columns: 1fr;
         gap: 3rem;
-        justify-items: stretch;
-        padding: 0;
+        justify-items: center;
     }
     
     .enrollment-content > .enrollment-info {
         position: static;
         width: 100%;
-        max-width: 100%;
-        padding: 0;
+        max-width: 600px;
     }
     
     .enrollment-form {
-        max-width: 100%;
+        max-width: 600px;
         margin: 0 auto;
-        width: calc(100% - 2rem);
+        width: 100%;
         padding: 2rem 1.5rem;
-        box-sizing: border-box;
     }
     
     .enrollment-form .form-group,
@@ -1360,22 +1343,11 @@ html[lang="ar"] .curriculum-item:hover {
     .enrollment-form .file-upload-group {
         width: 100%;
         max-width: 100%;
-        margin-left: 0;
-        margin-right: 0;
-        padding-left: 0;
-        padding-right: 0;
-        box-sizing: border-box;
     }
     
     .file-upload-group label {
         width: 100%;
         max-width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .action-btn {
-        width: 100%;
-        box-sizing: border-box;
     }
     
     .whatsapp-verification {
@@ -1470,39 +1442,8 @@ html[lang="ar"] .curriculum-item:hover {
         text-align: center;
     }
     
-    .enrollment .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
     .enrollment-form {
-        padding: 1.5rem 1rem;
-        margin: 0 auto;
-        width: calc(100% - 2rem);
-        max-width: 100%;
-        border-radius: 20px;
-    }
-    
-    .enrollment-form .form-group,
-    .enrollment-form .form-row,
-    .enrollment-form .form-actions,
-    .enrollment-form .file-upload-group {
-        width: 100%;
-        padding-left: 0;
-        padding-right: 0;
-        margin-left: 0;
-        margin-right: 0;
-        box-sizing: border-box;
-    }
-    
-    .action-btn {
-        width: 100%;
-        padding: 0.9rem 1rem;
-        box-sizing: border-box;
-    }
-    
-    .file-upload-group label {
-        padding: 1.25rem 1rem;
+        padding: 2rem 1.5rem;
     }
 }
 
