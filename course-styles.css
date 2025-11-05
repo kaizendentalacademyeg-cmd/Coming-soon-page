@@ -706,9 +706,7 @@ html[lang="ar"] .curriculum-item:hover {
 }
 
 .enrollment-content > .enrollment-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    /* Removed flex display - using block for proper alignment */
 }
 
 .enrollment-info h3 {
@@ -748,21 +746,49 @@ html[lang="ar"] .curriculum-item:hover {
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
 }
 
-.enrollment-form .form-group,
+.enrollment-form > * {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+}
+
+.enrollment-form .form-group {
+    width: 100%;
+    position: relative;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
+}
+
 .enrollment-form .form-row {
     width: 100%;
-    max-width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+
+.enrollment-form .form-group input,
+.enrollment-form .form-group textarea,
+.enrollment-form .form-group select {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .enrollment-form .submit-btn {
-    align-self: center;
     margin-top: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+    min-width: 250px;
+    display: inline-flex;
 }
 
 /* WhatsApp Verification Section */
@@ -846,6 +872,7 @@ html[lang="ar"] .curriculum-item:hover {
     margin-bottom: 2rem;
     width: 100%;
     justify-items: stretch;
+    box-sizing: border-box;
 }
 
 .action-btn {
@@ -890,48 +917,47 @@ html[lang="ar"] .curriculum-item:hover {
     box-shadow: 0 10px 30px rgba(198, 112, 17, 0.5);
 }
 
-/* File Upload Styling */
-.file-upload-group {
+/* File Upload Styling - REBUILT TO MATCH FORM-GROUP EXACTLY */
+.enrollment-form .file-upload-group {
     position: relative;
     width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
 }
 
-.file-upload-group input[type="file"] {
+.enrollment-form .file-upload-group input[type="file"] {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 1px;
+    height: 1px;
     opacity: 0;
     overflow: hidden;
-    cursor: pointer;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    margin: 0;
+    z-index: -1;
 }
 
-.file-upload-group label {
+/* CRITICAL FIX: Override .form-group label absolute positioning */
+.enrollment-form .file-upload-group label {
     cursor: pointer;
-    position: relative;
-    display: flex;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    display: flex !important;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem;
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    min-height: 120px;
     border: 2px dashed rgba(198, 112, 17, 0.4);
     border-radius: 15px;
     background: rgba(198, 112, 17, 0.05);
     transition: var(--transition);
     text-align: center;
-    min-height: 120px;
-    flex-direction: column;
     gap: 0.75rem;
     color: rgba(255, 255, 255, 0.7);
-    width: 100%;
-    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 !important;
+    pointer-events: auto !important;
 }
 
 .file-upload-group:hover label {
@@ -986,11 +1012,15 @@ html[lang="ar"] .curriculum-item:hover {
 .form-hint {
     display: block;
     margin-top: 0.5rem;
+    margin-left: 0;
+    margin-right: 0;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.5);
     font-style: italic;
     text-align: center;
     width: 100%;
+    box-sizing: border-box;
+    padding: 0;
 }
 
 /* Loading Overlay */
@@ -1301,12 +1331,14 @@ html[lang="ar"] .curriculum-item:hover {
         margin-left: 0;
         margin-right: 0;
         padding: 0;
+        gap: 1rem;
     }
     
     .action-btn {
         width: 100%;
         max-width: 100%;
         margin: 0;
+        box-sizing: border-box;
     }
 }
 
@@ -1345,6 +1377,17 @@ html[lang="ar"] .curriculum-item:hover {
         max-width: 100%;
     }
     
+    .enrollment-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .enrollment-form .submit-btn {
+        width: 100%;
+        max-width: 100%;
+        align-self: stretch;
+    }
+    
     .file-upload-group label {
         width: 100%;
         max-width: 100%;
@@ -1381,9 +1424,8 @@ html[lang="ar"] .curriculum-item:hover {
     }
     
     .form-actions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 1rem;
         width: 100%;
         padding: 0;
@@ -1396,6 +1438,17 @@ html[lang="ar"] .curriculum-item:hover {
         max-width: 100%;
         margin: 0;
         box-sizing: border-box;
+    }
+    
+    .enrollment-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .enrollment-form .submit-btn {
+        width: 100%;
+        max-width: 100%;
+        align-self: stretch;
     }
     
     .overview-grid {
