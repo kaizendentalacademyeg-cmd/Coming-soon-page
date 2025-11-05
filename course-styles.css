@@ -1296,15 +1296,17 @@ html[lang="ar"] .curriculum-item:hover {
     
     .form-actions {
         grid-template-columns: 1fr;
-        justify-items: center;
+        justify-items: stretch;
         max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
     }
     
     .action-btn {
         width: 100%;
-        max-width: 400px;
+        max-width: 100%;
+        margin: 0;
     }
 }
 
@@ -1316,23 +1318,36 @@ html[lang="ar"] .curriculum-item:hover {
     }
     
     .philosophy-content,
+    .enrollment {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    .enrollment .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
     .enrollment-content {
         grid-template-columns: 1fr;
         gap: 3rem;
-        justify-items: center;
+        justify-items: stretch;
+        padding: 0;
     }
     
     .enrollment-content > .enrollment-info {
         position: static;
         width: 100%;
-        max-width: 600px;
+        max-width: 100%;
+        padding: 0;
     }
     
     .enrollment-form {
-        max-width: 600px;
-        margin: 0 auto;
+        max-width: 100%;
+        margin: 0;
         width: 100%;
-        padding: 2rem 1.5rem;
+        padding: 2rem 1rem;
+        box-sizing: border-box;
     }
     
     .enrollment-form .form-group,
@@ -1341,13 +1356,17 @@ html[lang="ar"] .curriculum-item:hover {
     .enrollment-form .file-upload-group {
         width: 100%;
         max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+        box-sizing: border-box;
     }
     
     .file-upload-group label {
         width: 100%;
         max-width: 100%;
+        box-sizing: border-box;
     }
     
     .whatsapp-verification {
@@ -1386,12 +1405,16 @@ html[lang="ar"] .curriculum-item:hover {
         align-items: center;
         gap: 1rem;
         width: 100%;
+        padding: 0;
+        margin-left: 0;
+        margin-right: 0;
     }
     
     .action-btn {
         width: 100%;
-        max-width: 400px;
-        margin: 0 auto;
+        max-width: 100%;
+        margin: 0;
+        box-sizing: border-box;
     }
     
     .overview-grid {
@@ -1438,8 +1461,32 @@ html[lang="ar"] .curriculum-item:hover {
         text-align: center;
     }
     
+    .enrollment .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
     .enrollment-form {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 0.75rem;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .enrollment-form .form-group,
+    .enrollment-form .form-row,
+    .enrollment-form .form-actions,
+    .enrollment-form .file-upload-group {
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .action-btn {
+        width: 100%;
+        padding: 1rem;
     }
 }
 
