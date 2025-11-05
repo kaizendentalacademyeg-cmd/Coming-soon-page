@@ -750,14 +750,16 @@ html[lang="ar"] .curriculum-item:hover {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 .enrollment-form .form-group,
 .enrollment-form .form-row {
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
 }
 
 .enrollment-form .submit-btn {
@@ -846,6 +848,7 @@ html[lang="ar"] .curriculum-item:hover {
     margin-bottom: 2rem;
     width: 100%;
     justify-items: stretch;
+    box-sizing: border-box;
 }
 
 .action-btn {
@@ -860,6 +863,7 @@ html[lang="ar"] .curriculum-item:hover {
     transition: var(--transition);
     border: 2px solid;
     font-size: 1rem;
+    box-sizing: border-box;
 }
 
 .action-btn svg {
@@ -1344,9 +1348,9 @@ html[lang="ar"] .curriculum-item:hover {
     
     .enrollment-form {
         max-width: 100%;
-        margin: 0;
-        width: 100%;
-        padding: 2rem 1rem;
+        margin: 0 auto;
+        width: calc(100% - 2rem);
+        padding: 2rem 1.5rem;
         box-sizing: border-box;
     }
     
@@ -1366,6 +1370,11 @@ html[lang="ar"] .curriculum-item:hover {
     .file-upload-group label {
         width: 100%;
         max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .action-btn {
+        width: 100%;
         box-sizing: border-box;
     }
     
@@ -1462,15 +1471,16 @@ html[lang="ar"] .curriculum-item:hover {
     }
     
     .enrollment .container {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     
     .enrollment-form {
-        padding: 1.5rem 0.75rem;
-        margin: 0;
-        width: 100%;
+        padding: 1.5rem 1rem;
+        margin: 0 auto;
+        width: calc(100% - 2rem);
         max-width: 100%;
+        border-radius: 20px;
     }
     
     .enrollment-form .form-group,
@@ -1482,11 +1492,17 @@ html[lang="ar"] .curriculum-item:hover {
         padding-right: 0;
         margin-left: 0;
         margin-right: 0;
+        box-sizing: border-box;
     }
     
     .action-btn {
         width: 100%;
-        padding: 1rem;
+        padding: 0.9rem 1rem;
+        box-sizing: border-box;
+    }
+    
+    .file-upload-group label {
+        padding: 1.25rem 1rem;
     }
 }
 
