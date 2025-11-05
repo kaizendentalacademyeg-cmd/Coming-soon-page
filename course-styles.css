@@ -1286,6 +1286,15 @@ html[lang="ar"] .curriculum-item:hover {
     
     .form-actions {
         grid-template-columns: 1fr;
+        justify-items: center;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 400px;
     }
 }
 
@@ -1313,6 +1322,14 @@ html[lang="ar"] .curriculum-item:hover {
         max-width: 600px;
         margin: 0 auto;
         width: 100%;
+        padding: 2rem 1.5rem;
+    }
+    
+    .enrollment-form .form-group,
+    .enrollment-form .form-row,
+    .enrollment-form .form-actions {
+        width: 100%;
+        max-width: 100%;
     }
     
     .whatsapp-verification {
@@ -1343,6 +1360,20 @@ html[lang="ar"] .curriculum-item:hover {
     .cta-btn {
         width: 100%;
         justify-content: center;
+    }
+    
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
     }
     
     .overview-grid {
