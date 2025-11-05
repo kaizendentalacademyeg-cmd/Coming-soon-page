@@ -844,6 +844,8 @@ html[lang="ar"] .curriculum-item:hover {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-bottom: 2rem;
+    width: 100%;
+    justify-items: stretch;
 }
 
 .action-btn {
