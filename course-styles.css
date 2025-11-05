@@ -687,6 +687,139 @@ html[lang="ar"] .curriculum-item:hover {
     font-weight: 500;
 }
 
+/* Course Date Section */
+.course-date-section-wrapper {
+    padding: 4rem 0;
+    position: relative;
+    z-index: 2;
+}
+
+.course-date-section {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.course-date-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 30px;
+    padding: 3rem 4rem;
+    border: 1px solid rgba(198, 112, 17, 0.1);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+}
+
+.course-date-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(198, 112, 17, 0.05) 0%, rgba(231, 175, 32, 0.05) 100%);
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 0;
+}
+
+.course-date-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--text-accent);
+    box-shadow: 0 20px 60px rgba(198, 112, 17, 0.2);
+}
+
+.course-date-card:hover::before {
+    opacity: 1;
+}
+
+.course-date-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    width: 100%;
+}
+
+.course-date-duration {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.duration-number {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.duration-label {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.course-date-dates {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.date-item {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding: 0.6rem 1.2rem;
+    background: rgba(198, 112, 17, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(198, 112, 17, 0.2);
+    transition: var(--transition);
+    min-width: 65px;
+    text-align: center;
+    display: inline-block;
+}
+
+.course-date-card:hover .date-item {
+    background: rgba(198, 112, 17, 0.15);
+    border-color: var(--text-accent);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(198, 112, 17, 0.2);
+}
+
+.date-separator {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-accent);
+    opacity: 0.5;
+}
+
+.course-date-month {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-accent);
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+}
+
 /* Enrollment Section */
 .enrollment {
     padding: 4rem 0;
@@ -1356,6 +1489,18 @@ html[lang="ar"] .curriculum-item:hover {
         justify-items: center;
     }
     
+    .course-date-section-wrapper {
+        padding: 3rem 0;
+    }
+    
+    .course-date-section {
+        max-width: 100%;
+    }
+    
+    .course-date-card {
+        padding: 2.5rem 2rem;
+    }
+    
     .enrollment-content > .enrollment-info {
         position: static;
         width: 100%;
@@ -1476,6 +1621,36 @@ html[lang="ar"] .curriculum-item:hover {
     .percentage-circle svg {
         width: 250px;
         height: 250px;
+    }
+    
+    .course-date-section-wrapper {
+        padding: 2rem 0;
+    }
+    
+    .course-date-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .course-date-content {
+        gap: 1.25rem;
+    }
+    
+    .duration-number {
+        font-size: 2.75rem;
+    }
+    
+    .duration-label {
+        font-size: 0.95rem;
+    }
+    
+    .date-item {
+        font-size: 1.5rem;
+        padding: 0.5rem 1rem;
+        min-width: 55px;
+    }
+    
+    .course-date-month {
+        font-size: 1.1rem;
     }
 }
 
