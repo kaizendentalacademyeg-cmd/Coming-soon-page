@@ -1088,6 +1088,39 @@ html[lang="ar"] .course-btn:hover {
     transform: translateX(-5px);
 }
 
+/* Featured New Course Card */
+.course-card.featured-new {
+    border-color: rgba(239, 68, 68, 0.3);
+    position: relative;
+    animation: newCoursePulse 3s ease-in-out infinite;
+}
+
+.course-card.featured-new::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes newCoursePulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px 5px rgba(239, 68, 68, 0.15);
+    }
+}
+
+.course-card.featured-new:hover {
+    border-color: #ef4444;
+    box-shadow: 0 20px 60px rgba(239, 68, 68, 0.2);
+}
+
 /* Contact Section */
 .contact {
     background: linear-gradient(180deg, transparent 0%, rgba(198, 112, 17, 0.03) 50%, transparent 100%);
@@ -1852,5 +1885,69 @@ html[lang="ar"] .location-link:hover {
         padding: 0;
         justify-content: center;
     }
+}
+
+/* ========================================
+   PERFORMANCE OPTIMIZATIONS
+   ======================================== */
+
+/* Reduce animations on mobile for better performance */
+@media (max-width: 768px) {
+    .gradient-orb {
+        animation: none;
+        opacity: 0.08;
+    }
+    
+    .particles {
+        display: none;
+    }
+    
+    .animated-bg::before,
+    .animated-bg::after {
+        animation: none;
+    }
+}
+
+/* Respect user's reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .gradient-orb {
+        animation: none;
+    }
+    
+    .particles {
+        display: none;
+    }
+    
+    .typewriter {
+        animation: none;
+    }
+}
+
+/* GPU acceleration for animated elements */
+.gradient-orb,
+.particles,
+.faculty-card,
+.course-card,
+.vm-card {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Optimize images */
+img {
+    content-visibility: auto;
+}
+
+.faculty-image,
+.lecturer-image {
+    contain: layout style paint;
 }
 
