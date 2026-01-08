@@ -341,6 +341,12 @@ if (enrollmentForm) {
         appsScriptFormData.append("faculty", document.getElementById("faculty").value);
         appsScriptFormData.append("gradYear", document.getElementById("graduationYear").value);
         appsScriptFormData.append("moreInfo", document.getElementById("enrollMessage").value);
+        
+        // Get course name from hidden field or page title
+        const courseField = enrollmentForm.querySelector('input[name="course"]');
+        const courseName = courseField ? courseField.value : document.title.split(' - ')[0];
+        appsScriptFormData.append("course", courseName);
+        makeFormData.append("course", courseName);
         // NO FILE - Apps Script doesn't handle files
         
         console.log('📤 Sending to Make.com (with file):');
