@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Bonded Bioprinting - Kaizen Dental Academy</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="logo.png" as="image">
+    <link rel="preload" href="styles.css?v=14" as="style">
+    <link rel="preload" href="course-styles.css?v=14" as="style">
+    
     <link rel="stylesheet" href="styles.css?v=14">
     <link rel="stylesheet" href="course-styles.css?v=14">
     <link rel="icon" href="Logo Icon.png" type="image/png">
+    
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://connect.facebook.net">
     
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W9NX8Y7FYM"></script>
@@ -158,7 +168,7 @@
             <div class="lecturers-grid">
                 <div class="lecturer-card">
                     <div class="lecturer-image-wrapper">
-                        <img src="Elgammal.png" alt="Dr. Mahmoud Elgammal" class="lecturer-image">
+                        <img src="Elgammal.png" alt="Dr. Mahmoud Elgammal" class="lecturer-image" loading="lazy">
                     </div>
                     <div class="lecturer-info">
                         <h3 class="lecturer-name">Dr. Mahmoud Elgammal</h3>
@@ -171,7 +181,7 @@
                 </div>
                 <div class="lecturer-card">
                     <div class="lecturer-image-wrapper">
-                        <img src="Moheb.png" alt="Dr. Moheb Nady" class="lecturer-image">
+                        <img src="Moheb.png" alt="Dr. Moheb Nady" class="lecturer-image" loading="lazy">
                     </div>
                     <div class="lecturer-info">
                         <h3 class="lecturer-name">Dr. Moheb Nady</h3>
@@ -544,19 +554,20 @@
             <div class="course-date-section">
                 <div class="course-date-card">
                     <div class="course-date-content">
-                        <div class="batch-badge">2nd Batch</div>
+                        <div class="batch-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a); border-color: #22c55e; color: #ffffff;">✓ 2 Batches Completed</div>
                         <div class="course-date-duration">
                             <span class="duration-number">3</span>
                             <span class="duration-label" data-en="Days" data-ar="أيام">Days</span>
                         </div>
-                        <div class="course-date-dates">
-                            <span class="date-item">18</span>
-                            <span class="date-separator">-</span>
-                            <span class="date-item">19</span>
-                            <span class="date-separator">-</span>
-                            <span class="date-item">20</span>
+                        <div style="margin: 1.5rem 0; padding: 1.5rem 2rem; background: rgba(198, 112, 17, 0.1); border: 2px solid rgba(198, 112, 17, 0.3); border-radius: 15px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-accent); margin-bottom: 0.5rem;">🗓️ Next Batch</div>
+                            <div style="font-size: 2rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Coming Soon</div>
+                            <div style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem;">Stay tuned for the 3rd batch announcement!</div>
                         </div>
-                        <div class="course-date-month">December 2025</div>
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+                            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 0.5rem 1rem; border-radius: 8px; color: #22c55e; font-size: 0.9rem;">✓ 1st Batch - Completed</div>
+                            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 0.5rem 1rem; border-radius: 8px; color: #22c55e; font-size: 0.9rem;">✓ 2nd Batch - Completed</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -654,6 +665,9 @@
                     </div>
                 </div>
                 <form class="enrollment-form" id="enrollmentForm">
+                    <!-- Hidden field to identify which course this is -->
+                    <input type="hidden" name="course" value="3D Bonded Bioprinting">
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <input type="text" id="enrollFirstName" name="firstName" required>
@@ -892,7 +906,9 @@
         <span class="whatsapp-float-text">Chat with us</span>
     </a>
 
-    <script src="course-script.js?v=14"></script>
+    <script src="course-script.js?v=14" defer></script>
 </body>
 </html>
+
+
 
