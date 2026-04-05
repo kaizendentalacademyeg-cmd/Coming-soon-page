@@ -315,6 +315,83 @@
         </table>`;
     }
 
+    // ─── POLICY EDITOR ───
+    async function openPolicyEditor(id) {
+        const overlay = $('#policyEditorOverlay');
+        if (!overlay) return;
+        if (id) {
+            // Edit existing
+            const { data } = await sbFetch(`policies?id=eq.${id}`, { params: { select: '*' } });
+            const p = data?.[0];
+            if (!p) { showToast('Policy not found', 'error'); return; }
+            $('#policyEditorTitle').textContent = 'Edit Policy';
+            $('#policyEditId').value = p.id;
+            $('#policyEditTitle').value = p.title;
+            $('#policyEditSlug').value = p.slug;
+            $('#policyEditContent').value = p.content || '';
+            if (p.is_published) $('#policyEditPublished').classList.add('active');
+            else $('#policyEditPublished').classList.remove('active');
+            $('#deletePolicyBtn').style.display = '';
+        } else {
+            // New policy
+            $('#policyEditorTitle').textContent = 'New Policy';
+            $('#policyEditId').value = '';
+            $('#policyEditTitle').value = '';
+            $('#policyEditSlug').value = '';
+            $('#policyEditContent').value = '';
+            $('#policyEditPublished').classList.remove('active');
+            $('#deletePolicyBtn').style.display = 'none';
+        }
+        overlay.style.display = '';
+    }
+
+    function closePolicyEditor() {
+        const overlay = $('#policyEditorOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    $('#closePolicyEditor')?.addEventListener('click', closePolicyEditor);
+    $('#policyEditPublished')?.addEventListener('click', function() { this.classList.toggle('active'); });
+    $('#addPolicyBtn')?.addEventListener('click', () => openPolicyEditor(null));
+
+    $('#savePolicyBtn')?.addEventListener('click', async () => {
+        const id = $('#policyEditId').value;
+        const title = $('#policyEditTitle').value.trim();
+        const slug = $('#policyEditSlug').value.trim();
+        const content = $('#policyEditContent').value;
+        const is_published = $('#policyEditPublished').classList.contains('active');
+
+        if (!title || !slug) { showToast('Title and slug are required', 'error'); return; }
+
+        const body = { title, slug, content, is_published, updated_at: new Date().toISOString(), updated_by: currentUser?.id };
+
+        if (id) {
+            // Update
+            await sbFetch(`policies?id=eq.${id}`, { method: 'PATCH', body });
+            showToast('Policy updated!', 'success');
+            logAudit('update_policy', `Updated policy: ${title}`);
+        } else {
+            // Insert
+            await sbFetch('policies', { method: 'POST', body });
+            showToast('Policy created!', 'success');
+            logAudit('create_policy', `Created policy: ${title}`);
+        }
+        closePolicyEditor();
+        loadPolicies();
+    });
+
+    $('#deletePolicyBtn')?.addEventListener('click', async () => {
+        const id = $('#policyEditId').value;
+        if (!id) return;
+        const yes = await adminConfirm('Delete this policy?', 'This action cannot be undone.');
+        if (!yes) return;
+        await sbFetch(`policies?id=eq.${id}`, { method: 'DELETE' });
+        showToast('Policy deleted', 'success');
+        logAudit('delete_policy', `Deleted policy ${id}`);
+        closePolicyEditor();
+        loadPolicies();
+    });
+
     // ─── SETTINGS ───
     async function loadSettings() {
         const { data } = await sbFetch('site_settings', { params: { select: '*' } });
@@ -1057,7 +1134,7 @@
             loadEnrollments();
         },
         viewMember(id) { showToast('Member detail view coming soon', 'success'); },
-        editPolicy(id) { showToast('Policy editor coming soon', 'success'); },
+        editPolicy(id) { openPolicyEditor(id); },
         async editBlogPost(id) {
             const { data } = await sbFetch(`blog_posts?id=eq.${id}`, { params: { select: '*' } });
             if (data?.[0]) openBlogEditor(data[0]);

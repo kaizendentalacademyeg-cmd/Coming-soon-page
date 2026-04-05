@@ -294,6 +294,36 @@
                         <button class="btn btn-primary btn-sm" id="addPolicyBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Policy</button>
                     </div>
                     <div id="policiesList" class="admin-loading"><div class="admin-spinner"></div></div>
+                    <!-- Policy Editor Overlay -->
+                    <div id="policyEditorOverlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);padding:2rem;overflow-y:auto">
+                        <div style="max-width:800px;margin:0 auto;background:#1a1a24;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:2rem">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+                                <h3 id="policyEditorTitle" style="font-size:1.2rem;font-weight:700">Edit Policy</h3>
+                                <button class="btn btn-secondary btn-sm" id="closePolicyEditor">&times; Close</button>
+                            </div>
+                            <input type="hidden" id="policyEditId">
+                            <div class="form-group" style="margin-bottom:1rem">
+                                <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:rgba(255,255,255,0.5)">Title</label>
+                                <input type="text" class="form-control" id="policyEditTitle" placeholder="e.g. Refund Policy">
+                            </div>
+                            <div class="form-group" style="margin-bottom:1rem">
+                                <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:rgba(255,255,255,0.5)">Slug (URL path)</label>
+                                <input type="text" class="form-control" id="policyEditSlug" placeholder="e.g. refund-policy">
+                            </div>
+                            <div class="form-group" style="margin-bottom:1rem">
+                                <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:rgba(255,255,255,0.5)">Content (HTML supported)</label>
+                                <textarea class="form-control" id="policyEditContent" rows="18" style="min-height:350px;font-family:monospace;font-size:0.85rem;line-height:1.6" placeholder="Write your policy content here. You can use HTML tags like <h2>, <p>, <ul>, <li>, <a>, <strong>, etc."></textarea>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+                                <label style="font-size:0.85rem;color:rgba(255,255,255,0.5)">Published</label>
+                                <div class="toggle-track" id="policyEditPublished"></div>
+                            </div>
+                            <div style="display:flex;gap:0.75rem">
+                                <button class="btn btn-primary" id="savePolicyBtn">Save Policy</button>
+                                <button class="btn btn-secondary" id="deletePolicyBtn" style="background:rgba(255,60,60,0.15);border-color:rgba(255,60,60,0.3);color:#ff6b6b">Delete</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- ═══ SITE SETTINGS ═══ -->
