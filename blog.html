@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Kaizen Dental Academy</title>
+    <meta name="description" content="Read the latest dental tips, academy news, course updates, and research from Kaizen Dental Academy.">
+    <meta name="keywords" content="dental blog, dental education blog, Kaizen blog, dental tips, course updates, Egypt dentistry">
+    <meta name="author" content="Kaizen Dental Academy">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Blog - Kaizen Dental Academy">
+    <meta property="og:description" content="Latest dental tips, academy news, and course updates from Kaizen Dental Academy.">
+    <meta property="og:image" content="https://kaizendentalacademy.com/logo.png">
+    <meta property="og:url" content="https://kaizendentalacademy.com/blog">
+    <meta property="og:site_name" content="Kaizen Dental Academy">
+    <link rel="canonical" href="https://kaizendentalacademy.com/blog">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="favicon.png">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+
+    <!-- Navigation (same as main site) -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="index.html"><img src="logo.png" alt="Kaizen Dental Academy"></a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#courses">Courses</a>
+                <a href="blog.html" class="blog-nav-active">Blog</a>
+                <a href="index.html#contact">Contact</a>
+            </div>
+            <div class="nav-right">
+                <a href="my-account.html" class="nav-account-btn" id="navAccountBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="navAccountText">My Account</span>
+                </a>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" title="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══ BLOG HERO ═══ -->
+    <section class="blog-hero">
+        <div class="blog-hero-bg"></div>
+        <div class="container">
+            <h1 class="blog-hero-title">Kaizen <span>Blog</span></h1>
+            <p class="blog-hero-subtitle">Insights, tips, and news from the world of dental excellence</p>
+        </div>
+    </section>
+
+    <!-- ═══ CATEGORY FILTERS ═══ -->
+    <section class="blog-filters">
+        <div class="container">
+            <div class="filter-pills" id="filterPills">
+                <button class="filter-pill active" data-category="all">All</button>
+                <button class="filter-pill" data-category="Dental Tips">Dental Tips</button>
+                <button class="filter-pill" data-category="Academy News">Academy News</button>
+                <button class="filter-pill" data-category="Course Updates">Course Updates</button>
+                <button class="filter-pill" data-category="Research">Research</button>
+                <button class="filter-pill" data-category="General">General</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ BLOG GRID ═══ -->
+    <section class="blog-grid-section">
+        <div class="blog-grid" id="blogGrid">
+            <div class="blog-loading">
+                <div class="spinner"></div>
+                <p>Loading posts...</p>
+            </div>
+        </div>
+        <div class="blog-empty" id="blogEmpty" style="display:none">
+            <h3>No posts yet</h3>
+            <p>Check back soon for the latest updates from Kaizen Dental Academy.</p>
+        </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="blog-footer">
+        <div class="container">
+            <p>&copy; 2026 Kaizen Dental Academy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="maintenance-check.js"></script>
+    <script src="supabase-auth.js"></script>
+    <script src="blog.js"></script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+/* ========================================
+   KAIZEN DENTAL ACADEMY — STUDENT PORTAL
+   ======================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --sp-bg: #0a0a0f;
+    --sp-surface: #12121a;
+    --sp-surface-2: #1a1a25;
+    --sp-surface-3: #22222f;
+    --sp-border: rgba(255,255,255,0.06);
+    --sp-border-hover: rgba(255,255,255,0.12);
+    --sp-text: #e8e8ed;
+    --sp-text-dim: rgba(255,255,255,0.5);
+    --sp-text-muted: rgba(255,255,255,0.35);
+    --sp-accent: #c77111;
+    --sp-accent-light: #e7af20;
+    --sp-accent-dim: rgba(199,113,17,0.12);
+    --sp-success: #22c55e;
+    --sp-warning: #f59e0b;
+    --sp-danger: #ef4444;
+    --sp-info: #3b82f6;
+    --sp-radius: 16px;
+    --sp-radius-sm: 10px;
+    --sp-transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--sp-bg);
+    color: var(--sp-text);
+    background-image: url('mesh.png'), radial-gradient(ellipse at 50% 0%, rgba(199,113,17,0.08) 0%, transparent 60%);
+    background-attachment: fixed;
+    background-size: cover;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ─── AUTH SCREENS ─── */
+.sp-auth-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;
+}
+.sp-auth-card {
+    background: rgba(18, 18, 26, 0.4);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px; padding: 2.5rem; max-width: 440px; width: 100%;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+}
+.sp-auth-card .sp-logo { display: block; height: 44px; margin: 0 auto 1.5rem; }
+.sp-auth-card h1 { text-align: center; font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+.sp-auth-card .sp-subtitle { text-align: center; color: var(--sp-text-dim); font-size: 0.9rem; margin-bottom: 2rem; }
+.sp-form-group { margin-bottom: 1.25rem; }
+.sp-form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--sp-text-dim); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.4rem; }
+.sp-input {
+    width: 100%; padding: 0.8rem 1rem; background: var(--sp-surface-2);
+    border: 1px solid var(--sp-border); border-radius: var(--sp-radius-sm);
+    color: var(--sp-text); font-size: 0.95rem; font-family: inherit;
+    transition: border-color var(--sp-transition);
+}
+.sp-input:focus { outline: none; border-color: var(--sp-accent); }
+.sp-btn-primary {
+    width: 100%; padding: 0.875rem; background: linear-gradient(135deg, var(--sp-accent), #a85d0e);
+    color: #fff; border: none; border-radius: var(--sp-radius-sm);
+    font-weight: 700; font-size: 1rem; cursor: pointer;
+    transition: all var(--sp-transition); font-family: inherit;
+}
+.sp-btn-primary:hover { box-shadow: 0 8px 30px rgba(199,113,17,0.4); transform: translateY(-1px); }
+.sp-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.sp-btn-secondary {
+    width: 100%; padding: 0.8rem; background: transparent;
+    border: 2px solid var(--sp-border); border-radius: var(--sp-radius-sm);
+    color: var(--sp-text-dim); font-weight: 600; font-size: 0.9rem;
+    cursor: pointer; transition: all var(--sp-transition); font-family: inherit; margin-top: 0.75rem;
+}
+.sp-btn-secondary:hover { border-color: var(--sp-border-hover); color: var(--sp-text); }
+.sp-divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0; color: var(--sp-text-muted); font-size: 0.8rem; }
+.sp-divider::before, .sp-divider::after { content: ''; flex: 1; height: 1px; background: var(--sp-border); }
+.sp-auth-toggle { text-align: center; margin-top: 1.5rem; font-size: 0.875rem; color: var(--sp-text-dim); }
+.sp-auth-toggle a { color: var(--sp-accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+.sp-auth-toggle a:hover { color: var(--sp-accent-light); }
+.sp-error { color: var(--sp-danger); font-size: 0.85rem; margin-top: 0.75rem; display: none; text-align: center; }
+.sp-forgot { display: block; text-align: right; font-size: 0.8rem; color: var(--sp-text-muted); text-decoration: none; margin-top: -0.5rem; margin-bottom: 1.25rem; }
+.sp-forgot:hover { color: var(--sp-accent); }
+
+/* ─── DASHBOARD LAYOUT ─── */
+.sp-dashboard {
+    min-height: 100vh; background: var(--sp-bg);
+    padding: 5rem 2rem 4rem;
+}
+.sp-container { max-width: 960px; margin: 0 auto; }
+.sp-dashboard-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
+}
+.sp-welcome h1 { font-size: 1.75rem; font-weight: 800; }
+.sp-welcome h1 span { background: linear-gradient(135deg, var(--sp-accent), var(--sp-accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.sp-welcome p { color: var(--sp-text-dim); font-size: 0.9rem; margin-top: 0.25rem; }
+.sp-header-actions { display: flex; gap: 0.75rem; }
+.sp-header-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 1.25rem; border-radius: var(--sp-radius-sm);
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: all var(--sp-transition); text-decoration: none; font-family: inherit;
+}
+.sp-header-btn.outline { background: transparent; border: 1px solid var(--sp-border); color: var(--sp-text-dim); }
+.sp-header-btn.outline:hover { border-color: var(--sp-border-hover); color: var(--sp-text); }
+.sp-header-btn.danger { background: transparent; border: 1px solid rgba(239,68,68,0.2); color: var(--sp-danger); }
+.sp-header-btn.danger:hover { background: rgba(239,68,68,0.08); }
+
+/* ─── TABS ─── */
+.sp-tabs {
+    display: flex; gap: 0.25rem; background: var(--sp-surface);
+    border: 1px solid var(--sp-border); border-radius: var(--sp-radius);
+    padding: 0.3rem; margin-bottom: 2rem; overflow-x: auto;
+}
+.sp-tab {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    padding: 0.7rem 1rem; border-radius: var(--sp-radius-sm);
+    font-size: 0.85rem; font-weight: 600; color: var(--sp-text-dim);
+    cursor: pointer; transition: all var(--sp-transition);
+    border: none; background: none; font-family: inherit; white-space: nowrap;
+}
+.sp-tab:hover { color: var(--sp-text); }
+.sp-tab.active { background: var(--sp-accent-dim); color: var(--sp-accent-light); }
+.sp-tab svg { width: 18px; height: 18px; flex-shrink: 0; }
+.sp-tab-panel { display: none; }
+.sp-tab-panel.active { display: block; animation: spFadeIn 0.3s ease; }
+@keyframes spFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── COURSE CARDS ─── */
+.sp-courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+.sp-course-card {
+    background: var(--sp-surface); border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius); padding: 1.75rem;
+    transition: all var(--sp-transition); position: relative; overflow: hidden;
+}
+.sp-course-card:hover { border-color: var(--sp-border-hover); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.sp-course-card .sp-course-status { position: absolute; top: 1.25rem; right: 1.25rem; }
+.sp-course-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; padding-right: 5rem; }
+.sp-course-card .sp-course-meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; font-size: 0.8rem; color: var(--sp-text-muted); }
+.sp-course-card .sp-course-meta span { display: flex; align-items: center; gap: 0.35rem; }
+.sp-course-card .sp-course-actions { margin-top: 1.25rem; display: flex; gap: 0.5rem; }
+.sp-course-action-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600;
+    text-decoration: none; transition: all var(--sp-transition); cursor: pointer; border: none; font-family: inherit;
+}
+.sp-course-action-btn.gold { background: var(--sp-accent-dim); color: var(--sp-accent); }
+.sp-course-action-btn.gold:hover { background: rgba(199,113,17,0.2); }
+.sp-course-action-btn.outline { background: transparent; border: 1px solid var(--sp-border); color: var(--sp-text-dim); }
+
+/* ─── BADGES ─── */
+.sp-badge { display: inline-flex; align-items: center; padding: 0.2rem 0.7rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.sp-badge-confirmed { background: rgba(34,197,94,0.12); color: var(--sp-success); }
+.sp-badge-pending { background: rgba(245,158,11,0.12); color: var(--sp-warning); }
+.sp-badge-failed { background: rgba(239,68,68,0.12); color: var(--sp-danger); }
+.sp-badge-active { background: rgba(59,130,246,0.12); color: var(--sp-info); }
+.sp-badge-completed { background: rgba(34,197,94,0.12); color: var(--sp-success); }
+
+/* ─── PAYMENT TABLE ─── */
+.sp-table-wrap {
+    background: var(--sp-surface); border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius); overflow: hidden;
+}
+.sp-table { width: 100%; border-collapse: collapse; }
+.sp-table thead { background: var(--sp-surface-2); }
+.sp-table th { padding: 0.75rem 1.25rem; text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--sp-text-muted); font-weight: 600; }
+.sp-table td { padding: 1rem 1.25rem; border-top: 1px solid var(--sp-border); font-size: 0.875rem; }
+.sp-table tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* ─── PROFILE FORM ─── */
+.sp-profile-card {
+    background: var(--sp-surface); border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius); padding: 2rem;
+}
+.sp-profile-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.sp-profile-card h3 svg { color: var(--sp-accent); }
+.sp-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.sp-save-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1.75rem; background: linear-gradient(135deg, var(--sp-accent), #a85d0e);
+    color: #fff; border: none; border-radius: var(--sp-radius-sm);
+    font-weight: 600; font-size: 0.9rem; cursor: pointer;
+    transition: all var(--sp-transition); margin-top: 1.5rem; font-family: inherit;
+}
+.sp-save-btn:hover { box-shadow: 0 6px 25px rgba(199,113,17,0.35); }
+
+/* ─── EMPTY STATE ─── */
+.sp-empty {
+    text-align: center; padding: 4rem 2rem;
+    background: var(--sp-surface); border: 1px solid var(--sp-border);
+    border-radius: var(--sp-radius);
+}
+.sp-empty-icon { width: 64px; height: 64px; margin: 0 auto 1.5rem; border-radius: 50%; background: var(--sp-accent-dim); display: flex; align-items: center; justify-content: center; color: var(--sp-accent); }
+.sp-empty h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+.sp-empty p { color: var(--sp-text-dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+.sp-empty a { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.5rem; background: var(--sp-accent-dim); color: var(--sp-accent); border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: all var(--sp-transition); }
+.sp-empty a:hover { background: rgba(199,113,17,0.2); }
+
+/* ─── ENROLL MODAL ─── */
+.sp-modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center; padding: 2rem;
+}
+.sp-modal-overlay.show { display: flex; }
+.sp-modal {
+    background: var(--sp-surface); border: 1px solid var(--sp-border);
+    border-radius: 20px; padding: 2.5rem; max-width: 480px; width: 100%;
+    position: relative; box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+}
+.sp-modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--sp-text-dim); cursor: pointer; font-size: 1.5rem; padding: 0.5rem; line-height: 1; }
+.sp-modal h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+.sp-modal .sp-modal-subtitle { color: var(--sp-text-dim); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+/* InstaPay payment section */
+.sp-instapay-info { background: var(--sp-surface-2); border-radius: var(--sp-radius-sm); padding: 1.25rem; margin-bottom: 1.25rem; }
+.sp-instapay-info h4 { font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--sp-accent); }
+.sp-instapay-info .sp-instapay-number { font-size: 1.25rem; font-weight: 700; font-family: monospace; letter-spacing: 2px; margin-bottom: 0.5rem; }
+.sp-instapay-info .sp-copy-btn { font-size: 0.8rem; color: var(--sp-accent); cursor: pointer; background: none; border: none; font-family: inherit; }
+.sp-upload-area {
+    border: 2px dashed var(--sp-border); border-radius: var(--sp-radius-sm);
+    padding: 1.5rem; text-align: center; cursor: pointer;
+    transition: all var(--sp-transition); margin-bottom: 1rem;
+}
+.sp-upload-area:hover { border-color: var(--sp-accent); background: var(--sp-accent-dim); }
+.sp-upload-area input { display: none; }
+.sp-upload-area p { color: var(--sp-text-dim); font-size: 0.85rem; }
+.sp-upload-area .sp-upload-icon { color: var(--sp-accent); margin-bottom: 0.5rem; }
+
+/* ─── TOAST ─── */
+.sp-toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--sp-surface-2); border: 1px solid var(--sp-border); border-radius: var(--sp-radius-sm); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 9999; transform: translateY(120%); transition: transform 0.4s ease; }
+.sp-toast.show { transform: translateY(0); }
+.sp-toast.success { border-left: 3px solid var(--sp-success); }
+.sp-toast.error { border-left: 3px solid var(--sp-danger); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+    .sp-dashboard { padding: 4.5rem 1.25rem 3rem; }
+    .sp-dashboard-header { flex-direction: column; align-items: flex-start; }
+    .sp-tabs { overflow-x: auto; }
+    .sp-tab { font-size: 0.8rem; padding: 0.6rem 0.75rem; }
+    .sp-form-row { grid-template-columns: 1fr; }
+    .sp-courses-grid { grid-template-columns: 1fr; }
+    .sp-welcome h1 { font-size: 1.35rem; }
+    .sp-table { font-size: 0.8rem; }
+    .sp-table th, .sp-table td { padding: 0.6rem 0.75rem; }
+}

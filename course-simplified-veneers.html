@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simplified Veneers - Kaizen Dental Academy</title>
+    <meta name="description" content="Master the art of simplified veneers with Kaizen Dental Academy. Step-by-step clinical approach for predictable, beautiful results in cosmetic dentistry.">
+    <meta name="keywords" content="dental veneers, simplified veneers, cosmetic dentistry, veneer course, Egypt, Kaizen, porcelain veneers, smile design">
+    <meta name="author" content="Kaizen Dental Academy">
+    <meta name="theme-color" content="#0a0a0f">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Simplified Veneers - Kaizen Dental Academy">
+    <meta property="og:description" content="Master simplified veneers. Step-by-step clinical approach for predictable cosmetic dentistry results.">
+    <meta property="og:image" content="https://kaizendentalacademy.com/logo.png">
+    <meta property="og:url" content="https://kaizendentalacademy.com/course-simplified-veneers">
+    <meta property="og:site_name" content="Kaizen Dental Academy">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Simplified Veneers - Kaizen Dental Academy">
+    <meta name="twitter:description" content="Hands-on veneer course for predictable, beautiful cosmetic dentistry results.">
+    <meta name="twitter:image" content="https://kaizendentalacademy.com/logo.png">
+    <link rel="canonical" href="https://kaizendentalacademy.com/course-simplified-veneers">
     
     <!-- Preload critical resources -->
     <link rel="preload" href="logo.png" as="image">
@@ -12,7 +29,8 @@
     
     <link rel="stylesheet" href="styles.css?v=15">
     <link rel="stylesheet" href="course-styles.css?v=15">
-    <link rel="icon" href="Logo Icon.png" type="image/png">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="favicon.png">
     
     <!-- DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
@@ -287,14 +305,13 @@
                 <a href="index.html#hero">Home</a>
                 <a href="index.html#faculty">Faculty</a>
                 <a href="index.html#courses">Courses</a>
+                <a href="blog.html">Blog</a>
                 <a href="index.html#contact">Contact</a>
             </div>
             <div class="nav-right">
-                <a href="index.html" class="back-to-home-btn">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M10 4L4 10M4 10L10 16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <span>Back to Home</span>
+                <a href="my-account.html" class="nav-account-btn" id="navAccountBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="navAccountText">My Account</span>
                 </a>
                 <button class="mobile-menu-toggle" id="mobileMenuToggle">
                     <span></span>
@@ -309,7 +326,7 @@
     <section class="course-hero">
         <div class="container">
             <div class="course-hero-content">
-                <div class="course-hero-badge">Featured Course</div>
+                <div class="course-hero-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a); animation: none;">1st Batch — Completed ✅</div>
                 <h1 class="course-hero-title">
                     <span class="title-main">Simplified</span>
                     <span class="title-highlight">Veneers</span>
@@ -342,18 +359,21 @@
                 </div>
                 
                 <div class="course-hero-actions">
-                    <a href="#enroll" class="cta-btn primary">
-                        <span>Enroll Now</span>
+                    <div class="cta-btn primary" style="opacity: 0.6; cursor: default; pointer-events: none; background: linear-gradient(135deg, #22c55e, #16a34a);">
+                        <span>1st Batch Completed</span>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                    </a>
+                    </div>
                     <a href="#curriculum" class="cta-btn secondary">
                         <span>View Curriculum</span>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M10 4V16M10 16L4 10M10 16L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
+                </div>
+                <div style="margin-top: 1.5rem; background: rgba(198, 112, 17, 0.1); border: 1px solid rgba(198, 112, 17, 0.3); border-radius: 50px; padding: 1rem 2rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon — Stay Tuned!</span>
                 </div>
             </div>
         </div>
@@ -451,7 +471,7 @@
             <div class="lecturers-grid" style="max-width: 450px;">
                 <div class="lecturer-card">
                     <div class="lecturer-image-wrapper">
-                        <img src="Dr Hadida.png" alt="Dr. Mohamed Hadida" class="lecturer-image" loading="lazy">
+                        <img src="assets/images/faculty/Dr Hadida.png" alt="Dr. Mohamed Hadida" class="lecturer-image" loading="lazy">
                     </div>
                     <div class="lecturer-info">
                         <h3 class="lecturer-name">Dr. Mohamed Hadida</h3>
@@ -972,7 +992,7 @@
                     </div>
                     
                     <div class="form-actions">
-                        <a href="SIMPLIFIED VENEERS - Dr Mohamed Hadida KDA.pdf" target="_blank" rel="noopener noreferrer" class="action-btn pdf-btn">
+                        <a href="assets/pdfs/SIMPLIFIED VENEERS - Dr Mohamed Hadida KDA.pdf" target="_blank" rel="noopener noreferrer" class="action-btn pdf-btn">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                 <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1095,7 +1115,7 @@
     </footer>
 
     <!-- Floating PDF Download Button -->
-    <a href="SIMPLIFIED VENEERS - Dr Mohamed Hadida KDA.pdf" target="_blank" rel="noopener noreferrer" class="floating-pdf-btn" aria-label="Download Course PDF">
+    <a href="assets/pdfs/SIMPLIFIED VENEERS - Dr Mohamed Hadida KDA.pdf" target="_blank" rel="noopener noreferrer" class="floating-pdf-btn" aria-label="Download Course PDF">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1112,6 +1132,7 @@
         <span class="whatsapp-float-text">Chat with us</span>
     </a>
 
+    <script src="maintenance-check.js"></script>
     <script src="course-script.js?v=15" defer></script>
 </body>
 </html>

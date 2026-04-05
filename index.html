@@ -4,14 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kaizen Dental Academy - Excellence in Dental Education</title>
+    <meta name="description" content="Egypt's premier dental education academy. Join 400+ dentists in specialized courses covering prosthodontics, bioprinting, veneers, and more. 1% better every day.">
+    <meta name="keywords" content="dental academy, dental education, Egypt, prosthodontics, dental courses, Kaizen, continuing education, dentist training, Cairo">
+    <meta name="author" content="Kaizen Dental Academy">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Kaizen Dental Academy - Excellence in Dental Education">
+    <meta property="og:description" content="Egypt's premier dental education academy. Specialized courses in prosthodontics, bioprinting, veneers, and more.">
+    <meta property="og:image" content="https://kaizendentalacademy.com/logo.png">
+    <meta property="og:url" content="https://kaizendentalacademy.com">
+    <meta property="og:site_name" content="Kaizen Dental Academy">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kaizen Dental Academy - Excellence in Dental Education">
+    <meta name="twitter:description" content="Egypt's premier dental education academy. Specialized courses for dentists.">
+    <meta name="twitter:image" content="https://kaizendentalacademy.com/logo.png">
+    <!-- Canonical -->
+    <link rel="canonical" href="https://kaizendentalacademy.com">
     
     <!-- Preload critical resources -->
     <link rel="preload" href="logo.png" as="image">
     <link rel="preload" href="styles.css" as="style">
-    <link rel="preload" href="Fonts/Montserrat-Bold.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="assets/fonts/Montserrat-Bold.ttf" as="font" type="font/ttf" crossorigin>
     
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="Logo Icon.png" type="image/png">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="favicon.png">
     
     <!-- DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
@@ -65,9 +86,14 @@
                 <a href="#vision">Vision & Mission</a>
                 <a href="#phygital">Phygital Courses</a>
                 <a href="#courses">Courses</a>
+                <a href="blog.html">Blog</a>
                 <a href="#contact">Contact</a>
             </div>
             <div class="nav-right">
+                <a href="my-account.html" class="nav-account-btn" id="navAccountBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="navAccountText">My Account</span>
+                </a>
                 <button class="mobile-menu-toggle" id="mobileMenuToggle">
                     <span></span>
                     <span></span>
@@ -136,7 +162,7 @@
             <div class="faculty-grid">
                 <div class="faculty-card" data-index="0">
                     <div class="faculty-image-wrapper">
-                        <img src="Elgammal.png" alt="Dr. Mahmoud Elgammal" class="faculty-image" loading="lazy">
+                        <img src="assets/images/faculty/Elgammal.png" alt="Dr. Mahmoud Elgammal" class="faculty-image" loading="lazy">
                     </div>
                     <div class="faculty-info">
                         <h3 class="faculty-name">Dr. Mahmoud Elgammal</h3>
@@ -150,7 +176,7 @@
 
                 <div class="faculty-card" data-index="1">
                     <div class="faculty-image-wrapper">
-                        <img src="Youssef.png" alt="Dr. Youssif Hossam" class="faculty-image" loading="lazy">
+                        <img src="assets/images/faculty/Youssef.png" alt="Dr. Youssif Hossam" class="faculty-image" loading="lazy">
                     </div>
                     <div class="faculty-info">
                         <h3 class="faculty-name">Dr. Youssif Hossam</h3>
@@ -163,7 +189,7 @@
 
                 <div class="faculty-card" data-index="2">
                     <div class="faculty-image-wrapper">
-                        <img src="Moheb.png" alt="Dr. Moheb Nady" class="faculty-image" loading="lazy">
+                        <img src="assets/images/faculty/Moheb.png" alt="Dr. Moheb Nady" class="faculty-image" loading="lazy">
                     </div>
                     <div class="faculty-info">
                         <h3 class="faculty-name">Dr. Moheb Nady</h3>
@@ -177,7 +203,7 @@
 
                 <div class="faculty-card" data-index="3">
                     <div class="faculty-image-wrapper">
-                        <img src="Dr Hadida.png" alt="Dr. Mohamed Hadida" class="faculty-image" loading="lazy">
+                        <img src="assets/images/faculty/Dr Hadida.png" alt="Dr. Mohamed Hadida" class="faculty-image" loading="lazy">
                     </div>
                     <div class="faculty-info">
                         <h3 class="faculty-name">Dr. Mohamed Hadida</h3>
@@ -328,9 +354,9 @@
                 <span class="title-line">Our</span><span class="title-highlight"> Courses</span>
             </h2>
             <div class="courses-grid">
-                <!-- Simplified Veneers Course - NEW -->
-                <div class="course-card featured-new">
-                    <div class="course-badge" style="background: linear-gradient(135deg, #ef4444, #dc2626);" data-en="New Course" data-ar="دورة جديدة">New Course</div>
+                <!-- Simplified Veneers Course - COMPLETED -->
+                <div class="course-card">
+                    <div class="course-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a);" data-en="1st Batch Completed" data-ar="تم إتمام الدفعة الأولى">1st Batch Completed</div>
                     <div class="course-image">
                         <div class="course-image-placeholder">
                             <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -360,22 +386,18 @@
                                 </svg>
                                 <span data-en="16 Lectures" data-ar="16 محاضرة">16 Lectures</span>
                             </div>
-                            <div class="highlight-item" style="color: #ef4444;">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                    <circle cx="10" cy="10" r="8" stroke="#ef4444" stroke-width="2"/>
-                                    <circle cx="10" cy="10" r="3" fill="#ef4444"/>
-                                </svg>
-                                <span style="color: #ef4444; font-weight: 600;" data-en="4 Live Patient Workshops" data-ar="4 ورش عمل على مريض حقيقي">4 Live Patient Workshops</span>
-                            </div>
                             <div class="highlight-item">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                     <path d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z" stroke="#c77111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
-                                <span data-en="Feb 12-14, 2026" data-ar="12-14 فبراير 2026">Feb 12-14, 2026</span>
+                                <span data-en="4 Live Patient Workshops" data-ar="4 ورش عمل على مريض حقيقي">4 Live Patient Workshops</span>
                             </div>
                         </div>
-                        <a href="course-simplified-veneers.html" class="course-btn" data-en="Enroll Now" data-ar="سجل الآن">
-                            <span>Enroll Now</span>
+                        <div class="course-coming-soon" style="background: rgba(198, 112, 17, 0.1); border: 1px solid rgba(198, 112, 17, 0.3); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; text-align: center;">
+                            <span style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon</span>
+                        </div>
+                        <a href="course-simplified-veneers.html" class="course-btn" data-en="Learn More" data-ar="اعرف المزيد">
+                            <span>Learn More</span>
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                 <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
@@ -437,6 +459,63 @@
                         </a>
                     </div>
                 </div>
+
+                <!-- Kaizen Study Club - NEW PROGRAM -->
+                <div class="course-card featured-new">
+                    <div class="course-badge" style="background: linear-gradient(135deg, #ef4444, #dc2626);" data-en="New Program" data-ar="برنامج جديد">New Program</div>
+                    <div class="course-image">
+                        <div class="course-image-placeholder">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                                <circle cx="50" cy="40" r="15" stroke="url(#gradientKSC)" stroke-width="2" fill="none"/>
+                                <circle cx="30" cy="65" r="12" stroke="url(#gradientKSC)" stroke-width="2" fill="none"/>
+                                <circle cx="70" cy="65" r="12" stroke="url(#gradientKSC)" stroke-width="2" fill="none"/>
+                                <line x1="50" y1="55" x2="36" y2="56" stroke="url(#gradientKSC)" stroke-width="1.5" opacity="0.5"/>
+                                <line x1="50" y1="55" x2="64" y2="56" stroke="url(#gradientKSC)" stroke-width="1.5" opacity="0.5"/>
+                                <defs>
+                                    <linearGradient id="gradientKSC" x1="0" y1="0" x2="100" y2="100">
+                                        <stop offset="0%" stop-color="#c77111"/>
+                                        <stop offset="100%" stop-color="#ffffff"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="course-content">
+                        <h3 class="course-title">Kaizen Study Club</h3>
+                        <p class="course-instructor" style="color: #c77111; font-weight: 600; margin-bottom: 0.75rem;">Join 400+ Dentists Worldwide</p>
+                        <p class="course-description" data-en="12 weekly online meetings over 3 months covering diagnosis, cariology, preparation, bonding, cementation, digital workflows, and more — taught by 5 expert faculty members." 
+                           data-ar="12 لقاء أسبوعي عبر الإنترنت على مدار 3 أشهر يغطي التشخيص والتسوس والتحضير والالتصاق والتثبيت وسير العمل الرقمي والمزيد — يقدمها 5 أعضاء هيئة تدريس خبراء.">
+                            12 weekly online meetings over 3 months covering diagnosis, cariology, preparation, bonding, cementation, digital workflows, and more — taught by 5 expert faculty members.
+                        </p>
+                        <div class="course-highlights">
+                            <div class="highlight-item">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z" stroke="#c77111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span data-en="12 Weekly Meetings" data-ar="12 لقاء أسبوعي">12 Weekly Meetings</span>
+                            </div>
+                            <div class="highlight-item" style="color: #ef4444;">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <circle cx="10" cy="10" r="8" stroke="#ef4444" stroke-width="2"/>
+                                    <circle cx="10" cy="10" r="3" fill="#ef4444"/>
+                                </svg>
+                                <span style="color: #ef4444; font-weight: 600;" data-en="Starts June 6, 2026" data-ar="يبدأ 6 يونيو 2026">Starts June 6, 2026</span>
+                            </div>
+                            <div class="highlight-item">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z" stroke="#c77111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span data-en="3 Months Program" data-ar="برنامج 3 أشهر">3 Months Program</span>
+                            </div>
+                        </div>
+                        <a href="course-ksc.html" class="course-btn" data-en="Join Now" data-ar="انضم الآن">
+                            <span>Join Now</span>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -479,6 +558,7 @@
                             <option value="" disabled selected></option>
                             <option value="simplified-veneers" data-en="Simplified Veneers - Dr. Mohamed Hadida" data-ar="القشور المبسطة - د. محمد حديده">Simplified Veneers - Dr. Mohamed Hadida</option>
                             <option value="3d-bioprinting" data-en="3D Bonded Bioprinting" data-ar="الطباعة الحيوية ثلاثية الأبعاد">3D Bonded Bioprinting</option>
+                            <option value="kaizen-study-club" data-en="Kaizen Study Club (KSC)" data-ar="نادي كايزن للدراسة">Kaizen Study Club (KSC)</option>
                         </select>
                         <label for="interest" data-en="Course Interest" data-ar="اهتمام بالدورة">Course Interest</label>
                     </div>
@@ -629,6 +709,8 @@
         <span class="whatsapp-float-text">Chat with us</span>
     </a>
 
+    <script src="maintenance-check.js"></script>
+    <script src="supabase-auth.js"></script>
     <script src="script.js" defer></script>
 </body>
 </html>

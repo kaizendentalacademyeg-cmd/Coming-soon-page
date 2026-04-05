@@ -632,6 +632,65 @@ html[lang="ar"] .curriculum-item:hover {
     margin: 0;
 }
 
+/* New Curriculum Grid */
+.curriculum-grid-new {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .curriculum-grid-new {
+        grid-template-columns: 1fr;
+    }
+}
+
+.curriculum-new-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(198, 112, 17, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.curriculum-new-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--text-accent);
+    box-shadow: 0 10px 30px rgba(198, 112, 17, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.curriculum-new-card .week-label {
+    color: var(--text-accent);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.curriculum-new-card .week-title {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+    margin-top: 0;
+}
+
+.curriculum-new-card .week-docs {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+}
+
 /* Kaizen Philosophy Section */
 .kaizen-philosophy {
     padding: 4rem 0;
@@ -1746,3 +1805,333 @@ html[lang="ar"] .curriculum-item:hover {
     }
 }
 
+
+/* ═══════════════════════════════════════════════════════════
+   TELEGRAM BOT DEMO SECTION
+   ═══════════════════════════════════════════════════════════ */
+
+.tg-demo-section {
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.tg-demo-subtitle {
+    text-align: center;
+    color: rgba(255,255,255,0.55);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: -1rem auto 3rem;
+}
+
+.tg-demo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.tg-demo-card {
+    position: relative;
+}
+
+.tg-demo-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #c77111;
+    margin-bottom: 1rem;
+}
+
+/* Phone Frame */
+.tg-phone {
+    background: #17212b;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+    display: flex;
+    flex-direction: column;
+    height: 480px;
+    position: relative;
+}
+
+/* Header */
+.tg-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.8rem;
+    background: #1f2936;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    flex-shrink: 0;
+}
+
+.tg-header-back { opacity: 0.5; flex-shrink: 0; }
+
+.tg-header-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #2b3945;
+}
+
+.tg-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tg-header-info { flex: 1; min-width: 0; }
+
+.tg-header-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tg-header-status {
+    font-size: 0.7rem;
+    color: #6ab3f3;
+}
+
+.tg-header-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-shrink: 0;
+    opacity: 0.5;
+}
+
+/* Chat Area */
+.tg-chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    background: #0e1621;
+}
+
+.tg-chat-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+/* Messages */
+.tg-msg {
+    max-width: 85%;
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    position: relative;
+    animation: tgMsgIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    word-wrap: break-word;
+}
+
+.tg-msg-out {
+    align-self: flex-end;
+    background: #2b5278;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.tg-msg-in {
+    align-self: flex-start;
+    background: #182533;
+    color: #ddd;
+    border-bottom-left-radius: 4px;
+}
+
+.tg-msg-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    float: right;
+    margin: 4px 0 -4px 10px;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.35);
+}
+
+.tg-msg-check {
+    color: #4fae4e;
+    font-size: 0.7rem;
+}
+
+/* Bot label */
+.tg-msg-bot-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6ab3f3;
+    margin-bottom: 3px;
+}
+
+/* AI quote block inside bot message */
+.tg-ai-quote {
+    border-left: 3px solid #c77111;
+    padding: 0.3rem 0 0.3rem 0.6rem;
+    margin-bottom: 0.4rem;
+}
+
+.tg-ai-quote-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #c77111;
+    margin-bottom: 2px;
+}
+
+.tg-ai-quote-text {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+}
+
+.tg-ai-badge {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.3);
+    float: right;
+    margin-top: -0.2rem;
+}
+
+/* Inline keyboard buttons */
+.tg-inline-kb {
+    display: flex;
+    gap: 0;
+    margin: 0.5rem -0.7rem -0.55rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.tg-inline-btn {
+    flex: 1;
+    padding: 0.6rem 0.4rem;
+    background: transparent;
+    border: none;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    color: #6ab3f3;
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: default;
+}
+
+.tg-inline-btn:last-child {
+    border-right: none;
+}
+
+/* Typing Indicator */
+.tg-typing {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.6rem 1rem;
+    background: #182533;
+    border-radius: 10px;
+    animation: tgMsgIn 0.3s ease-out;
+}
+
+.tg-typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    animation: tgTypingBounce 1.4s ease-in-out infinite;
+}
+
+.tg-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.tg-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes tgTypingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+    30% { transform: translateY(-5px); opacity: 0.8; }
+}
+
+@keyframes tgMsgIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Input Bar */
+.tg-input-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.7rem;
+    background: #17212b;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    flex-shrink: 0;
+}
+
+.tg-input-clip, .tg-input-emoji, .tg-input-mic {
+    flex-shrink: 0;
+    opacity: 0.5;
+}
+
+.tg-input-field {
+    flex: 1;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
+    padding: 0.3rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.tg-input-field.typing {
+    color: #fff;
+}
+
+/* START button */
+.tg-start-btn {
+    position: absolute;
+    bottom: 46px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 0.65rem;
+    color: #6ab3f3;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: #17212b;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    cursor: default;
+    z-index: 5;
+}
+
+/* Date pill */
+.tg-date-pill {
+    align-self: center;
+    padding: 0.2rem 0.8rem;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.3);
+    color: rgba(255,255,255,0.5);
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin: 0.3rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tg-demo-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+    }
+    .tg-phone { height: 440px; }
+    .tg-demo-subtitle { font-size: 0.95rem; padding: 0 1rem; }
+}

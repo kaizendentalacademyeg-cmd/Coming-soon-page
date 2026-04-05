@@ -311,19 +311,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Cursor Trail Effect (Luxury Touch)
-const cursorTrail = [];
-const trailLength = 5;
+// Cursor Trail Effect - REMOVED for performance
 
-document.addEventListener('mousemove', (e) => {
-    cursorTrail.push({ x: e.clientX, y: e.clientY, time: Date.now() });
-    
-    if (cursorTrail.length > trailLength) {
-        cursorTrail.shift();
-    }
-});
-
-// Parallax Effect on Scroll - Optimized with throttling
+// Parallax Effect on Scroll - Optimized with throttling + cached DOM
+const cachedOrbs = document.querySelectorAll('.gradient-orb');
 let scrollTimeout;
 window.addEventListener('scroll', () => {
     if (scrollTimeout) return;
@@ -336,9 +327,8 @@ window.addEventListener('scroll', () => {
     // Only apply parallax if scrolled past hero
     if (scrolled > window.innerHeight) return;
     
-    // Parallax for background orbs only (lightweight)
-    const orbs = document.querySelectorAll('.gradient-orb');
-    orbs.forEach((orb, index) => {
+    // Parallax for background orbs only (lightweight, cached)
+    cachedOrbs.forEach((orb, index) => {
         const speed = (index + 1) * 0.02;
         orb.style.transform = `translateY(${scrolled * speed}px)`;
     });
@@ -380,14 +370,7 @@ document.querySelectorAll('section').forEach(section => {
     sectionObserver.observe(section);
 });
 
-// Add Loading Animation
-window.addEventListener('load', () => {
-    document.body.style.opacity = '0';
-    setTimeout(() => {
-        document.body.style.transition = 'opacity 1s ease';
-        document.body.style.opacity = '1';
-    }, 100);
-});
+// Loading Animation - REMOVED (caused blank flash on page load)
 
 // Gradient Animation on Hover for Buttons
 document.querySelectorAll('.cta-btn, .submit-btn, .course-btn').forEach(btn => {
@@ -446,31 +429,7 @@ window.addEventListener('scroll', () => {
     progressBar.style.width = scrolled + '%';
 });
 
-// Easter Egg: Konami Code for Special Animation
-let konamiCode = [];
-const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-
-document.addEventListener('keydown', (e) => {
-    konamiCode.push(e.key);
-    konamiCode = konamiCode.slice(-10);
-    
-    if (konamiCode.join(',') === konamiSequence.join(',')) {
-        document.body.style.animation = 'rainbow 2s linear infinite';
-        setTimeout(() => {
-            document.body.style.animation = '';
-        }, 5000);
-    }
-});
-
-// Add rainbow animation
-const rainbowStyle = document.createElement('style');
-rainbowStyle.textContent = `
-    @keyframes rainbow {
-        0% { filter: hue-rotate(0deg); }
-        100% { filter: hue-rotate(360deg); }
-    }
-`;
-document.head.appendChild(rainbowStyle);
+// Konami Code - REMOVED for performance (unnecessary keydown listener)
 
 // Performance: Reduce animations on low-end devices
 if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) {
@@ -480,9 +439,9 @@ if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) {
     document.getElementById('particles').style.display = 'none';
 }
 
-// Accessibility: Pause animations on preference
+// Accessibility: Pause animations on preference (optimized - targeted selectors)
 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.querySelectorAll('*').forEach(el => {
+    document.querySelectorAll('.gradient-orb, .particle, .scroll-indicator, .vm-card::before, .faculty-card, .course-card').forEach(el => {
         el.style.animation = 'none';
         el.style.transition = 'none';
     });
@@ -491,3 +450,29 @@ if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 console.log('%cKaizen Dental Academy 🦷', 'font-size: 20px; font-weight: bold; color: #c77111;');
 console.log('%c1% better every single day', 'font-size: 14px; font-style: italic; color: #ffffff;');
 
+// ─── Auth-Aware Navbar ───
+// Show user's name in nav when logged in (non-blocking, fire-and-forget)
+(async function updateNavUser() {
+    try {
+        if (typeof KaizenAuth === 'undefined') return;
+        const session = await KaizenAuth.getSession();
+        if (!session?.access_token) return;
+        
+        const btn = document.getElementById('navAccountBtn');
+        const text = document.getElementById('navAccountText');
+        if (!btn || !text) return;
+        
+        const profile = await KaizenAuth.getProfile();
+        if (profile) {
+            const name = (profile.first_name || '').trim();
+            if (name) {
+                text.textContent = name;
+                btn.classList.add('logged-in');
+            }
+            // Admin/employee → point to admin panel
+            if (profile.role === 'admin' || profile.role === 'employee') {
+                btn.href = 'admin.html';
+            }
+        }
+    } catch (e) { /* silent — non-critical */ }
+})();

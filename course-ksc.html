@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en" data-no-arabic="true">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaizen Study Club - Kaizen Dental Academy</title>
+    <meta name="description" content="Join 400+ dentists in the Kaizen Study Club. 12 weekly online meetings over 3 months covering diagnosis, cariology, preparation, bonding, cementation, and digital workflows.">
+    <meta name="keywords" content="Kaizen Study Club, KSC, dental study club, online dental course, Egypt, prosthodontics, bonding, cementation, digital dentistry">
+    <meta name="author" content="Kaizen Dental Academy">
+    <meta name="theme-color" content="#0a0a0f">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Kaizen Study Club - 12 Weeks of Advanced Dental Education">
+    <meta property="og:description" content="Join 400+ dentists. 12 weekly sessions covering diagnosis, cariology, preparation, bonding, cementation & digital workflows.">
+    <meta property="og:image" content="https://kaizendentalacademy.com/logo.png">
+    <meta property="og:url" content="https://kaizendentalacademy.com/course-ksc">
+    <meta property="og:site_name" content="Kaizen Dental Academy">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kaizen Study Club - 12 Weeks of Advanced Dental Education">
+    <meta name="twitter:description" content="Join 400+ dentists in the KSC. Covering diagnosis, cariology, bonding, cementation & more.">
+    <meta name="twitter:image" content="https://kaizendentalacademy.com/logo.png">
+    <link rel="canonical" href="https://kaizendentalacademy.com/course-ksc">
+    <link rel="preload" href="logo.png" as="image">
+    <link rel="preload" href="styles.css?v=16" as="style">
+    <link rel="preload" href="course-styles.css?v=16" as="style">
+    <link rel="stylesheet" href="styles.css?v=16">
+    <link rel="stylesheet" href="course-styles.css?v=16">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://connect.facebook.net">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W9NX8Y7FYM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-W9NX8Y7FYM');
+    </script>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1986369785542088');
+    fbq('track', 'PageView');
+    fbq('track', 'ViewContent', {
+        content_name: 'Kaizen Study Club',
+        content_category: 'Dental Course',
+        content_type: 'product',
+        content_ids: ['KSC'],
+        value: 5000,
+        currency: 'EGP'
+    });
+    </script>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1986369785542088&ev=PageView&noscript=1"/></noscript>
+
+    <style>
+        /* KSC-specific styles */
+        .ksc-lecturers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+        @media (max-width: 1024px) { .ksc-lecturers-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; } }
+        @media (max-width: 768px) { .ksc-lecturers-grid { grid-template-columns: 1fr; gap: 1.5rem; max-width: 350px; } }
+        .ksc-start-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(220,38,38,0.08)); border: 2px solid rgba(239,68,68,0.5); color: #ef4444; padding: 0.75rem 1.5rem; border-radius: 50px; font-weight: 700; font-size: 1rem; margin-top: 1rem; animation: kscPulse 2s ease-in-out infinite; }
+        @keyframes kscPulse { 0%,100%{ box-shadow: 0 0 20px rgba(239,68,68,0.2); } 50%{ box-shadow: 0 0 40px rgba(239,68,68,0.4); } }
+        /* Pricing — timeline style */
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem; }
+        .pricing-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2.5rem 2rem; text-align: center; transition: all 0.4s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+        .pricing-card:hover { transform: translateY(-8px); border-color: rgba(199,113,17,0.4); box-shadow: 0 20px 60px rgba(199,113,17,0.15); }
+        .pricing-card.featured { border-color: rgba(199,113,17,0.5); background: rgba(199,113,17,0.05); }
+        .pricing-card.featured::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #c77111, #e7af20); }
+        .pricing-card.graduate { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.03); }
+        .pricing-card.graduate::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #22c55e, #86efac); }
+        .pricing-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem; }
+        .pricing-icon.bird { background: rgba(199,113,17,0.12); }
+        .pricing-icon.owl { background: rgba(199,113,17,0.15); }
+        .pricing-icon.grad { background: rgba(34,197,94,0.12); }
+        .pricing-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.4); margin-bottom: 0.5rem; width: 100%; }
+        .pricing-name { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 1rem; width: 100%; }
+        .pricing-amount { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, #c77111, #e7af20); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; text-align: center; }
+        .pricing-currency { display: block; font-size: 0.9rem; font-weight: 600; margin-top: 0.25rem; opacity: 0.8; }
+        .pricing-deadline { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.75rem; padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; background: rgba(199,113,17,0.1); color: #e7af20; }
+        .pricing-condition { flex: 1; margin-top: 1rem; color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.6; width: 100%; }
+        .pricing-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; padding: 0.875rem 2rem; border-radius: 50px; font-weight: 600; text-decoration: none; transition: all 0.3s; border: 2px solid rgba(199,113,17,0.5); color: #c77111; background: transparent; cursor: pointer; font-size: 1rem; font-family: inherit; }
+        .pricing-btn:hover { background: rgba(199,113,17,0.1); border-color: #c77111; transform: translateY(-2px); }
+        .pricing-card.featured .pricing-btn { background: linear-gradient(135deg, #c77111, #a85d0e); color: #fff; border-color: transparent; }
+        .pricing-card.featured .pricing-btn:hover { box-shadow: 0 8px 30px rgba(199,113,17,0.4); }
+        .pricing-card.graduate .pricing-btn { border-color: rgba(34,197,94,0.4); color: #22c55e; }
+        .pricing-card.graduate .pricing-btn:hover { background: rgba(34,197,94,0.08); }
+        .pricing-note { text-align: center; margin-top: 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.8rem; font-style: italic; }
+        /* Refund */
+        .refund-section { margin-top: 4rem; }
+        .refund-block { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2.5rem; margin-top: 2rem; }
+        .refund-block h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #c77111; }
+        .refund-block ul { list-style: none; padding: 0; margin: 0 0 1.5rem; }
+        .refund-block ul li { padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.5; display: flex; align-items: flex-start; gap: 0.75rem; }
+        .refund-block ul li:last-child { border-bottom: none; }
+        .refund-block ul li .refund-dot { flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; margin-top: 0.4rem; }
+        .refund-block ul li .refund-dot.green { background: #22c55e; }
+        .refund-block ul li .refund-dot.yellow { background: #f59e0b; }
+        .refund-block ul li .refund-dot.red { background: #ef4444; }
+        .refund-block .refund-warning { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 1.25rem; color: #ef4444; font-weight: 600; font-size: 0.9rem; line-height: 1.5; }
+        @media (max-width: 1024px) {
+            .ksc-lecturers-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .pricing-grid { grid-template-columns: 1fr; max-width: 380px; margin-left: auto; margin-right: auto; }
+            .pricing-amount { font-size: 2.25rem; }
+            .ksc-lecturers-grid { grid-template-columns: 1fr; max-width: 320px; margin-left: auto; margin-right: auto; gap: 3rem; }
+        }
+        /* InstaPay Enrollment Form */
+        .instapay-form-wrapper { max-width: 640px; margin: 0 auto; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 2.5rem; }
+        .instapay-tier-display { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(199,113,17,0.12), rgba(199,113,17,0.04)); border: 1px solid rgba(199,113,17,0.3); border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+        .tier-badge { font-size: 1.1rem; font-weight: 700; color: #e7af20; }
+        .tier-price { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #c77111, #e7af20); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .instapay-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .instapay-form .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .instapay-form .form-group label { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; }
+        .instapay-form .form-group input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0.75rem 1rem; color: #fff; font-size: 0.95rem; font-family: inherit; transition: border-color 0.3s; }
+        .instapay-form .form-group input:focus { outline: none; border-color: rgba(199,113,17,0.6); box-shadow: 0 0 0 3px rgba(199,113,17,0.1); }
+        .instapay-form .form-group input::placeholder { color: rgba(255,255,255,0.25); }
+        .instapay-actions { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+        .instapay-pay-btn { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 1.05rem; background: linear-gradient(135deg, #4ade80, #22c55e); color: #000; transition: all 0.3s; box-shadow: 0 4px 20px rgba(34,197,94,0.3); }
+        .instapay-pay-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(34,197,94,0.5); }
+        .file-upload-group { margin-bottom: 1.5rem; }
+        .file-upload-label { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 2rem; border: 2px dashed rgba(255,255,255,0.15); border-radius: 14px; cursor: pointer; transition: all 0.3s; color: rgba(255,255,255,0.5); text-align: center; }
+        .file-upload-label:hover { border-color: rgba(199,113,17,0.4); background: rgba(199,113,17,0.04); }
+        .file-upload-label svg { color: rgba(199,113,17,0.6); }
+        .file-upload-text { font-size: 0.9rem; font-weight: 600; }
+        .file-upload-name { font-size: 0.8rem; color: #4ade80; min-height: 1rem; }
+        .instapay-submit-btn { display: flex; align-items: center; justify-content: center; gap: 0.75rem; width: 100%; padding: 1rem 2rem; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: 700; font-family: inherit; cursor: pointer; background: linear-gradient(135deg, #c77111, #a85d0e); color: #fff; transition: all 0.3s; box-shadow: 0 4px 20px rgba(199,113,17,0.3); }
+        .instapay-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(199,113,17,0.5); }
+        .instapay-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .instapay-form-status { text-align: center; margin-top: 1rem; font-weight: 600; min-height: 1.5rem; }
+        .instapay-form-status.success { color: #4ade80; }
+        .instapay-form-status.error { color: #ef4444; }
+        @media (max-width: 768px) {
+            .instapay-form-grid { grid-template-columns: 1fr; }
+            .instapay-form-wrapper { padding: 1.5rem; }
+            .instapay-tier-display { flex-direction: column; text-align: center; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="index.html"><img src="logo.png" alt="Kaizen Dental Academy"></a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html#hero">Home</a>
+                <a href="index.html#faculty">Faculty</a>
+                <a href="index.html#courses">Courses</a>
+                <a href="blog.html">Blog</a>
+                <a href="index.html#contact">Contact</a>
+            </div>
+            <div class="nav-right">
+                <a href="my-account.html" class="nav-account-btn" id="navAccountBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span id="navAccountText">My Account</span>
+                </a>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Course Hero Section -->
+    <section class="course-hero">
+        <div class="container">
+            <div class="course-hero-content">
+
+                <h1 class="course-hero-title">
+                    <span class="title-main">Kaizen</span>
+                    <span class="title-highlight">Study Club</span>
+                </h1>
+                <p class="course-hero-subtitle" data-en="Join 400+ dentists worldwide in the ultimate dental education community. 12 weekly online meetings over 3 months with 5 expert faculty members." data-ar="انضم إلى أكثر من 400 طبيب أسنان حول العالم في مجتمع التعليم السني الأمثل. 12 لقاء أسبوعي عبر الإنترنت على مدار 3 أشهر مع 5 أعضاء هيئة تدريس خبراء.">
+                    Join 400+ dentists worldwide in the ultimate dental education community. 12 weekly online meetings over 3 months with 5 expert faculty members.
+                </p>
+
+                <div class="course-hero-stats">
+                    <div class="stat-item"><div class="stat-number">12</div><div class="stat-label" data-en="Weekly Meetings" data-ar="لقاء أسبوعي">Weekly Meetings</div></div>
+                    <div class="stat-item"><div class="stat-number">5</div><div class="stat-label" data-en="Expert Faculty" data-ar="أعضاء هيئة تدريس">Expert Faculty</div></div>
+                    <div class="stat-item"><div class="stat-number">3</div><div class="stat-label" data-en="Months" data-ar="أشهر">Months</div></div>
+                </div>
+                <div class="ksc-start-badge" id="kscStartBadge" data-en="🔴 Starts June 6, 2026" data-ar="🔴 يبدأ 6 يونيو 2026">🔴 Starts June 6, 2026</div>
+                <div class="course-hero-actions">
+                    <a href="#pricing" class="cta-btn primary" data-en="Join Now" data-ar="انضم الآن"><span>Join Now</span><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                    <a href="#curriculum" class="cta-btn secondary" data-en="View Curriculum" data-ar="عرض المنهج"><span>View Curriculum</span><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4V16M10 16L4 10M10 16L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                </div>
+            </div>
+        </div>
+        <div class="course-hero-visual">
+            <div class="floating-3d-model">
+                <svg width="300" height="300" viewBox="0 0 300 300" fill="none">
+                    <defs><linearGradient id="kscGrad" x1="0" y1="0" x2="300" y2="300"><stop offset="0%" stop-color="#c67011"/><stop offset="100%" stop-color="#e7af20"/></linearGradient></defs>
+                    <circle cx="150" cy="120" r="45" stroke="url(#kscGrad)" stroke-width="2" fill="none" opacity="0.3"/>
+                    <circle cx="100" cy="200" r="35" stroke="url(#kscGrad)" stroke-width="2" fill="none" opacity="0.3"/>
+                    <circle cx="200" cy="200" r="35" stroke="url(#kscGrad)" stroke-width="2" fill="none" opacity="0.3"/>
+                    <line x1="130" y1="160" x2="110" y2="170" stroke="url(#kscGrad)" stroke-width="1.5" opacity="0.4"/>
+                    <line x1="170" y1="160" x2="190" y2="170" stroke="url(#kscGrad)" stroke-width="1.5" opacity="0.4"/>
+                    <line x1="130" y1="210" x2="170" y2="210" stroke="url(#kscGrad)" stroke-width="1.5" opacity="0.4"/>
+                    <circle cx="150" cy="120" r="8" fill="url(#kscGrad)" opacity="0.5"/>
+                    <circle cx="100" cy="200" r="6" fill="url(#kscGrad)" opacity="0.4"/>
+                    <circle cx="200" cy="200" r="6" fill="url(#kscGrad)" opacity="0.4"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Faculty Section -->
+    <section class="course-lecturers">
+        <div class="container">
+            <h2 class="section-title"><span class="title-line" data-en="Expert" data-ar="هيئة التدريس">Expert</span><span class="title-highlight" data-en=" Faculty" data-ar=" الخبراء"> Faculty</span></h2>
+            <div class="ksc-lecturers-grid">
+                <div class="faculty-card">
+                    <div class="faculty-image-wrapper">
+                        <img src="ksc/elgammal.png" alt="Dr. Mahmoud Elgammal" class="faculty-image" loading="lazy">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Mahmoud Elgammal</h3>
+                        <div class="faculty-title">
+                            <div class="title-item">Biomimetic Restorative Dentist</div>
+                            <div class="title-item">Co-Owner & Director of Scientific Dept.<br>Kaizen Dental Academy</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="faculty-card">
+                    <div class="faculty-image-wrapper">
+                        <img src="ksc/yh.png" alt="Dr. Youssif Hossam" class="faculty-image" loading="lazy">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Youssif Hossam</h3>
+                        <div class="faculty-title">
+                            <div class="title-item">Co-Owner & Clinical Supervisor<br>Kaizen Dental Academy</div>
+                            <div class="title-item">Owner of Joie Dental Clinic</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="faculty-card">
+                    <div class="faculty-image-wrapper">
+                        <img src="ksc/moheb.png" alt="Dr. Moheb Nady" class="faculty-image" loading="lazy">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Moheb Nady</h3>
+                        <div class="faculty-title">
+                            <div class="title-item">Restorative Dentist</div>
+                            <div class="title-item">Owner of Up Dental Clinic<br>Director of RestoGame</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="faculty-card">
+                    <div class="faculty-image-wrapper">
+                        <img src="ksc/hadida.png" alt="Dr. Mohamed Hadida" class="faculty-image" loading="lazy">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Mohamed Hadida</h3>
+                        <div class="faculty-title">
+                            <div class="title-item">Restorative and Aesthetic Dentist</div>
+                            <div class="title-item">Director of Simplified Composite<br>Veneer Course</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="faculty-card">
+                    <div class="faculty-image-wrapper">
+                        <img src="ksc/talaat.png" alt="Dr. Mohamed Talaat" class="faculty-image" loading="lazy">
+                    </div>
+                    <div class="faculty-info">
+                        <h3 class="faculty-name">Dr. Mohamed Talaat</h3>
+                        <div class="faculty-title">
+                            <div class="title-item">Exocad Certified Trainer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Overview -->
+    <section class="course-overview">
+        <div class="container">
+            <h2 class="section-title"><span class="title-line" data-en="Program" data-ar="نظرة">Program</span><span class="title-highlight" data-en=" Overview" data-ar=" عامة"> Overview</span></h2>
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <div class="overview-icon"><svg width="60" height="60" viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="22" stroke="url(#kscOv1)" stroke-width="2"/><path d="M20 30L27 37L40 24" stroke="url(#kscOv1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="kscOv1" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#c67011"/><stop offset="100%" stop-color="#e7af20"/></linearGradient></defs></svg></div>
+                    <h3 data-en="Interactive Sessions" data-ar="جلسات تفاعلية">Interactive Sessions</h3>
+                    <p data-en="Live online meetings with real-time Q&A, case discussions, and peer learning with expert faculty guidance." data-ar="لقاءات حية عبر الإنترنت مع أسئلة وأجوبة في الوقت الفعلي ومناقشات الحالات والتعلم بين الأقران مع توجيه هيئة التدريس الخبراء.">Live online meetings with real-time Q&A, case discussions, and peer learning with expert faculty guidance.</p>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon"><svg width="60" height="60" viewBox="0 0 60 60" fill="none"><rect x="10" y="15" width="40" height="30" rx="3" stroke="url(#kscOv2)" stroke-width="2"/><line x1="15" y1="50" x2="22" y2="55" stroke="url(#kscOv2)" stroke-width="2"/><line x1="45" y1="50" x2="38" y2="55" stroke="url(#kscOv2)" stroke-width="2"/><line x1="22" y1="55" x2="38" y2="55" stroke="url(#kscOv2)" stroke-width="2"/><defs><linearGradient id="kscOv2" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#c67011"/><stop offset="100%" stop-color="#e7af20"/></linearGradient></defs></svg></div>
+                    <h3 data-en="Fully Online" data-ar="عبر الإنترنت بالكامل">Fully Online</h3>
+                    <p data-en="Join from anywhere in the world. All sessions are conducted online, making it accessible for dentists globally." data-ar="انضم من أي مكان في العالم. جميع الجلسات تُعقد عبر الإنترنت، مما يجعلها متاحة لأطباء الأسنان عالمياً.">Join from anywhere in the world. All sessions are conducted online, making it accessible for dentists globally.</p>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-icon"><svg width="60" height="60" viewBox="0 0 60 60" fill="none"><path d="M30 10L35 25H50L38 35L43 50L30 40L17 50L22 35L10 25H25L30 10Z" stroke="url(#kscOv3)" stroke-width="2" fill="none"/><defs><linearGradient id="kscOv3" x1="0" y1="0" x2="60" y2="60"><stop offset="0%" stop-color="#c67011"/><stop offset="100%" stop-color="#e7af20"/></linearGradient></defs></svg></div>
+                    <h3 data-en="Comprehensive Coverage" data-ar="تغطية شاملة">Comprehensive Coverage</h3>
+                    <p data-en="From diagnosis and photography to digital workflows and cementation — covering all essential topics in modern restorative dentistry." data-ar="من التشخيص والتصوير إلى سير العمل الرقمي والتثبيت — تغطية جميع الموضوعات الأساسية في طب الأسنان الترميمي الحديث.">From diagnosis and photography to digital workflows and cementation — covering all essential topics in modern restorative dentistry.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Curriculum Section -->
+    <section class="curriculum" id="curriculum">
+        <div class="container">
+            <h2 class="section-title"><span class="title-line" data-en="12-Week" data-ar="المنهج">12-Week</span><span class="title-highlight" data-en=" Curriculum" data-ar=" الدراسي"> Curriculum</span></h2>
+            <div class="curriculum-section">
+                <h3 class="curriculum-heading"><span>Weekly Meetings</span></h3>
+                <div class="curriculum-list">
+                    <div class="curriculum-item"><div class="item-number">01</div><div class="item-content"><h4>Diagnosis &amp; Treatment Planning</h4><p class="instructor">Dr. Mahmoud Elgammal &amp; Dr. Youssif Hossam</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">02</div><div class="item-content"><h4>Cariology &amp; CRE</h4><p class="instructor">Dr. Mahmoud Elgammal &amp; Dr. Mohamed Hadida</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">03</div><div class="item-content"><h4>Preparation Designs for Direct &amp; Indirect</h4><p class="instructor">Dr. Mahmoud Elgammal &amp; Dr. Moheb Nady</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">04</div><div class="item-content"><h4>Isolation &amp; DMA</h4><p class="instructor">Dr. Mahmoud Elgammal &amp; Dr. Moheb Nady</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">05</div><div class="item-content"><h4>Bondodontics / IDS / Resin Coating / DME</h4><p class="instructor">Dr. Mahmoud Elgammal, Dr. Youssif Hossam &amp; Dr. Mohamed Hadida</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">06</div><div class="item-content"><h4>Matrixing &amp; Direct Build Up</h4><p class="instructor">Dr. Mahmoud Elgammal, Dr. Mohamed Hadida &amp; Dr. Moheb Nady</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">07</div><div class="item-content"><h4>Scanning &amp; Designing &amp; Printing</h4><p class="instructor">Dr. Mahmoud Elgammal, Dr. Mohamed Talaat &amp; Dr. Moheb Nady</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">08</div><div class="item-content"><h4>Cementation Protocol</h4><p class="instructor">Dr. Mahmoud Elgammal &amp; Dr. Mohamed Hadida</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">09</div><div class="item-content"><h4>Finishing &amp; Polishing</h4><p class="instructor">Dr. Mahmoud Elgammal &amp; Dr. Moheb Nady</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">10</div><div class="item-content"><h4>Occlusal Adjustments</h4><p class="instructor">Dr. Mahmoud Elgammal &amp; Dr. Mohamed Hadida</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">11</div><div class="item-content"><h4>Cases Under Microscope &amp; Full Mouth Planning</h4><p class="instructor">All Faculty</p></div></div>
+                    <div class="curriculum-item"><div class="item-number">12</div><div class="item-content"><h4>Case Presentation &amp; Graduation</h4><p class="instructor">All Faculty</p></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Telegram Bot Demo Section -->
+    <section class="tg-demo-section" id="telegram-bot">
+        <div class="container">
+            <h2 class="section-title"><span class="title-line">Smart</span><span class="title-highlight"> Community System</span></h2>
+            <p class="tg-demo-subtitle">Our Telegram-powered automation delivers instant access, AI-driven support, and seamless community management — all from one bot.</p>
+
+            <div class="tg-demo-grid">
+                <!-- Chat 1: Bot Welcome Flow -->
+                <div class="tg-demo-card">
+                    <div class="tg-demo-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg> Bot Welcome</div>
+                    <div class="tg-phone">
+                        <div class="tg-header">
+                            <div class="tg-header-back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+                            <div class="tg-header-avatar"><img src="assets/images/courses/KSC.jpg" alt="KSC" class="tg-avatar-img"></div>
+                            <div class="tg-header-info">
+                                <div class="tg-header-name">Kaizen Study Club</div>
+                                <div class="tg-header-status">bot</div>
+                            </div>
+                            <div class="tg-header-actions">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                            </div>
+                        </div>
+                        <div class="tg-chat" id="tgChat1">
+                            <div class="tg-chat-bg"></div>
+                            <!-- Messages will be injected by JS -->
+                        </div>
+                        <div class="tg-input-bar">
+                            <div class="tg-input-clip"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.49"/></svg></div>
+                            <div class="tg-input-field" id="tgInput1">Write a message...</div>
+                            <div class="tg-input-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+                            <div class="tg-input-mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+                        </div>
+                        <div class="tg-start-btn" id="tgStartBtn">START</div>
+                    </div>
+                </div>
+
+                <!-- Chat 2: AI Assistant Flow -->
+                <div class="tg-demo-card">
+                    <div class="tg-demo-label"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1.27A7 7 0 0113 22h-2a7 7 0 01-6.73-3H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2z"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M9 17c.85.63 1.885 1 3 1s2.15-.37 3-1"/></svg> AI Assistant</div>
+                    <div class="tg-phone">
+                        <div class="tg-header">
+                            <div class="tg-header-back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></div>
+                            <div class="tg-header-avatar"><img src="assets/images/Kaizen Ai.jpg" alt="Kaizen AI" class="tg-avatar-img"></div>
+                            <div class="tg-header-info">
+                                <div class="tg-header-name">Kaizen Ai</div>
+                                <div class="tg-header-status" id="tgHeaderStatus2">bot</div>
+                            </div>
+                            <div class="tg-header-actions">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                            </div>
+                        </div>
+                        <div class="tg-chat" id="tgChat2">
+                            <div class="tg-chat-bg"></div>
+                            <!-- Messages will be injected by JS -->
+                        </div>
+                        <div class="tg-input-bar">
+                            <div class="tg-input-clip"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.49"/></svg></div>
+                            <div class="tg-input-field" id="tgInput2">Write a message...</div>
+                            <div class="tg-input-emoji"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+                            <div class="tg-input-mic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+
+
+    <section class="course-overview" id="pricing">
+        <div class="container">
+            <h2 class="section-title"><span class="title-line" data-en="Registration" data-ar="التسجيل">Registration</span><span class="title-highlight" data-en=" & Pricing" data-ar=" والأسعار"> & Pricing</span></h2>
+            <div class="pricing-grid">
+
+                <!-- Early Bird -->
+                <div class="pricing-card featured">
+                    <div class="pricing-icon bird">🐦</div>
+                    <div class="pricing-label">EARLY BIRD</div>
+                    <div class="pricing-name">Early Registration</div>
+                    <div class="pricing-amount" id="earlyBirdPrice">5,000 <span class="pricing-currency">EGP</span></div>
+                    <div class="pricing-deadline" id="earlyBirdDeadline">⏰ Before April 30, 2026</div>
+                    <div class="pricing-condition">Register before the deadline and save 1,000 EGP. Same full access — just rewarded for planning ahead.</div>
+                    <a href="my-account.html" class="pricing-btn pricing-action-btn" data-tier="early_bird"><span>Register Now</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                </div>
+
+                <!-- Late Owl -->
+                <div class="pricing-card">
+                    <div class="pricing-icon owl">🦉</div>
+                    <div class="pricing-label">LATE OWL</div>
+                    <div class="pricing-name">Standard Registration</div>
+                    <div class="pricing-amount" id="lateOwlPrice">6,000 <span class="pricing-currency">EGP</span></div>
+                    <div class="pricing-deadline" id="lateOwlDeadline">📅 After April 30, 2026</div>
+                    <div class="pricing-condition">Register after the early bird deadline. Full access to all 12 sessions, recordings, and community.</div>
+                    <a href="my-account.html" class="pricing-btn pricing-action-btn" data-tier="late_owl"><span>Register Now</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                </div>
+
+                <!-- Fresh Graduate -->
+                <div class="pricing-card graduate">
+                    <div class="pricing-icon grad">🎓</div>
+                    <div class="pricing-label">COMMUNITY COMMITMENT</div>
+                    <div class="pricing-name">Fresh Graduates</div>
+                    <div class="pricing-amount" id="gradPrice">3,000 <span class="pricing-currency">EGP</span></div>
+                    <div class="pricing-deadline" style="background:rgba(34,197,94,0.1);color:#86efac">🌱 Class of 2024 & 2025</div>
+                    <div class="pricing-condition">Our commitment to supporting young dentists from day one. Exclusive discount for recent graduates — verify your graduation year during registration.</div>
+                    <a href="my-account.html" class="pricing-btn pricing-action-btn" data-tier="fresh_graduate"><span>Register Now</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                </div>
+
+            </div>
+            <p class="pricing-note">* Prices and deadlines are managed by admin and may be updated. All registrations receive the same full access to the program.</p>
+        </div>
+    </section>
+
+    <!-- Enrollment Section (hidden by default, shown when payment_method is instapay) -->
+    <section class="enrollment" id="instapay-enrollment" style="display:none">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="title-line">Enroll</span><span class="title-highlight"> Now</span>
+            </h2>
+            <div class="enrollment-content">
+                <div class="enrollment-info">
+                    <div class="instapay-tier-display" id="instapayTierDisplay" style="display:flex;align-items:center;justify-content:space-between;background:rgba(199,113,17,0.08);border:1px solid rgba(199,113,17,0.3);border-radius:12px;padding:1rem 1.5rem;margin-bottom:1.5rem">
+                        <div class="tier-badge" id="selectedTierBadge" style="font-size:1.1rem;font-weight:700;color:#e7af20">🐦 Early Bird</div>
+                        <div class="tier-price" id="selectedTierPrice" style="font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,#c77111,#e7af20);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">5,000 EGP</div>
+                    </div>
+                    <h3>Kaizen Study Club – Enrollment</h3>
+                    <p>Join 400+ dentists in the KSC. 12 weekly online meetings over 3 months covering diagnosis, cariology, preparation, bonding, cementation, and digital workflows.</p>
+                    <div class="enrollment-features">
+                        <div class="enroll-feature">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#c67011" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>12 Weekly Online Sessions</span>
+                        </div>
+                        <div class="enroll-feature">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#c67011" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Certificate of Completion</span>
+                        </div>
+                        <div class="enroll-feature">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#c67011" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Exclusive Community Access</span>
+                        </div>
+                    </div>
+                </div>
+                <form class="enrollment-form" id="enrollmentForm">
+                    <input type="hidden" name="course" value="Kaizen Study Club">
+                    <input type="hidden" name="tier" id="enrollTierHidden" value="early_bird">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="text" id="enrollFirstName" name="firstName" required>
+                            <label for="enrollFirstName">First Name</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="enrollLastName" name="lastName" required>
+                            <label for="enrollLastName">Last Name</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="enrollEmail" name="email" required>
+                        <label for="enrollEmail">Email Address</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="enrollPhone" name="phone" required>
+                        <label for="enrollPhone">Phone Number</label>
+                    </div>
+                    <div class="form-group">
+                        <select id="enrollCountry" name="country" required>
+                            <option value="" disabled selected></option>
+                            <option value="EG">Egypt</option>
+                            <option value="SA">Saudi Arabia</option>
+                            <option value="AE">United Arab Emirates</option>
+                            <option value="KW">Kuwait</option>
+                            <option value="QA">Qatar</option>
+                            <option value="BH">Bahrain</option>
+                            <option value="OM">Oman</option>
+                            <option value="JO">Jordan</option>
+                            <option value="LB">Lebanon</option>
+                            <option value="IQ">Iraq</option>
+                            <option value="SY">Syria</option>
+                            <option value="YE">Yemen</option>
+                            <option value="LY">Libya</option>
+                            <option value="TN">Tunisia</option>
+                            <option value="DZ">Algeria</option>
+                            <option value="MA">Morocco</option>
+                            <option value="SD">Sudan</option>
+                            <option value="US">United States</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="CA">Canada</option>
+                            <option value="AU">Australia</option>
+                            <option value="DE">Germany</option>
+                            <option value="FR">France</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                        <label for="enrollCountry">Country</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="clinicName" name="clinic" required>
+                        <label for="clinicName">Clinic/Practice Name</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="faculty" name="faculty" required>
+                        <label for="faculty">Faculty</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="graduationYear" name="gradYear" required pattern="[0-9]{4}">
+                        <label for="graduationYear">Year of Graduation</label>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="enrollMessage" name="moreInfo" rows="3"></textarea>
+                        <label for="enrollMessage">Additional Information (Optional)</label>
+                    </div>
+                    <div class="form-actions">
+                        <a href="#" id="instapayPayLink" target="_blank" rel="noopener noreferrer" class="action-btn payment-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10H21M7 15H7.01M12 15H12.01M21 10V18C21 19.1046 20.1046 20 19 20H5C3.89543 20 3 19.1046 3 18V10C3 8.89543 3.89543 8 5 8H19C20.1046 8 21 8.89543 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>Pay Now</span>
+                        </a>
+                    </div>
+                    <div class="form-group file-upload-group">
+                        <input type="file" id="transactionScreenshot" name="transaction" accept="image/*" required>
+                        <label for="transactionScreenshot">
+                            <span class="file-upload-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                            <span class="file-upload-text">Upload Transaction Screenshot</span>
+                            <span class="file-upload-name"></span>
+                        </label>
+                        <small class="form-hint">Please upload a screenshot or photo of your payment transaction</small>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <span>Complete Enrollment</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- WhatsApp Verification Section -->
+            <div class="whatsapp-verification">
+                <div class="whatsapp-verification-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.372a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                </div>
+                <h3>Double Check Your Payment</h3>
+                <p>For extra verification, please send your payment screenshot via WhatsApp. Our team will confirm your enrollment promptly.</p>
+                <a href="https://wa.me/+201044490400?text=Hello%2C%20I%20just%20submitted%20my%20KSC%20enrollment%20and%20would%20like%20to%20send%20my%20payment%20screenshot%20for%20verification." target="_blank" rel="noopener noreferrer" class="whatsapp-verification-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.372a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    <span>Send Payment Screenshot on WhatsApp</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Refund Policy Section -->
+    <section class="course-overview refund-section" id="refund-policy">
+        <div class="container">
+            <h2 class="section-title"><span class="title-line" data-en="Refund" data-ar="سياسة">Refund</span><span class="title-highlight" data-en=" Policy" data-ar=" الاسترداد"> Policy</span></h2>
+            <div class="refund-block">
+                <h3>Before Program Start</h3>
+                <ul>
+                    <li><span class="refund-dot green"></span>More than 14 days before the program start date: <strong>Full refund (100%)</strong> is available.</li>
+                    <li><span class="refund-dot yellow"></span>Between 7 to 14 days before the program start date: A <strong>partial refund (50%)</strong> will be issued.</li>
+                    <li><span class="refund-dot red"></span>Less than 7 days before the program start date: <strong style="color:#ef4444">No refunds will be issued.</strong></li>
+                </ul>
+                <h3>After Program Start</h3>
+                <div class="refund-warning">Once the program has started, or access has been granted to any part of the program (including Telegram groups, sessions, or shared resources), <strong>NO REFUNDS WILL BE ISSUED</strong> under any circumstances.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="logo.png" alt="Kaizen Dental Academy">
+                    <p data-en="1% better every single day" data-ar="أفضل بنسبة 1٪ كل يوم">1% better every single day</p>
+                </div>
+                <div class="footer-links">
+                    <h4 data-en="Quick Links" data-ar="روابط سريعة">Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html#faculty" data-en="Faculty" data-ar="الهيئة التدريسية">Faculty</a></li>
+                        <li><a href="index.html#courses" data-en="Courses" data-ar="الدورات">Courses</a></li>
+                        <li><a href="index.html#contact" data-en="Contact" data-ar="تواصل">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-location">
+                    <h4 data-en="Location" data-ar="الموقع">Location</h4>
+                    <a href="https://maps.app.goo.gl/EdRaynNXKzFhwner7" target="_blank" rel="noopener noreferrer" class="location-link">
+                        <div class="location-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="2"/></svg></div>
+                        <span class="location-text" data-en="4th Al Selhdar, St, Heliopolis, Cairo" data-ar="شارع السلحدار الرابع، مصر الجديدة، القاهرة">4th Al Selhdar, St, Heliopolis, Cairo</span>
+                    </a>
+                </div>
+                <div class="footer-social">
+                    <h4 data-en="Follow Us" data-ar="تابعنا">Follow Us</h4>
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/KaizenDentalAcademyEg" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 2H15C13.67 2 12.4 2.53 11.46 3.46C10.53 4.4 10 5.67 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73 14.11 6.48 14.29 6.29C14.48 6.11 14.73 6 15 6H18V2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                        <a href="https://www.instagram.com/kaizendentalacademyeg" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></a>
+                        <a href="https://www.youtube.com/@KaizenDentalAcademyEG" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21.59 7.2C21.56 6.99 21.48 6.8 21.36 6.62C21.25 6.44 21.1 6.29 20.93 6.18C20.76 6.06 20.57 5.99 20.37 5.95C19.46 5.79 12 5.79 12 5.79C12 5.79 4.54 5.79 3.63 5.95C3.43 5.99 3.24 6.06 3.07 6.18C2.9 6.29 2.75 6.44 2.64 6.62C2.53 6.8 2.45 6.99 2.41 7.2C2.15 8.11 2 9.05 2 10C2 10.95 2.15 11.89 2.41 12.8C2.45 13.01 2.53 13.2 2.64 13.38C2.75 13.56 2.9 13.71 3.07 13.82C3.24 13.94 3.43 14.01 3.63 14.05C4.54 14.21 12 14.21 12 14.21C12 14.21 19.46 14.21 20.37 14.05C20.57 14.01 20.76 13.94 20.93 13.82C21.1 13.71 21.25 13.56 21.36 13.38C21.48 13.2 21.56 13.01 21.59 12.8C21.85 11.89 22 10.95 22 10C22 9.05 21.85 8.11 21.59 7.2Z" fill="currentColor"/><path d="M9.75 14.02L15.5 10.52L9.75 7.02V14.02Z" fill="#231f20"/></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Kaizen Dental Academy. <span data-en="All rights reserved." data-ar="كل الحقوق محفوظة.">All rights reserved.</span></p>
+                <p class="developer-credit"><span data-en="Developed By :" data-ar="تم التطوير بواسطة :">Developed By :</span> <a href="https://www.promptmarketingagency.com" target="_blank" rel="noopener noreferrer">Prompt Marketing Agency</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating PDF Download Button -->
+    <a href="assets/pdfs/KSC Details.pdf" target="_blank" rel="noopener noreferrer" class="floating-pdf-btn" aria-label="Download Course PDF">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15V19C21 19.53 20.79 20.04 20.41 20.41C20.04 20.79 19.53 21 19 21H5C4.47 21 3.96 20.79 3.59 20.41C3.21 20.04 3 19.53 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="floating-pdf-text">Download PDF</span>
+    </a>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/+201044490400" target="_blank" rel="noopener noreferrer" class="whatsapp-float-btn" aria-label="Chat on WhatsApp">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51-.17 0-.37-.01-.57-.01-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35m-5.42 7.4h0a9.87 9.87 0 01-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 01-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 012.89 6.99c0 5.45-4.44 9.88-9.89 9.88m8.41-18.3A11.82 11.82 0 0012.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 005.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 00-3.48-8.41Z"/></svg>
+        <span class="whatsapp-float-text">Chat with us</span>
+    </a>
+
+    <script src="maintenance-check.js"></script>
+    <script src="course-script.js?v=16" defer></script>
+    <script>
+    // Dynamic pricing + payment method router
+    (async function() {
+        const SUPABASE_URL = 'https://cwkohmqprgcfyzcjcqsn.supabase.co';
+        const ANON_KEY = typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3a29obXFwcmdjZnl6Y2pjcXNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzODM5NzEsImV4cCI6MjA5MDk1OTk3MX0.zpiIrHKCEjPy8baKUzY-kh9ALMrqeETcXzdC3lVIIcY';
+
+        // Fetch all needed settings in one request
+        let settings = {};
+        try {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/site_settings?key=in.("ksc_early_bird_price","ksc_late_owl_price","ksc_graduate_price","ksc_early_bird_deadline","ksc_start_date","payment_method","instapay_link")&select=key,value', {
+                headers: { 'apikey': ANON_KEY }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                data.forEach(r => {
+                    let v = r.value;
+                    if (typeof v === 'string') v = v.replace(/^"|"$/g, '');
+                    settings[r.key] = v;
+                });
+            }
+        } catch(e) { /* fallback to hardcoded */ }
+
+        // ── Update Prices ──
+        if (settings.ksc_early_bird_price) {
+            document.getElementById('earlyBirdPrice').innerHTML = Number(settings.ksc_early_bird_price).toLocaleString() + ' <span class="pricing-currency">EGP</span>';
+        }
+        if (settings.ksc_late_owl_price) {
+            document.getElementById('lateOwlPrice').innerHTML = Number(settings.ksc_late_owl_price).toLocaleString() + ' <span class="pricing-currency">EGP</span>';
+        }
+        if (settings.ksc_graduate_price) {
+            document.getElementById('gradPrice').innerHTML = Number(settings.ksc_graduate_price).toLocaleString() + ' <span class="pricing-currency">EGP</span>';
+        }
+        if (settings.ksc_early_bird_deadline) {
+            const d = new Date(settings.ksc_early_bird_deadline);
+            const fmt = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('earlyBirdDeadline').textContent = '⏰ Before ' + fmt;
+            document.getElementById('lateOwlDeadline').textContent = '📅 After ' + fmt;
+        }
+        if (settings.ksc_start_date) {
+            const d = new Date(settings.ksc_start_date);
+            const fmt = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const badge = document.getElementById('kscStartBadge');
+            if (badge) badge.textContent = '🔴 Starts ' + fmt;
+        }
+
+        // ── Payment Method Routing ──
+        const paymentMethod = (typeof settings.payment_method === 'object' && settings.payment_method.active)
+            ? settings.payment_method.active
+            : (typeof settings.payment_method === 'string' ? settings.payment_method : 'instapay');
+        const instapayLink = settings.instapay_link || '';
+        const isInstaPay = paymentMethod === 'instapay';
+
+        // Tier info for InstaPay form
+        const tiers = {
+            early_bird:     { label: '🐦 Early Bird',       price: settings.ksc_early_bird_price || '5000' },
+            late_owl:       { label: '🦉 Late Owl',         price: settings.ksc_late_owl_price || '6000' },
+            fresh_graduate: { label: '🎓 Fresh Graduate',   price: settings.ksc_graduate_price || '3000' }
+        };
+
+        // Auto-switch: if early bird deadline has passed, default to late owl
+        let selectedTier = 'early_bird';
+        if (settings.ksc_early_bird_deadline) {
+            const deadline = new Date(settings.ksc_early_bird_deadline);
+            deadline.setHours(23, 59, 59, 999); // end of deadline day
+            if (new Date() > deadline) {
+                selectedTier = 'late_owl';
+            }
+        }
+        // Update the default tier display in enrollment form
+        const defaultT = tiers[selectedTier];
+        const tierBadgeEl = document.getElementById('selectedTierBadge');
+        const tierPriceEl = document.getElementById('selectedTierPrice');
+        const tierHiddenEl = document.getElementById('enrollTierHidden');
+        if (tierBadgeEl) tierBadgeEl.textContent = defaultT.label;
+        if (tierPriceEl) tierPriceEl.textContent = Number(defaultT.price).toLocaleString() + ' EGP';
+        if (tierHiddenEl) tierHiddenEl.value = selectedTier;
+
+        if (isInstaPay) {
+            // Show the enrollment section
+            const ipSection = document.getElementById('instapay-enrollment');
+            if (ipSection) ipSection.style.display = '';
+
+            // Set InstaPay link
+            const ipPayLink = document.getElementById('instapayPayLink');
+            if (ipPayLink && instapayLink) ipPayLink.href = instapayLink;
+
+            // Wire pricing buttons to scroll to form + select tier
+            document.querySelectorAll('.pricing-action-btn').forEach(btn => {
+                btn.href = '#instapay-enrollment';
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    selectedTier = this.dataset.tier;
+                    const t = tiers[selectedTier];
+                    document.getElementById('selectedTierBadge').textContent = t.label;
+                    document.getElementById('selectedTierPrice').textContent = Number(t.price).toLocaleString() + ' EGP';
+                    // Update hidden tier field for form submission
+                    const tierHidden = document.getElementById('enrollTierHidden');
+                    if (tierHidden) tierHidden.value = selectedTier;
+                    document.getElementById('instapay-enrollment').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Meta Pixel: InitiateCheckout
+                    if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
+                        content_name: 'KSC - ' + t.label, content_ids: ['KSC'], content_type: 'product',
+                        value: Number(t.price), currency: 'EGP'
+                    });
+                });
+            });
+        } else {
+            // Paymob: track InitiateCheckout when user clicks Register Now
+            document.querySelectorAll('.pricing-action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const t = tiers[this.dataset.tier];
+                    if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
+                        content_name: 'KSC - ' + t.label, content_ids: ['KSC'], content_type: 'product',
+                        value: Number(t.price), currency: 'EGP'
+                    });
+                });
+            });
+        }
+    })();
+    </script>
+
+    <!-- Telegram Demo Animation -->
+    <script>
+    (function() {
+        const chat1 = document.getElementById('tgChat1');
+        const chat2 = document.getElementById('tgChat2');
+        if (!chat1 || !chat2) return;
+
+        const TIME = '4:00 PM';
+        const check = '<span class="tg-msg-check">✓✓</span>';
+
+        function addMsg(chat, html) {
+            const bg = chat.querySelector('.tg-chat-bg');
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const el = div.firstElementChild;
+            chat.appendChild(el);
+            chat.scrollTop = chat.scrollHeight;
+            return el;
+        }
+
+        function removeEl(el) { if (el && el.parentNode) el.parentNode.removeChild(el); }
+
+        function typing(chat) {
+            return addMsg(chat, '<div class="tg-typing"><div class="tg-typing-dot"></div><div class="tg-typing-dot"></div><div class="tg-typing-dot"></div></div>');
+        }
+
+        function clearChat(chat) {
+            const bg = chat.querySelector('.tg-chat-bg');
+            while (chat.lastChild && chat.lastChild !== bg) chat.removeChild(chat.lastChild);
+        }
+
+        // ─── CHAT 1: Bot Welcome ───
+        let running1 = false;
+        function runChat1() {
+            if (running1) return;
+            running1 = true;
+            clearChat(chat1);
+            const startBtn = document.getElementById('tgStartBtn');
+            if (startBtn) startBtn.style.opacity = '1';
+
+            const steps = [
+                // Date pill
+                { delay: 600, fn: () => addMsg(chat1, '<div class="tg-date-pill">Today</div>') },
+                // START button blinks
+                { delay: 1200, fn: () => { if (startBtn) startBtn.style.opacity = '0'; } },
+                // User sends /start
+                { delay: 300, fn: () => addMsg(chat1, '<div class="tg-msg tg-msg-out">/start<span class="tg-msg-time">' + TIME + ' ' + check + '</span></div>') },
+                // Typing
+                { delay: 800, fn: () => { window._t1 = typing(chat1); } },
+                // Bot reply
+                { delay: 1500, fn: () => {
+                    removeEl(window._t1);
+                    addMsg(chat1,
+                        '<div class="tg-msg tg-msg-in">' +
+                        '<div class="tg-msg-bot-label">Kaizen Study Club</div>' +
+                        'Welcome to Kaizen Study Club!<br><br>' +
+                        'Please select a group below to receive your personal access link.<br><br>' +
+                        'Each link is valid for 5 minutes only.' +
+                        '<span class="tg-msg-time">' + TIME + '</span>' +
+                        '<div class="tg-inline-kb">' +
+                        '<div class="tg-inline-btn">Database</div>' +
+                        '<div class="tg-inline-btn">Facebook Community</div>' +
+                        '</div>' +
+                        '</div>'
+                    );
+                }},
+            ];
+
+            let i = 0;
+            function next() {
+                if (i >= steps.length) { running1 = false; setTimeout(runChat1, 5000); return; }
+                const s = steps[i++];
+                setTimeout(() => { s.fn(); next(); }, s.delay);
+            }
+            next();
+        }
+
+        // ─── CHAT 2: AI Assistant ───
+        let running2 = false;
+        function runChat2() {
+            if (running2) return;
+            running2 = true;
+            clearChat(chat2);
+            const status = document.getElementById('tgHeaderStatus2');
+
+            const steps = [
+                { delay: 1800, fn: () => addMsg(chat2, '<div class="tg-date-pill">Today</div>') },
+                // User types /ask
+                { delay: 1000, fn: () => {
+                    const input = document.getElementById('tgInput2');
+                    if (input) { input.textContent = '/ask how are you ?'; input.classList.add('typing'); }
+                }},
+                { delay: 800, fn: () => {
+                    const input = document.getElementById('tgInput2');
+                    if (input) { input.textContent = 'Write a message...'; input.classList.remove('typing'); }
+                    addMsg(chat2, '<div class="tg-msg tg-msg-out">/ask how are you ?<span class="tg-msg-time">' + TIME + ' ' + check + '</span></div>');
+                }},
+                // Bot starts typing
+                { delay: 600, fn: () => {
+                    if (status) status.textContent = 'typing...';
+                    window._t2 = typing(chat2);
+                }},
+                // AI response
+                { delay: 2200, fn: () => {
+                    removeEl(window._t2);
+                    if (status) status.textContent = 'bot';
+                    addMsg(chat2,
+                        '<div class="tg-msg tg-msg-in">' +
+                        '<div class="tg-msg-bot-label">Kaizen Ai <span class="tg-ai-badge">Ai Assistant</span></div>' +
+                        '<div class="tg-ai-quote">' +
+                        '<div class="tg-ai-quote-name">Mohamed Shehata</div>' +
+                        '<div class="tg-ai-quote-text">/ask how are you ?</div>' +
+                        '</div>' +
+                        'I\'m doing well, thank you for asking! How can I help you today with your dental knowledge?' +
+                        '<span class="tg-msg-time">' + TIME + '</span>' +
+                        '</div>'
+                    );
+                }},
+            ];
+
+            let i = 0;
+            function next() {
+                if (i >= steps.length) { running2 = false; setTimeout(runChat2, 5000); return; }
+                const s = steps[i++];
+                setTimeout(() => { s.fn(); next(); }, s.delay);
+            }
+            next();
+        }
+
+        // Trigger on scroll into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    runChat1();
+                    runChat2();
+                }
+            });
+        }, { threshold: 0.3 });
+
+        const section = document.getElementById('telegram-bot');
+        if (section) observer.observe(section);
+    })();
+    </script>
+</body>
+</html>
+

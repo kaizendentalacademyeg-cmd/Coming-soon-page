@@ -664,13 +664,14 @@ if (progressRing) {
     }
 }
 
-// 3D Model Interaction
+// 3D Model Interaction - OPTIMIZED: only animate when hero is visible
 const floatingModel = document.querySelector('.floating-3d-model');
 if (floatingModel) {
     let mouseX = 0;
     let mouseY = 0;
     let modelX = 0;
     let modelY = 0;
+    let modelAnimating = false;
     
     document.addEventListener('mousemove', (e) => {
         mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -678,6 +679,7 @@ if (floatingModel) {
     });
     
     function animateModel() {
+        if (!modelAnimating) return;
         modelX += (mouseX * 20 - modelX) * 0.05;
         modelY += (mouseY * 20 - modelY) * 0.05;
         
@@ -685,7 +687,18 @@ if (floatingModel) {
         requestAnimationFrame(animateModel);
     }
     
-    animateModel();
+    // Only animate when model is in viewport
+    const modelObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                modelAnimating = true;
+                animateModel();
+            } else {
+                modelAnimating = false;
+            }
+        });
+    }, { threshold: 0 });
+    modelObserver.observe(floatingModel);
 }
 
 // Smooth Reveal for Course Hero Elements
@@ -743,12 +756,13 @@ document.querySelectorAll('.curriculum-item').forEach(item => {
     });
 });
 
-// Add Particle Effect to Hero Section
+// Add Particle Effect to Hero Section - Optimized (desktop only, reduced count)
 function createHeroParticles() {
     const hero = document.querySelector('.course-hero');
-    if (!hero) return;
+    if (!hero || window.innerWidth <= 768) return;
     
-    for (let i = 0; i < 20; i++) {
+    const particleCount = 8; // Reduced from 20
+    for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.className = 'hero-particle';
         particle.style.cssText = `
@@ -769,26 +783,7 @@ function createHeroParticles() {
 
 createHeroParticles();
 
-// Scroll Progress Indicator specifically for Course Page
-const courseProgressBar = document.createElement('div');
-courseProgressBar.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #c77111, #ffffff);
-    width: 0%;
-    z-index: 9999;
-    transition: width 0.3s ease;
-`;
-document.body.appendChild(courseProgressBar);
-
-window.addEventListener('scroll', () => {
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight - windowHeight;
-    const scrolled = (window.pageYOffset / documentHeight) * 100;
-    courseProgressBar.style.width = scrolled + '%';
-});
+// Scroll Progress Indicator - REMOVED (duplicate of script.js progress bar)
 
 // Add Hover Sound Effect (Optional - commented out by default)
 /*
@@ -839,7 +834,12 @@ function shareCourse() {
     } else {
         // Fallback: Copy to clipboard
         navigator.clipboard.writeText(window.location.href).then(() => {
-            alert('Course link copied to clipboard!');
+            // Show a custom toast instead of ugly browser alert
+            const t = document.createElement('div');
+            t.textContent = '✅ Course link copied to clipboard!';
+            t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#e8e8ed;padding:0.75rem 1.5rem;border-radius:10px;border:1px solid rgba(199,113,17,0.3);font-size:0.9rem;z-index:10000;box-shadow:0 8px 30px rgba(0,0,0,0.3);animation:fadeUp 0.3s ease';
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
         });
     }
 }
