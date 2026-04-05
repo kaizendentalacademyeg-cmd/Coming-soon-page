@@ -41,12 +41,38 @@
         $('#dashboard').style.display = 'none';
     }
 
+    // ─── Course slug → ID map (add new courses here) ───
+    const COURSE_SLUGS = {
+        'ksc': '055b906f-0cec-4bdd-84d7-65a71c053d44',
+        'simplified-veneers': '79b935da-077d-436e-9616-f8b0746c2e79',
+        '3d-bioprinting': '6167a282-54b7-47f0-b92e-0c2490d431b0'
+    };
+
+    // Check if we arrived here with an enrollment intent from a course page
+    function checkEnrollmentIntent() {
+        const params = new URLSearchParams(window.location.search);
+        const action = params.get('action');
+        if (action !== 'enroll') return false;
+
+        const courseSlug = params.get('course');
+        const courseId = COURSE_SLUGS[courseSlug];
+        if (!courseId || !currentUser?.id) return false;
+
+        // Redirect straight to Paymob payment API
+        const paymentUrl = `/api/create-payment?course_id=${courseId}&user_id=${currentUser.id}`;
+        window.location.replace(paymentUrl);
+        return true;
+    }
+
     function showDashboard() {
         // Redirect admin/employee users to admin panel BEFORE showing any UI
         if (currentProfile?.role === 'admin' || currentProfile?.role === 'employee') {
             window.location.replace('admin.html');
             return;
         }
+        // If there's an enrollment intent, redirect to payment
+        if (checkEnrollmentIntent()) return;
+
         $('#authScreen').style.display = 'none';
         $('#dashboard').style.display = '';
         const name = (currentProfile?.first_name || '') + ' ' + (currentProfile?.last_name || '') || currentUser?.email?.split('@')[0] || 'Student';

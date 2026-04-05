@@ -766,8 +766,10 @@
                 });
             });
         } else {
-            // Paymob: track InitiateCheckout when user clicks Register Now
+            // Paymob: update hrefs to carry enrollment intent through login
             document.querySelectorAll('.pricing-action-btn').forEach(btn => {
+                const tier = btn.dataset.tier;
+                btn.href = `my-account.html?action=enroll&course=ksc&tier=${tier}`;
                 btn.addEventListener('click', function() {
                     const t = tiers[this.dataset.tier];
                     if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
