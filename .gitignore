@@ -16,5 +16,8 @@ desktop.ini
 # Node
 node_modules/
 
+# Internal docs / specs
+docs/
+
 # Gemini/AI working files
 .gemini/
