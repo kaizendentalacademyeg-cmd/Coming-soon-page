@@ -683,7 +683,7 @@
             }
 
             // 2. Fetch Course Specific Data
-            const courseRes = await fetch(SUPABASE_URL + '/rest/v1/courses?slug=eq.kaizen-study-club&select=*', {
+            const courseRes = await fetch(SUPABASE_URL + '/rest/v1/courses?slug=eq.ksc&select=*', {
                 headers: { 'apikey': ANON_KEY }
             });
             if (courseRes.ok) {

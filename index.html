@@ -563,7 +563,7 @@
                             <option value="" disabled selected></option>
                             <option value="simplified-veneers" data-en="Simplified Veneers - Dr. Mohamed Hadida" data-ar="القشور المبسطة - د. محمد حديده">Simplified Veneers - Dr. Mohamed Hadida</option>
                             <option value="3d-bioprinting" data-en="3D Bonded Bioprinting" data-ar="الطباعة الحيوية ثلاثية الأبعاد">3D Bonded Bioprinting</option>
-                            <option value="kaizen-study-club" data-en="Kaizen Study Club (KSC)" data-ar="نادي كايزن للدراسة">Kaizen Study Club (KSC)</option>
+                            <option value="ksc" data-en="Kaizen Study Club (KSC)" data-ar="نادي كايزن للدراسة">Kaizen Study Club (KSC)</option>
                         </select>
                         <label for="interest" data-en="Course Interest" data-ar="اهتمام بالدورة">Course Interest</label>
                     </div>
@@ -758,7 +758,7 @@
                     const nextText = document.getElementById('bioprint-main-next');
                     if (nextText && dateText) nextText.innerHTML = '🗓️ Next Batch: ' + dateText;
                 }
-                else if (course.slug === 'kaizen-study-club') {
+                else if (course.slug === 'ksc') {
                     const nextText = document.getElementById('ksc-main-next');
                     if (nextText && dateText) nextText.textContent = dateText;
                 }
