@@ -826,6 +826,10 @@
                     </div>
                     <div class="blog-mgr-actions">
                         <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();AdminPanel.editBlogPost('${p.id}')">✏️ Edit</button>
+                        ${p.status === 'published' 
+                            ? `<button class="btn btn-sm" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.1)" onclick="event.stopPropagation();AdminPanel.toggleBlogStatus('${p.id}', 'draft')">⏸ Set Draft</button>`
+                            : `<button class="btn btn-sm" style="background:rgba(199,113,17,0.15);color:var(--admin-accent-light);border:1px solid rgba(199,113,17,0.3)" onclick="event.stopPropagation();AdminPanel.toggleBlogStatus('${p.id}', 'published')">🚀 Publish</button>`
+                        }
                         <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.2)" onclick="event.stopPropagation();AdminPanel.deleteBlogPost('${p.id}')">🗑 Delete</button>
                     </div>
                 </div>
@@ -1138,6 +1142,19 @@
         async editBlogPost(id) {
             const { data } = await sbFetch(`blog_posts?id=eq.${id}`, { params: { select: '*' } });
             if (data?.[0]) openBlogEditor(data[0]);
+        },
+        async toggleBlogStatus(id, newStatus) {
+            const update = { status: newStatus };
+            if (newStatus === 'published') update.published_at = new Date().toISOString();
+            
+            try {
+                await sbFetch(`blog_posts?id=eq.${id}`, { method: 'PATCH', body: update });
+                showToast(`Post ${newStatus === 'published' ? 'published! 🚀' : 'moved to drafts.'}`, 'success');
+                logAudit('toggle_blog_status', `ID: ${id}, Status: ${newStatus}`);
+                loadBlogPosts();
+            } catch (e) {
+                showToast('Failed to update status', 'error');
+            }
         },
         async deleteBlogPost(id) {
             const yes = await adminConfirm('Delete this blog post?', 'This action cannot be undone.');
