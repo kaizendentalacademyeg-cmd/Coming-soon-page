@@ -55,25 +55,17 @@
             userPermissions = null; // admin = all permissions
             showAdminPanel();
         } else if (profile?.role === 'employee') {
-            // Load employee permissions
+            // Load employee permissions — allow entry even if permissions row is missing (zero access)
             try {
                 const { data: perms } = await sbFetch('permissions', { params: { select: '*', user_id: `eq.${user.id}` } });
-                if (perms?.length) {
-                    currentUser = { ...user, profile };
-                    userPermissions = perms[0];
-                    showAdminPanel();
-                } else {
-                    hideLoading();
-                    $('#authGate').style.display = 'none';
-                    $('#adminLayout').style.display = 'none';
-                    $('#accessDenied').style.display = '';
-                }
+                currentUser = { ...user, profile };
+                userPermissions = perms?.[0] || {}; // Empty object = no permissions (can't see any section)
+                showAdminPanel();
             } catch (e) {
                 console.error('Permission load error:', e);
-                hideLoading();
-                $('#authGate').style.display = 'none';
-                $('#adminLayout').style.display = 'none';
-                $('#accessDenied').style.display = '';
+                currentUser = { ...user, profile };
+                userPermissions = {};
+                showAdminPanel();
             }
         } else {
             hideLoading();
@@ -892,8 +884,8 @@
                 can_view_audit_log: $('#empPermAudit').checked,
             };
 
-            // Call Edge Function (uses service_role server-side)
-            const res = await fetch(`${SB_URL}/functions/v1/create-employee`, {
+            // Call Vercel API (uses service_role server-side)
+            const res = await fetch(`/api/create-employee`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`,
@@ -1268,7 +1260,62 @@
             logAudit('update_payment', `Enrollment ${id} payment: ${status}`);
             loadEnrollments();
         },
-        viewMember(id) { showToast('Member detail view coming soon', 'success'); },
+        async viewMember(id) {
+            const { data } = await sbFetch(`profiles?id=eq.${id}`, { params: { select: '*' } });
+            const m = data?.[0];
+            if (!m) { showToast('Member not found', 'error'); return; }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'admin-modal-overlay';
+            overlay.innerHTML = `
+                <div class="admin-modal" style="max-width:480px;width:100%">
+                    <h3 style="margin-bottom:1.25rem">Edit Member</h3>
+                    <div style="display:flex;flex-direction:column;gap:0.85rem">
+                        <div style="display:flex;gap:0.75rem">
+                            <div style="flex:1"><label style="font-size:0.75rem;color:rgba(255,255,255,0.5);display:block;margin-bottom:0.3rem">First Name</label>
+                                <input id="mEditFirst" class="form-control" value="${esc(m.first_name || '')}"></div>
+                            <div style="flex:1"><label style="font-size:0.75rem;color:rgba(255,255,255,0.5);display:block;margin-bottom:0.3rem">Last Name</label>
+                                <input id="mEditLast" class="form-control" value="${esc(m.last_name || '')}"></div>
+                        </div>
+                        <div><label style="font-size:0.75rem;color:rgba(255,255,255,0.5);display:block;margin-bottom:0.3rem">Email</label>
+                            <input id="mEditEmail" class="form-control" value="${esc(m.email || '')}" readonly style="opacity:0.5;cursor:not-allowed" title="Email cannot be changed here"></div>
+                        <div><label style="font-size:0.75rem;color:rgba(255,255,255,0.5);display:block;margin-bottom:0.3rem">Phone</label>
+                            <input id="mEditPhone" class="form-control" value="${esc(m.phone || '')}"></div>
+                        <div><label style="font-size:0.75rem;color:rgba(255,255,255,0.5);display:block;margin-bottom:0.3rem">Role</label>
+                            <select id="mEditRole" class="form-control">
+                                <option value="member" ${m.role === 'member' ? 'selected' : ''}>Member (Student)</option>
+                                <option value="employee" ${m.role === 'employee' ? 'selected' : ''}>Employee (Staff)</option>
+                                <option value="admin" ${m.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select></div>
+                        <p style="font-size:0.72rem;color:rgba(255,255,255,0.3);margin:0">Joined: ${formatDate(m.created_at)}</p>
+                    </div>
+                    <div class="admin-modal-actions" style="margin-top:1.5rem">
+                        <button class="btn btn-secondary btn-sm" id="mEditCancel">Cancel</button>
+                        <button class="btn btn-primary btn-sm" id="mEditSave">Save Changes</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('#mEditCancel').onclick = () => overlay.remove();
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+            overlay.querySelector('#mEditSave').onclick = async () => {
+                const updates = {
+                    first_name: overlay.querySelector('#mEditFirst').value.trim(),
+                    last_name: overlay.querySelector('#mEditLast').value.trim(),
+                    phone: overlay.querySelector('#mEditPhone').value.trim(),
+                    role: overlay.querySelector('#mEditRole').value
+                };
+                try {
+                    await sbFetch(`profiles?id=eq.${id}`, { method: 'PATCH', body: updates });
+                    showToast('Member updated!', 'success');
+                    logAudit('edit_member', `Updated member ${id}`);
+                    overlay.remove();
+                    loadMembers();
+                } catch (e) {
+                    showToast('Failed to save: ' + e.message, 'error');
+                }
+            };
+        },
         editPolicy(id) { openPolicyEditor(id); },
         async editBlogPost(id) {
             const { data } = await sbFetch(`blog_posts?id=eq.${id}`, { params: { select: '*' } });
