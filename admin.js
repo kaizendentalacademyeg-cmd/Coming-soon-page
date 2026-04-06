@@ -1127,7 +1127,22 @@
 
     // Insert image — choose file upload or URL
     $('#insertImageBtn')?.addEventListener('click', () => {
-        // Show a choice: upload file or paste URL
+        // Save cursor position NOW before anything steals focus
+        const editor = $('#blogContentEditor');
+        editor.focus();
+        const sel = window.getSelection();
+        const savedRange = (sel && sel.rangeCount > 0) ? sel.getRangeAt(0).cloneRange() : null;
+
+        function insertAtSavedCursor(html) {
+            editor.focus();
+            const s = window.getSelection();
+            if (savedRange) {
+                s.removeAllRanges();
+                s.addRange(savedRange);
+            }
+            document.execCommand('insertHTML', false, html);
+        }
+
         const overlay = document.createElement('div');
         overlay.className = 'admin-modal-overlay';
         overlay.innerHTML = `
@@ -1155,7 +1170,7 @@
                 showToast('Compressing & uploading...', 'success');
                 try {
                     const url = await uploadBlogImage(file);
-                    document.execCommand('insertHTML', false, `<img src="${url}" alt="Blog image"><p><br></p>`);
+                    insertAtSavedCursor(`<img src="${url}" alt="Blog image"><p><br></p>`);
                     showToast('Image inserted!', 'success');
                 } catch (err) {
                     showToast('Image upload failed: ' + err.message, 'error');
@@ -1168,7 +1183,7 @@
             overlay.remove();
             const url = await adminPrompt('Paste Image URL', 'https://...');
             if (url) {
-                document.execCommand('insertHTML', false, `<img src="${url}" alt="Blog image"><p><br></p>`);
+                insertAtSavedCursor(`<img src="${url}" alt="Blog image"><p><br></p>`);
             }
         };
     });
