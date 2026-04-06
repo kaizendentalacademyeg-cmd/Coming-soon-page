@@ -327,6 +327,35 @@
     font-style: italic;
 }
 
+/* ─── EDITOR.JS RENDERED BLOCKS ─── */
+.post-heading { margin: 2.5rem 0 1rem; }
+h2.post-heading { font-size: 1.6rem; font-weight: 700; color: #e7af20; }
+h3.post-heading { font-size: 1.25rem; font-weight: 600; color: #fff; }
+h4.post-heading { font-size: 1.05rem; font-weight: 600; color: rgba(255,255,255,0.8); }
+
+.post-list { padding-left: 1.5rem; margin-bottom: 1.25rem; }
+.post-list li { margin-bottom: 0.4rem; color: rgba(255,255,255,0.85); }
+
+.post-image { margin: 2rem 0; text-align: center; }
+.post-image img { max-width: 100%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.35); }
+.post-image--border img { border: 1px solid rgba(255,255,255,0.12); }
+.post-image--bg { background: rgba(255,255,255,0.04); padding: 1rem; border-radius: 14px; }
+.post-image--stretched img { width: 100%; }
+.post-image-caption { margin-top: 0.6rem; font-size: 0.85rem; color: rgba(255,255,255,0.4); font-style: italic; }
+
+.post-quote { border-left: 3px solid #c67011; padding: 1rem 1.5rem; margin: 2rem 0; background: rgba(198,112,17,0.06); border-radius: 0 10px 10px 0; }
+.post-quote p { color: rgba(255,255,255,0.75); font-style: italic; margin: 0 0 0.4rem; font-size: 1.05rem; }
+.post-quote cite { color: rgba(255,255,255,0.35); font-size: 0.85rem; }
+
+.post-delimiter { text-align: center; margin: 2.5rem 0; color: rgba(199,113,17,0.5); letter-spacing: 8px; font-size: 0.85rem; }
+
+.post-embed { margin: 2rem 0; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.3); }
+.post-embed iframe { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
+.post-embed-caption { text-align: center; font-size: 0.85rem; color: rgba(255,255,255,0.4); padding: 0.5rem; }
+
+.post-code { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 1.25rem 1.5rem; overflow-x: auto; margin: 1.5rem 0; }
+.post-code code { font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.88rem; color: #e7af20; }
+
 /* Share buttons */
 .post-share {
     display: flex;

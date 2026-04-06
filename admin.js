@@ -935,7 +935,9 @@
         }).join('');
     }
 
-    // Blog editor
+    // ─── EDITOR.JS INSTANCE ───
+    let editorInstance = null;
+
     function openBlogEditor(post = null) {
         $('#blogListView').style.display = 'none';
         $('#blogEditorView').style.display = '';
@@ -946,8 +948,72 @@
         $('#blogExcerpt').value = post?.excerpt || '';
         $('#blogCoverUrl').value = post?.cover_image_url || '';
         $('#blogPostStatus').value = post?.status || 'draft';
-        $('#blogContentEditor').innerHTML = post?.content || '';
         updateCoverPreview();
+
+        // Parse stored content (JSON blocks or empty)
+        let savedData = { blocks: [] };
+        if (post?.content) {
+            try {
+                const parsed = JSON.parse(post.content);
+                if (parsed?.blocks) savedData = parsed;
+            } catch (_) { /* legacy HTML post — start fresh */ }
+        }
+
+        // Destroy previous instance before reinitialising
+        const mountEl = $('#editorjs');
+        if (editorInstance) {
+            editorInstance.destroy();
+            editorInstance = null;
+        }
+        if (mountEl) mountEl.innerHTML = '';
+
+        editorInstance = new EditorJS({
+            holder: 'editorjs',
+            data: savedData,
+            placeholder: 'Start writing — press Tab or click + to add a block…',
+            inlineToolbar: ['bold', 'italic', 'link', 'inlineCode'],
+            tools: {
+                header: {
+                    class: Header,
+                    config: { levels: [2, 3, 4], defaultLevel: 2 }
+                },
+                list: {
+                    class: List,
+                    inlineToolbar: true,
+                    config: { defaultStyle: 'unordered' }
+                },
+                image: {
+                    class: ImageTool,
+                    config: {
+                        uploader: {
+                            uploadByFile: async (file) => {
+                                try {
+                                    const url = await uploadBlogImage(file);
+                                    return { success: 1, file: { url } };
+                                } catch (e) {
+                                    showToast('Image upload failed: ' + e.message, 'error');
+                                    return { success: 0 };
+                                }
+                            },
+                            uploadByUrl: async (url) => {
+                                return { success: 1, file: { url } };
+                            }
+                        }
+                    }
+                },
+                quote: {
+                    class: Quote,
+                    inlineToolbar: true,
+                    config: { quotePlaceholder: 'Quote…', captionPlaceholder: 'Author' }
+                },
+                embed: {
+                    class: Embed,
+                    config: { services: { youtube: true, facebook: true, instagram: true } }
+                },
+                delimiter: Delimiter,
+                inlineCode: { class: InlineCode }
+            }
+        });
     }
 
      // Custom modal prompt (replaces ugly browser prompt)
@@ -1090,107 +1156,8 @@
         return `${SB_URL}/storage/v1/object/public/blog-images/${filename}`;
     }
 
-    // Rich text toolbar
-    $$('.toolbar-btn[data-cmd]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const cmd = btn.dataset.cmd;
-            const val = btn.dataset.val || null;
-            if (cmd === 'createLink') {
-                const url = await adminPrompt('Insert Link', 'https://example.com');
-                if (url) document.execCommand(cmd, false, url);
-            } else {
-                document.execCommand(cmd, false, val);
-            }
-            $('#blogContentEditor').focus();
-        });
-    });
-
-    // Insert YouTube embed
-    $('#insertYoutubeBtn')?.addEventListener('click', async () => {
-        const url = await adminPrompt('Embed YouTube Video', 'https://www.youtube.com/watch?v=...');
-        if (!url) return;
-        const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([\\w-]{11})/);
-        if (match) {
-            const iframe = `<div class="embed-responsive"><iframe src="https://www.youtube.com/embed/${match[1]}" allowfullscreen></iframe></div><p><br></p>`;
-            document.execCommand('insertHTML', false, iframe);
-        } else {
-            showToast('Invalid YouTube URL', 'error');
-        }
-    });
-
-    // Insert Facebook video embed
-    $('#insertFbVideoBtn')?.addEventListener('click', async () => {
-        const url = await adminPrompt('Embed Facebook Video', 'https://www.facebook.com/...');
-        if (!url) return;
-        const embedUrl = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
-        const iframe = `<div class="embed-responsive"><iframe src="${embedUrl}" scrolling="no" allowfullscreen="true"></iframe></div><p><br></p>`;
-        document.execCommand('insertHTML', false, iframe);
-    });
-
-    // Insert image — choose file upload or URL
-    $('#insertImageBtn')?.addEventListener('click', () => {
-        // Save cursor position NOW before anything steals focus
-        const editor = $('#blogContentEditor');
-        editor.focus();
-        const sel = window.getSelection();
-        const savedRange = (sel && sel.rangeCount > 0) ? sel.getRangeAt(0).cloneRange() : null;
-
-        function insertAtSavedCursor(html) {
-            editor.focus();
-            const s = window.getSelection();
-            if (savedRange) {
-                s.removeAllRanges();
-                s.addRange(savedRange);
-            }
-            document.execCommand('insertHTML', false, html);
-        }
-
-        const overlay = document.createElement('div');
-        overlay.className = 'admin-modal-overlay';
-        overlay.innerHTML = `
-            <div class="admin-modal">
-                <h3>Insert Image</h3>
-                <div class="image-insert-options">
-                    <button class="btn btn-primary btn-sm" id="imgUploadChoice">📁 Upload from device</button>
-                    <button class="btn btn-secondary btn-sm" id="imgUrlChoice">🔗 Paste URL</button>
-                </div>
-                <div class="admin-modal-actions">
-                    <button class="btn btn-secondary btn-sm admin-modal-cancel">Cancel</button>
-                </div>
-            </div>`;
-        document.body.appendChild(overlay);
-        overlay.querySelector('.admin-modal-cancel').onclick = () => overlay.remove();
-        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-
-        overlay.querySelector('#imgUploadChoice').onclick = () => {
-            overlay.remove();
-            const input = document.createElement('input');
-            input.type = 'file'; input.accept = 'image/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                showToast('Compressing & uploading...', 'success');
-                try {
-                    const url = await uploadBlogImage(file);
-                    insertAtSavedCursor(`<img src="${url}" alt="Blog image"><p><br></p>`);
-                    showToast('Image inserted!', 'success');
-                } catch (err) {
-                    showToast('Image upload failed: ' + err.message, 'error');
-                }
-            };
-            input.click();
-        };
-
-        overlay.querySelector('#imgUrlChoice').onclick = async () => {
-            overlay.remove();
-            const url = await adminPrompt('Paste Image URL', 'https://...');
-            if (url) {
-                insertAtSavedCursor(`<img src="${url}" alt="Blog image"><p><br></p>`);
-            }
-        };
-    });
-
     function closeBlogEditor() {
+        if (editorInstance) { editorInstance.destroy(); editorInstance = null; }
         $('#blogEditorView').style.display = 'none';
         $('#blogListView').style.display = '';
         loadBlogPosts();
@@ -1231,16 +1198,24 @@
         const id = $('#blogPostId').value;
         const title = $('#blogTitle').value.trim();
         if (!title) { showToast('Title is required', 'error'); return; }
+        if (!editorInstance) { showToast('Editor not ready', 'error'); return; }
+
+        let outputData;
+        try {
+            outputData = await editorInstance.save();
+        } catch (e) {
+            showToast('Could not read editor content', 'error'); return;
+        }
+
         const status = $('#blogPostStatus').value;
         const postData = {
             title,
-            // Only generate slug for new posts — editing a post must not break its URL
             ...(!id && { slug: slugify(title) }),
             category: $('#blogCategory').value,
             tags: $('#blogTags').value.split(',').map(t => t.trim()).filter(Boolean),
             excerpt: $('#blogExcerpt').value.trim(),
             cover_image_url: $('#blogCoverUrl').value.trim(),
-            content: $('#blogContentEditor').innerHTML,
+            content: JSON.stringify(outputData),
             status,
             updated_at: new Date().toISOString(),
         };

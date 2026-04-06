@@ -235,25 +235,7 @@
                                 <div id="coverPreview" class="cover-preview"></div>
                             </div>
                         </div>
-                        <div class="blog-toolbar">
-                            <button type="button" class="toolbar-btn" data-cmd="bold" title="Bold"><b>B</b></button>
-                            <button type="button" class="toolbar-btn" data-cmd="italic" title="Italic"><i>I</i></button>
-                            <button type="button" class="toolbar-btn" data-cmd="underline" title="Underline"><u>U</u></button>
-                            <span class="toolbar-sep"></span>
-                            <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="H2" title="Heading">H2</button>
-                            <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="H3" title="Sub-heading">H3</button>
-                            <button type="button" class="toolbar-btn" data-cmd="formatBlock" data-val="P" title="Paragraph">P</button>
-                            <span class="toolbar-sep"></span>
-                            <button type="button" class="toolbar-btn" data-cmd="insertUnorderedList" title="Bullet list">• List</button>
-                            <button type="button" class="toolbar-btn" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
-                            <span class="toolbar-sep"></span>
-                            <button type="button" class="toolbar-btn" id="insertImageBtn" title="Insert Image">🖼️ Image</button>
-                            <button type="button" class="toolbar-btn" id="insertYoutubeBtn" title="Embed YouTube">▶ YouTube</button>
-                            <button type="button" class="toolbar-btn" id="insertFbVideoBtn" title="Embed Facebook Video">📘 Facebook</button>
-                            <span class="toolbar-sep"></span>
-                            <button type="button" class="toolbar-btn" data-cmd="createLink" title="Insert Link">🔗 Link</button>
-                        </div>
-                        <div class="blog-content-editor" contenteditable="true" id="blogContentEditor" placeholder="Write your post content here..."></div>
+                        <div id="editorjs" class="editorjs-wrap"></div>
                     </div>
                 </div>
 
@@ -373,6 +355,15 @@
     <!-- Toast -->
     <div class="admin-toast" id="adminToast"><span id="toastMessage"></span></div>
 
+    <!-- Editor.js block editor -->
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest/dist/editorjs.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest/dist/header.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest/dist/list.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/image@latest/dist/image.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest/dist/quote.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/embed@latest/dist/embed.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/delimiter@latest/dist/delimiter.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@editorjs/inline-code@latest/dist/inline-code.umd.min.js"></script>
     <script src="supabase-auth.js"></script>
     <script src="admin.js"></script>
 </body>

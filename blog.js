@@ -202,8 +202,18 @@
                 if ($('#postDate')) $('#postDate').textContent = date;
                 if ($('#postViews')) $('#postViews').textContent = `${post.views_count || 0} views`;
 
-                // Content
-                if ($('#postContent')) $('#postContent').innerHTML = post.content || '<p>No content.</p>';
+                // Content — Editor.js JSON or legacy HTML
+                if ($('#postContent')) {
+                    let rendered = '<p>No content.</p>';
+                    if (post.content) {
+                        try {
+                            const parsed = JSON.parse(post.content);
+                            if (parsed?.blocks) rendered = renderEditorJsBlocks(parsed.blocks);
+                            else rendered = post.content;
+                        } catch (_) { rendered = post.content; }
+                    }
+                    $('#postContent').innerHTML = rendered;
+                }
 
                 // Increment views (fire and forget)
                 incrementViews(post.id, post.views_count || 0);
@@ -399,4 +409,61 @@
     }
 
     function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+
+    // ─── EDITOR.JS BLOCK RENDERER ───
+    function renderEditorJsBlocks(blocks) {
+        if (!Array.isArray(blocks)) return '';
+        return blocks.map(block => {
+            const d = block.data || {};
+            switch (block.type) {
+                case 'paragraph':
+                    return `<p>${d.text || ''}</p>`;
+
+                case 'header': {
+                    const lvl = Math.min(Math.max(d.level || 2, 2), 6);
+                    return `<h${lvl} class="post-heading">${d.text || ''}</h${lvl}>`;
+                }
+
+                case 'list': {
+                    const tag = d.style === 'ordered' ? 'ol' : 'ul';
+                    const items = (d.items || []).map(item => {
+                        const text = typeof item === 'string' ? item : (item.content || '');
+                        return `<li>${text}</li>`;
+                    }).join('');
+                    return `<${tag} class="post-list">${items}</${tag}>`;
+                }
+
+                case 'image': {
+                    const url = d.file?.url || d.url || '';
+                    if (!url) return '';
+                    const cls = ['post-image',
+                        d.withBorder ? 'post-image--border' : '',
+                        d.withBackground ? 'post-image--bg' : '',
+                        d.stretched ? 'post-image--stretched' : ''
+                    ].filter(Boolean).join(' ');
+                    const cap = d.caption ? `<figcaption class="post-image-caption">${d.caption}</figcaption>` : '';
+                    return `<figure class="${cls}"><img src="${esc(url)}" alt="${esc(d.caption || '')}" loading="lazy">${cap}</figure>`;
+                }
+
+                case 'quote':
+                    return `<blockquote class="post-quote"><p>${d.text || ''}</p>${d.caption ? `<cite>— ${esc(d.caption)}</cite>` : ''}</blockquote>`;
+
+                case 'delimiter':
+                    return `<div class="post-delimiter"><span>✦ ✦ ✦</span></div>`;
+
+                case 'embed': {
+                    const src = d.embed || '';
+                    if (!src) return '';
+                    const cap = d.caption ? `<p class="post-embed-caption">${esc(d.caption)}</p>` : '';
+                    return `<div class="post-embed"><iframe src="${esc(src)}" loading="lazy" allowfullscreen allow="autoplay; encrypted-media"></iframe>${cap}</div>`;
+                }
+
+                case 'code':
+                    return `<pre class="post-code"><code>${esc(d.code || '')}</code></pre>`;
+
+                default:
+                    return '';
+            }
+        }).join('\n');
+    }
 })();
