@@ -695,7 +695,96 @@
             }
         } catch(e) { console.error("Data fetch error:", e); }
 
-        if (!courseData) return; // Fallback to HTML defaults
+        // ─── ALWAYS wire payment buttons (even if course data failed to load) ───
+        const paymentMethod = (typeof settings.payment_method === 'object' && settings.payment_method.active)
+            ? settings.payment_method.active
+            : (typeof settings.payment_method === 'string' ? settings.payment_method : 'instapay');
+        const instapayLink = settings.instapay_link || '';
+        const isInstaPay = paymentMethod === 'instapay';
+
+        // tiers will be populated below once courseData loads; referenced in click handlers
+        const tiers = {};
+
+        if (isInstaPay) {
+            const ipSection = document.getElementById('instapay-enrollment');
+            if (ipSection) ipSection.style.display = '';
+            const ipPayLink = document.getElementById('instapayPayLink');
+            if (ipPayLink && instapayLink) ipPayLink.href = instapayLink;
+
+            document.querySelectorAll('.pricing-action-btn').forEach(btn => {
+                btn.href = '#instapay-enrollment';
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tierKey = this.dataset.tier;
+                    const t = tiers[tierKey];
+                    const badge = document.getElementById('selectedTierBadge');
+                    const priceEl = document.getElementById('selectedTierPrice');
+                    const tierHidden = document.getElementById('enrollTierHidden');
+                    if (t) {
+                        if (badge) badge.textContent = t.label;
+                        if (priceEl) priceEl.textContent = Number(t.price).toLocaleString() + ' EGP';
+                        if (tierHidden) tierHidden.value = tierKey;
+                        if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
+                            content_name: 'KSC - ' + t.label, content_ids: ['KSC'], content_type: 'product',
+                            value: Number(t.price), currency: 'EGP'
+                        });
+                    }
+                    document.getElementById('instapay-enrollment').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+        } else {
+            // Paymob flow — call API then redirect to checkout
+            document.querySelectorAll('.pricing-action-btn').forEach(btn => {
+                btn.href = '#';
+                btn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    const tierKey = this.dataset.tier;
+                    const t = tiers[tierKey];
+
+                    const session = await KaizenAuth.getSession();
+                    if (!session?.access_token) {
+                        window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
+                        return;
+                    }
+                    const user = await KaizenAuth.getUser();
+                    if (!user) {
+                        window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
+                        return;
+                    }
+
+                    if (t && typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
+                        content_name: 'KSC - ' + (t.label || tierKey), content_ids: ['KSC'],
+                        content_type: 'product', value: Number(t?.price || 0), currency: 'EGP'
+                    });
+
+                    const span = this.querySelector('span');
+                    const origText = span?.textContent;
+                    if (span) span.textContent = 'Processing...';
+                    this.style.opacity = '0.7';
+                    this.style.pointerEvents = 'none';
+
+                    try {
+                        const res = await fetch(`/api/create-payment?course_id=055b906f-0cec-4bdd-84d7-65a71c053d44&user_id=${user.id}&tier=${tierKey}`, {
+                            headers: { 'Authorization': `Bearer ${session.access_token}` }
+                        });
+                        const data = await res.json();
+                        if (data.payment_url) {
+                            window.location.href = data.payment_url;
+                        } else {
+                            alert(data.error || 'Payment setup failed. Please contact support.');
+                        }
+                    } catch (err) {
+                        alert('Connection error. Please try again.');
+                    } finally {
+                        if (span && origText) span.textContent = origText;
+                        this.style.opacity = '';
+                        this.style.pointerEvents = '';
+                    }
+                });
+            });
+        }
+
+        if (!courseData) return; // UI updates below need course data; buttons are already wired above
 
         // ─── UPDATE UI WITH COURSE DATA ───
 
@@ -801,98 +890,6 @@
             });
         }
 
-        // ── Payment Method Routine ──
-        const paymentMethod = (typeof settings.payment_method === 'object' && settings.payment_method.active)
-            ? settings.payment_method.active
-            : (typeof settings.payment_method === 'string' ? settings.payment_method : 'instapay');
-        const instapayLink = settings.instapay_link || '';
-        const isInstaPay = paymentMethod === 'instapay';
-
-        // Set default selected tier based on date condition if possible
-        let selectedTier = 'early_bird';
-        // (Existing auto-switch logic could be enhanced here if deadlines were actual date fields)
-
-        if (isInstaPay) {
-            const ipSection = document.getElementById('instapay-enrollment');
-            if (ipSection) ipSection.style.display = '';
-
-            const ipPayLink = document.getElementById('instapayPayLink');
-            if (ipPayLink && instapayLink) ipPayLink.href = instapayLink;
-
-            document.querySelectorAll('.pricing-action-btn').forEach(btn => {
-                btn.href = '#instapay-enrollment';
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const tierKey = this.dataset.tier;
-                    const t = tiers[tierKey];
-                    if (!t) return;
-                    
-                    document.getElementById('selectedTierBadge').textContent = t.label;
-                    document.getElementById('selectedTierPrice').textContent = Number(t.price).toLocaleString() + ' EGP';
-                    const tierHidden = document.getElementById('enrollTierHidden');
-                    if (tierHidden) tierHidden.value = tierKey;
-                    
-                    document.getElementById('instapay-enrollment').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    
-                    if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
-                        content_name: 'KSC - ' + t.label, content_ids: ['KSC'], content_type: 'product',
-                        value: Number(t.price), currency: 'EGP'
-                    });
-                });
-            });
-        } else {
-            // Paymob flow — call API then redirect to checkout
-            document.querySelectorAll('.pricing-action-btn').forEach(btn => {
-                btn.href = '#'; // prevent default navigation
-                btn.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    const tierKey = this.dataset.tier;
-                    const t = tiers[tierKey];
-
-                    // Must be logged in
-                    const session = await KaizenAuth.getSession();
-                    if (!session?.access_token) {
-                        window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
-                        return;
-                    }
-                    const user = await KaizenAuth.getUser();
-                    if (!user) {
-                        window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
-                        return;
-                    }
-
-                    // Fire Meta pixel
-                    if (t && typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
-                        content_name: 'KSC - ' + (t.label || tierKey), content_ids: ['KSC'],
-                        content_type: 'product', value: Number(t?.price || 0), currency: 'EGP'
-                    });
-
-                    // Show loading state
-                    const origText = this.querySelector('span')?.textContent;
-                    if (this.querySelector('span')) this.querySelector('span').textContent = 'Processing...';
-                    this.style.opacity = '0.7';
-                    this.style.pointerEvents = 'none';
-
-                    try {
-                        const res = await fetch(`/api/create-payment?course_id=055b906f-0cec-4bdd-84d7-65a71c053d44&user_id=${user.id}&tier=${tierKey}`, {
-                            headers: { 'Authorization': `Bearer ${session.access_token}` }
-                        });
-                        const data = await res.json();
-                        if (data.payment_url) {
-                            window.location.href = data.payment_url;
-                        } else {
-                            alert(data.error || 'Payment setup failed. Please contact support.');
-                        }
-                    } catch (err) {
-                        alert('Connection error. Please try again.');
-                    } finally {
-                        if (this.querySelector('span') && origText) this.querySelector('span').textContent = origText;
-                        this.style.opacity = '';
-                        this.style.pointerEvents = '';
-                    }
-                });
-            });
-        }
     })();
     </script>
 
