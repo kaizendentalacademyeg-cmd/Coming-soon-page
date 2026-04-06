@@ -552,8 +552,11 @@
     function startCoursesAutoRefresh() {
         stopCoursesAutoRefresh();
         coursesRefreshTimer = setInterval(() => {
-            if (currentPanel === 'courses') loadCourses(true);
-        }, 15000); // refresh every 15s
+            // Skip refresh if any course is currently being edited (accordion open)
+            if (currentPanel === 'courses' && !document.querySelector('.course-accord.open')) {
+                loadCourses(true);
+            }
+        }, 15000);
     }
     function stopCoursesAutoRefresh() {
         if (coursesRefreshTimer) { clearInterval(coursesRefreshTimer); coursesRefreshTimer = null; }
