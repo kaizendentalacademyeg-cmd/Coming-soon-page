@@ -640,9 +640,8 @@
                                             <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
                                         </select>
                                     </div>
-                                    <div class="tier-field" style="flex: 2"><label>Text (Deadline or Condition)</label>
-                                        <input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}">
-                                        <span style="font-size: 0.75rem; color: #888; margin-top: 0.25rem; display: block;">Empty box = No condition shown. Type to override.</span>
+                                    <div class="tier-field" style="flex: 1.5"><label>Extra Info</label>
+                                        <input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}" placeholder="Optional info (e.g. Class of 2024)">
                                     </div>
                                     <button class="btn-remove-tier" title="Remove tier" type="button">✕</button>
                                 </div>`).join('')}
@@ -741,7 +740,7 @@
                                 <option value="USD">USD</option>
                             </select>
                         </div>
-                        <div class="tier-field"><label>Condition/Date</label><input type="text" class="tier-condition form-control" placeholder="e.g. Until June 6"></div>
+                        <div class="tier-field" style="flex: 1.5"><label>Extra Info</label><input type="text" class="tier-condition form-control" placeholder="Optional info (e.g. Class of 2024)"></div>
                         <button class="btn-remove-tier" title="Remove" type="button">✕</button>
                     `;
                     list.appendChild(row);
