@@ -361,7 +361,7 @@
             <div class="courses-grid">
                 <!-- Simplified Veneers Course - COMPLETED -->
                 <div class="course-card">
-                    <div class="course-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a);" data-en="1st Batch Completed" data-ar="تم إتمام الدفعة الأولى">1st Batch Completed</div>
+                    <div class="course-badge" id="veneers-main-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a);" data-en="1st Batch Completed" data-ar="تم إتمام الدفعة الأولى">1st Batch Completed</div>
                     <div class="course-image">
                         <div class="course-image-placeholder">
                             <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -399,7 +399,7 @@
                             </div>
                         </div>
                         <div class="course-coming-soon" style="background: rgba(198, 112, 17, 0.1); border: 1px solid rgba(198, 112, 17, 0.3); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; text-align: center;">
-                            <span style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon</span>
+                            <span id="veneers-main-next" style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon</span>
                         </div>
                         <a href="course-simplified-veneers.html" class="course-btn" data-en="Learn More" data-ar="اعرف المزيد">
                             <span>Learn More</span>
@@ -412,7 +412,7 @@
                 
                 <!-- 3D Bonded Bioprinting Course - Updated -->
                 <div class="course-card">
-                    <div class="course-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a);" data-en="2 Batches Completed" data-ar="تم إتمام دفعتين">2 Batches Completed</div>
+                    <div class="course-badge" id="bioprint-main-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a);" data-en="2 Batches Completed" data-ar="تم إتمام دفعتين">2 Batches Completed</div>
                     <div class="course-image">
                         <div class="course-image-placeholder">
                             <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -454,7 +454,7 @@
                             </div>
                         </div>
                         <div class="course-coming-soon" style="background: rgba(198, 112, 17, 0.1); border: 1px solid rgba(198, 112, 17, 0.3); border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; text-align: center;">
-                            <span style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon</span>
+                            <span id="bioprint-main-next" style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon</span>
                         </div>
                         <a href="course-3d-bioprinting.html" class="course-btn" data-en="Learn More" data-ar="اعرف المزيد">
                             <span>Learn More</span>
@@ -504,7 +504,7 @@
                                     <circle cx="10" cy="10" r="8" stroke="#ef4444" stroke-width="2"/>
                                     <circle cx="10" cy="10" r="3" fill="#ef4444"/>
                                 </svg>
-                                <span style="color: #ef4444; font-weight: 600;" data-en="Starts June 6, 2026" data-ar="يبدأ 6 يونيو 2026">Starts June 6, 2026</span>
+                                <span id="ksc-main-next" style="color: #ef4444; font-weight: 600;" data-en="Starts June 6, 2026" data-ar="يبدأ 6 يونيو 2026">Starts June 6, 2026</span>
                             </div>
                             <div class="highlight-item">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -724,6 +724,35 @@
     </a>
 
 
+    <!-- Dynamic Course Cards Sync -->
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            if (typeof supabase === 'undefined') return;
+            const { data, error } = await supabase.from('courses').select('slug, next_batch_info, subtitle');
+            if (!data || error) return;
+            
+            data.forEach(course => {
+                if (course.slug === 'simplified-veneers') {
+                    const badge = document.getElementById('veneers-main-badge');
+                    if (badge && course.subtitle) badge.textContent = course.subtitle;
+                    const nextText = document.getElementById('veneers-main-next');
+                    if (nextText && course.next_batch_info) nextText.innerHTML = '🗓️ Next Batch: ' + course.next_batch_info;
+                }
+                else if (course.slug === '3d-bioprinting') {
+                    const badge = document.getElementById('bioprint-main-badge');
+                    if (badge && course.subtitle) badge.textContent = course.subtitle;
+                    const nextText = document.getElementById('bioprint-main-next');
+                    if (nextText && course.next_batch_info) nextText.innerHTML = '🗓️ Next Batch: ' + course.next_batch_info;
+                }
+                else if (course.slug === 'ksc') {
+                    const nextText = document.getElementById('ksc-main-next');
+                    if (nextText && course.next_batch_info) nextText.textContent = course.next_batch_info;
+                }
+            });
+        } catch (err) { console.error('Error syncing main cards:', err); }
+    });
+    </script>
     <script src="supabase-auth.js"></script>
     <script src="script.js" defer></script>
 </body>
