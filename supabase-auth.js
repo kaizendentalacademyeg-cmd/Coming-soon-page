@@ -100,8 +100,9 @@ const KaizenAuth = {
                                     this._session = parsed;
                                     this.startHeartbeat(); // Resume heartbeat
                                 } else {
+                                    // Stale or missing log — clear but DON'T return early
+                                    // so OAuth hash tokens below can still be processed
                                     await this._clearSession();
-                                    return null;
                                 }
                             } catch (err) {
                                 // If network error, trust local for now but keep trying heartbeat
