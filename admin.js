@@ -1044,17 +1044,47 @@
         });
     }
 
-    // Upload image to Supabase Storage (with compression)
+    // Upload image to Supabase Storage (with compression + size limits)
+    const MAX_INPUT_MB = 10;   // reject raw files larger than this
+    const MAX_OUTPUT_MB = 2;   // reject compressed result larger than this
+
     async function uploadBlogImage(file) {
+        // 1. Check raw file size
+        if (file.size > MAX_INPUT_MB * 1024 * 1024) {
+            throw new Error(`File too large (max ${MAX_INPUT_MB} MB). Please use a smaller image.`);
+        }
+
+        // 2. Compress
         const compressed = await compressImage(file);
-        const filename = `img-${Date.now()}.webp`;
+
+        // 3. Check compressed size
+        if (compressed.size > MAX_OUTPUT_MB * 1024 * 1024) {
+            throw new Error(`Compressed image still exceeds ${MAX_OUTPUT_MB} MB. Try a smaller or simpler image.`);
+        }
+
+        const filename = `blog/${Date.now()}-${Math.random().toString(36).slice(2,7)}.webp`;
         const session = await KaizenAuth.getSession();
+        if (!session?.access_token) throw new Error('Not logged in — please refresh and try again.');
+
         const res = await fetch(`${SB_URL}/storage/v1/object/blog-images/${filename}`, {
             method: 'POST',
-            headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'image/webp' },
+            headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${session.access_token}`,
+                'Content-Type': 'image/webp'
+            },
             body: compressed
         });
-        if (!res.ok) throw new Error('Upload failed');
+
+        if (!res.ok) {
+            let errMsg = `Upload failed (${res.status})`;
+            try {
+                const errBody = await res.json();
+                errMsg = errBody.message || errBody.error || errMsg;
+            } catch (_) {}
+            throw new Error(errMsg);
+        }
+
         return `${SB_URL}/storage/v1/object/public/blog-images/${filename}`;
     }
 
