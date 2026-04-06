@@ -4,10 +4,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    --admin-bg: #0a0a0f;
-    --admin-surface: #12121a;
-    --admin-surface-2: #1a1a25;
-    --admin-surface-3: #22222f;
+    --admin-bg: #0a0907;
+    --admin-surface: #14110d;
+    --admin-surface-2: #1c1812;
+    --admin-surface-3: #262119;
     --admin-border: rgba(255,255,255,0.06);
     --admin-border-hover: rgba(255,255,255,0.12);
     --admin-text: #e8e8ed;
@@ -19,7 +19,7 @@
     --admin-success: #22c55e;
     --admin-warning: #f59e0b;
     --admin-danger: #ef4444;
-    --admin-info: #3b82f6;
+    --admin-info: #e7af20; /* Changed from blue to gold/amber */
     --sidebar-w: 260px;
     --header-h: 64px;
     --radius: 12px;
@@ -63,8 +63,12 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body.admin-body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--admin-bg);
+    background-color: var(--admin-bg);
     color: var(--admin-text);
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(199, 113, 17, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(231, 175, 32, 0.03) 0%, transparent 40%);
+    background-attachment: fixed;
     min-height: 100vh;
     overflow-x: hidden;
 }
@@ -78,9 +82,9 @@ body.admin-body {
                 var(--admin-bg);
 }
 .admin-login-card {
-    background: rgba(18, 18, 26, 0.4);
-    -webkit-backdrop-filter: blur(24px);
-    backdrop-filter: blur(24px);
+    background: rgba(20, 17, 13, 0.6);
+    -webkit-backdrop-filter: blur(40px);
+    backdrop-filter: blur(40px);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 20px;
     padding: 3rem 2.5rem;
@@ -126,7 +130,10 @@ body.admin-body {
 
 /* ─── SIDEBAR ─── */
 .admin-sidebar {
-    width: var(--sidebar-w); background: var(--admin-surface);
+    width: var(--sidebar-w); 
+    background: rgba(20, 18, 15, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border-right: 1px solid var(--admin-border);
     display: flex; flex-direction: column;
     position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
@@ -167,11 +174,13 @@ body.admin-body {
     display: flex; flex-direction: column; min-height: 100vh;
 }
 .admin-header {
-    height: var(--header-h); background: var(--admin-surface);
+    height: var(--header-h); 
+    background: rgba(16, 14, 11, 0.6);
     border-bottom: 1px solid var(--admin-border);
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 2rem; position: sticky; top: 0; z-index: 50;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
 }
 .admin-header h2 { font-size: 1.15rem; font-weight: 700; }
 .admin-header-actions { display: flex; align-items: center; gap: 1rem; }
@@ -181,7 +190,9 @@ body.admin-body {
 /* ─── STAT CARDS ─── */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
 .stat-card {
-    background: var(--admin-surface);
+    background: rgba(26, 22, 18, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--admin-border);
     border-radius: var(--radius); padding: 1.5rem;
     transition: all var(--transition);
@@ -198,7 +209,10 @@ body.admin-body {
 
 /* ─── TABLES ─── */
 .admin-table-wrapper {
-    background: var(--admin-surface); border: 1px solid var(--admin-border);
+    background: rgba(20, 18, 15, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--admin-border);
     border-radius: var(--radius); overflow: hidden;
 }
 .table-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; flex-wrap: wrap; gap: 1rem; }

@@ -20,7 +20,7 @@
     async function checkMaintenance() {
         try {
             // Admin bypass
-            var sessionRaw = localStorage.getItem('kaizen_session');
+            var sessionRaw = localStorage.getItem('kda_session');
             if (sessionRaw) {
                 try {
                     var session = JSON.parse(sessionRaw);

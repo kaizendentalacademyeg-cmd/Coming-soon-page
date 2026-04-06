@@ -49,7 +49,7 @@
     };
 
     // Check if we arrived here with an enrollment intent from a course page
-    function checkEnrollmentIntent() {
+    async function checkEnrollmentIntent() {
         const params = new URLSearchParams(window.location.search);
         const action = params.get('action');
         if (action !== 'enroll') return false;
@@ -58,20 +58,44 @@
         const courseId = COURSE_SLUGS[courseSlug];
         if (!courseId || !currentUser?.id) return false;
 
-        // Redirect straight to Paymob payment API
-        const paymentUrl = `/api/create-payment?course_id=${courseId}&user_id=${currentUser.id}`;
-        window.location.replace(paymentUrl);
-        return true;
+        // Show a "preparing payment" state
+        showToast('Preparing secure payment gateway...', 'info');
+
+        try {
+            const res = await fetch(`/api/create-payment?course_id=${courseId}&user_id=${currentUser.id}`);
+            const data = await res.json();
+
+            if (res.ok && data.url) {
+                // Smoothly transition to Paymob
+                window.location.href = data.url;
+                return true;
+            } else {
+                // If it's a redirect-style response from older version
+                if (res.status === 302 || (res.type === 'opaqueredirect')) {
+                     window.location.href = res.url;
+                     return true;
+                }
+                throw new Error(data.error || 'Payment gateway currently unavailable');
+            }
+        } catch (error) {
+            console.error('Enrollment error:', error);
+            showToast(error.message, 'error');
+            // Hide preloader if it's still hanging
+            if (typeof window.KaizenPreloader !== 'undefined') {
+                window.KaizenPreloader.hide();
+            }
+            return false; // Fall back to dashboard so user isn't stuck
+        }
     }
 
-    function showDashboard() {
+    async function showDashboard() {
         // Redirect admin/employee users to admin panel BEFORE showing any UI
         if (currentProfile?.role === 'admin' || currentProfile?.role === 'employee') {
             window.location.replace('admin.html');
             return;
         }
         // If there's an enrollment intent, redirect to payment
-        if (checkEnrollmentIntent()) return;
+        if (await checkEnrollmentIntent()) return;
 
         $('#authScreen').style.display = 'none';
         $('#dashboard').style.display = '';
