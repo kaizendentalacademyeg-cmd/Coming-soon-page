@@ -412,12 +412,7 @@
             $('#settInstagram').value = typeof map.instagram_url === 'string' ? map.instagram_url : '';
             $('#settYoutube').value = typeof map.youtube_url === 'string' ? map.youtube_url : '';
             $('#settMaps').value = typeof map.google_maps_url === 'string' ? map.google_maps_url : val('google_maps', 'url');
-            // Pricing
-            if (map.ksc_early_bird_price) $('#settEarlyBirdPrice').value = map.ksc_early_bird_price;
-            if (map.ksc_late_owl_price) $('#settLateOwlPrice').value = map.ksc_late_owl_price;
-            if (map.ksc_graduate_price) $('#settGradPrice').value = map.ksc_graduate_price;
-            if (map.ksc_early_bird_deadline) $('#settEarlyBirdDeadline').value = map.ksc_early_bird_deadline;
-            if (map.ksc_start_date) $('#settKscStartDate').value = map.ksc_start_date;
+
             // Payment
             const pm = map.payment_method;
             const isPaymob = pm === 'paymob' || (typeof pm === 'object' && pm?.active === 'paymob');

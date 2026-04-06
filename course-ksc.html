@@ -738,11 +738,12 @@
             courseData.highlights.forEach((h, idx) => {
                 if (statItems[idx]) {
                     const text = h.text || '';
-                    const match = text.match(/^(\d+)\s+(.*)$/);
                     if (match) {
+                        statItems[idx].querySelector('.stat-number').style.display = 'block';
                         statItems[idx].querySelector('.stat-number').textContent = match[1];
                         statItems[idx].querySelector('.stat-label').textContent = match[2];
                     } else {
+                        statItems[idx].querySelector('.stat-number').style.display = 'none';
                         statItems[idx].querySelector('.stat-number').textContent = '';
                         statItems[idx].querySelector('.stat-label').textContent = text;
                     }
