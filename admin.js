@@ -616,9 +616,21 @@
                         </div>
                     </div>
 
-                    <div class="course-mgr-section-title">Pricing Tiers (JSON)</div>
-                    <textarea class="course-tiers-json" data-id="${c.id}" placeholder='[{"name": "Early Bird", "price": 5000, "currency": "EGP"}]'>${JSON.stringify(tiers, null, 2)}</textarea>
-                    <div class="text-muted" style="margin-bottom:1rem; font-size:0.7rem">Edit the list of prices above. Format: Name, Price, Currency.</div>
+                    <div class="course-mgr-section-title">Pricing Tiers</div>
+                    <div class="course-tiers-list" data-id="${c.id}">
+                        ${tiers.map((t, idx) => `
+                            <div class="tier-edit-row" data-index="${idx}">
+                                <input type="text" class="tier-name form-control" value="${esc(t.name || '')}" placeholder="Tier Name (e.g. Early Bird)">
+                                <input type="number" class="tier-price form-control" value="${t.price || ''}" placeholder="Price (e.g. 5000)">
+                                <select class="tier-currency form-control">
+                                    <option value="EGP" ${t.currency === 'EGP' ? 'selected' : ''}>EGP</option>
+                                    <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
+                                </select>
+                                <button class="btn-remove-tier" title="Remove" type="button">✕</button>
+                            </div>`).join('')}
+                    </div>
+                    <button class="btn btn-secondary btn-sm add-tier-btn" data-id="${c.id}" type="button" style="margin-top:0.5rem; width:100%; font-size:0.7rem">+ Add Pricing Tier</button>
+                    <div class="text-muted" style="margin-top:0.5rem; margin-bottom:1rem; font-size:0.7rem">Add early bird, standard, or special discount prices here.</div>
 
                     <div class="course-mgr-section-title">Course Highlights (One per line)</div>
                     <textarea class="course-highlights-text" data-id="${c.id}" placeholder="Enter highlights...">${highlights.map(h => h.text || h).join('\n')}</textarea>
@@ -673,6 +685,33 @@
             container.querySelectorAll('.course-save-btn').forEach(btn => {
                 btn.addEventListener('click', () => saveCourse(btn.dataset.id));
             });
+
+            // Bind Add Tier buttons
+            container.querySelectorAll('.add-tier-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const list = this.previousElementSibling;
+                    const row = document.createElement('div');
+                    row.className = 'tier-edit-row';
+                    row.innerHTML = `
+                        <input type="text" class="tier-name form-control" value="" placeholder="Tier Name">
+                        <input type="number" class="tier-price form-control" value="" placeholder="Price">
+                        <select class="tier-currency form-control">
+                            <option value="EGP">EGP</option>
+                            <option value="USD">USD</option>
+                        </select>
+                        <button class="btn-remove-tier" title="Remove" type="button">✕</button>
+                    `;
+                    list.appendChild(row);
+                });
+            });
+
+            // Delegate Remove Tier clicks
+            container.addEventListener('click', function(e) {
+                const removeBtn = e.target.closest('.btn-remove-tier');
+                if (removeBtn) {
+                    removeBtn.closest('.tier-edit-row').remove();
+                }
+            });
         } catch (e) {
             console.error('Load courses error:', e);
             container.innerHTML = '<p class="empty-state">Failed to load courses.</p>';
@@ -691,14 +730,13 @@
         const instructor = card.querySelector('.course-instructor')?.value || '';
         const isVisible = card.querySelector('.toggle-track[data-field="is_visible"]').classList.contains('active');
 
-        // Parse Prices
-        let pricingTiers = [];
-        try {
-            pricingTiers = JSON.parse(card.querySelector('.course-tiers-json').value);
-        } catch (e) {
-            showToast('Invalid Pricing Tiers JSON format', 'error');
-            return;
-        }
+        // Parse Prices (Row-based)
+        const tierRows = card.querySelectorAll('.tier-edit-row');
+        const pricingTiers = Array.from(tierRows).map(row => ({
+            name: row.querySelector('.tier-name').value.trim(),
+            price: parseFloat(row.querySelector('.tier-price').value) || 0,
+            currency: row.querySelector('.tier-currency').value
+        })).filter(t => t.name || t.price);
 
         // Parse Highlights
         const highlightsText = card.querySelector('.course-highlights-text').value;

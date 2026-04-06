@@ -711,15 +711,34 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
     font-size: 0.75rem; font-weight: 700; color: var(--admin-accent-light);
     text-transform: uppercase; letter-spacing: 0.5px; margin: 1.25rem 0 0.5rem;
 }
-.course-tiers-json, .course-highlights-text {
-    width: 100%; min-height: 100px;
+.course-tiers-list {
+    display: flex; flex-direction: column; gap: 0.5rem;
+}
+.tier-edit-row {
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.tier-edit-row .form-control {
+    background: var(--admin-surface-2); border: 1px solid var(--admin-border);
+    color: var(--admin-text); padding: 0.4rem 0.6rem; font-size: 0.8rem;
+}
+.tier-edit-row .tier-name { flex: 2; }
+.tier-edit-row .tier-price { flex: 1; min-width: 60px; }
+.tier-edit-row .tier-currency { width: 70px; flex-shrink: 0; }
+.btn-remove-tier {
+    background: none; border: none; color: #ef4444; cursor: pointer;
+    font-size: 1rem; padding: 0.25rem; transition: transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-remove-tier:hover { transform: scale(1.2); color: #f87171; }
+
+.course-highlights-text {
+    width: 100%; min-height: 80px;
     background: var(--admin-surface-2); border: 1px solid var(--admin-border);
     border-radius: var(--radius-sm); color: var(--admin-text); padding: 0.75rem;
-    font-family: 'Consolas', 'Monaco', monospace; font-size: 0.8rem;
-    resize: vertical; transition: border-color 0.2s;
+    font-size: 0.85rem; line-height: 1.5; resize: vertical;
+    transition: border-color 0.2s;
 }
-.course-highlights-text { font-family: inherit; font-size: 0.85rem; min-height: 80px; }
-.course-tiers-json:focus, .course-highlights-text:focus {
+.course-highlights-text:focus {
     outline: none; border-color: var(--admin-accent);
 }
 
