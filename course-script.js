@@ -1,5 +1,29 @@
 // Course Page Specific JavaScript
 
+// ─── AUTH-AWARE NAVBAR ───
+(async function initCourseNavAuth() {
+    if (typeof KaizenAuth === 'undefined') return;
+    try {
+        const session = await KaizenAuth.getSession();
+        const accountBtn = document.getElementById('navAccountBtn');
+        const signoutBtn = document.getElementById('navSignOutBtn');
+        const accountText = document.getElementById('navAccountText');
+
+        if (session) {
+            const profile = await KaizenAuth.getProfile();
+            if (profile && accountBtn && accountText) {
+                accountText.textContent = profile.first_name || 'My Account';
+                accountBtn.classList.add('logged-in');
+                if (signoutBtn) signoutBtn.style.display = 'flex';
+
+                if (profile.role === 'admin' || profile.role === 'employee') {
+                    accountBtn.href = 'admin.html';
+                }
+            }
+        }
+    } catch (e) { /* silent */ }
+})();
+
 // Navbar Glassy Effect on Scroll - Smooth transition with debouncing
 const navbar = document.getElementById('navbar');
 let navbarTicking = false;
