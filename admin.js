@@ -1062,7 +1062,7 @@
             throw new Error(`Compressed image still exceeds ${MAX_OUTPUT_MB} MB. Try a smaller or simpler image.`);
         }
 
-        const filename = `blog/${Date.now()}-${Math.random().toString(36).slice(2,7)}.webp`;
+        const filename = `img-${Date.now()}-${Math.random().toString(36).slice(2,7)}.webp`;
         const session = await KaizenAuth.getSession();
         if (!session?.access_token) throw new Error('Not logged in — please refresh and try again.');
 
