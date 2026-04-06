@@ -572,118 +572,156 @@
             container.innerHTML = data.map(c => {
                 const isActive = c.status === 'active';
                 const statusLabels = { active: 'Active', completed: 'Completed', coming_soon: 'Coming Soon', draft: 'Draft' };
-                const formatLabels = { online: '🌐 Online', phygital: '🏥 Phygital', onsite: '📍 On-site' };
                 const highlights = Array.isArray(c.highlights) ? c.highlights : [];
                 const tiers = Array.isArray(c.pricing_tiers) ? c.pricing_tiers : [];
+                const priceDisplay = tiers.length ? tiers.map(t => `${t.name}: ${Number(t.price).toLocaleString()} ${t.currency || 'EGP'}`).join(' · ') : 'No pricing set';
+
                 return `
-                <div class="course-mgr-card ${isActive ? 'is-active' : ''}" data-course-id="${c.id}">
-                    <div class="course-mgr-header">
-                        <div style="flex:1">
-                            <div class="course-mgr-title">${esc(c.title)}</div>
-                            <div class="course-mgr-slug">/${esc(c.slug)}</div>
-                        </div>
-                        <span class="course-mgr-status-badge ${c.status}">${statusLabels[c.status] || c.status}</span>
-                    </div>
-
-                    <div class="course-mgr-edit-grid">
-                        <div class="course-mgr-row-stack">
-                            <label>Subtitle</label>
-                            <input type="text" class="course-subtitle form-control" data-id="${c.id}" value="${esc(c.subtitle || '')}" placeholder="e.g. Master the art of...">
-                        </div>
-                        <div class="course-mgr-row-stack">
-                            <label>Instructor</label>
-                            <input type="text" class="course-instructor form-control" data-id="${c.id}" value="${esc(c.instructor || '')}" placeholder="e.g. Dr. Jane Doe">
-                        </div>
-                    </div>
-
-                    <div class="course-mgr-info-edit">
-                        <div class="course-mgr-row">
-                            <label>Format</label>
-                            <select class="course-format-select" data-id="${c.id}">
-                                <option value="online" ${c.format === 'online' ? 'selected' : ''}>🌐 Online</option>
-                                <option value="phygital" ${c.format === 'phygital' ? 'selected' : ''}>🏥 Phygital</option>
-                                <option value="onsite" ${c.format === 'onsite' ? 'selected' : ''}>📍 On-site</option>
-                            </select>
-                        </div>
-                        <div class="course-mgr-row">
-                            <label>Status</label>
-                            <select class="course-status-select" data-id="${c.id}">
-                                <option value="active" ${c.status === 'active' ? 'selected' : ''}>🟢 Active</option>
-                                <option value="coming_soon" ${c.status === 'coming_soon' ? 'selected' : ''}>🟡 Coming Soon</option>
-                                <option value="completed" ${c.status === 'completed' ? 'selected' : ''}>🔵 Completed</option>
-                                <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>⚪ Draft (Hidden)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="course-mgr-section-title">Pricing Tiers</div>
-                    <div class="course-tiers-list" data-id="${c.id}">
-                        ${tiers.map((t, idx) => `
-                            <div class="tier-edit-row" data-index="${idx}">
-                                <input type="text" class="tier-name form-control" value="${esc(t.name || '')}" placeholder="Tier Name (e.g. Early Bird)">
-                                <input type="number" class="tier-price form-control" value="${t.price || ''}" placeholder="Price (e.g. 5000)">
-                                <select class="tier-currency form-control">
-                                    <option value="EGP" ${t.currency === 'EGP' ? 'selected' : ''}>EGP</option>
-                                    <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
-                                </select>
-                                <button class="btn-remove-tier" title="Remove" type="button">✕</button>
-                            </div>`).join('')}
-                    </div>
-                    <button class="btn btn-secondary btn-sm add-tier-btn" data-id="${c.id}" type="button" style="margin-top:0.5rem; width:100%; font-size:0.7rem">+ Add Pricing Tier</button>
-                    <div class="text-muted" style="margin-top:0.5rem; margin-bottom:1rem; font-size:0.7rem">Add early bird, standard, or special discount prices here.</div>
-
-                    <div class="course-mgr-section-title">Course Highlights (One per line)</div>
-                    <textarea class="course-highlights-text" data-id="${c.id}" placeholder="Enter highlights...">${highlights.map(h => h.text || h).join('\n')}</textarea>
-
-                    <div class="course-mgr-controls">
-                        <div class="course-mgr-row">
-                            <label>Start Date</label>
-                            <input type="date" class="course-start-date" data-id="${c.id}" value="${c.start_date || ''}">
-                        </div>
-                        <div class="course-mgr-row">
-                            <label>Next Batch</label>
-                            <input type="text" class="course-next-batch form-control" data-id="${c.id}" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Starts June 6, 2026">
-                        </div>
-                        <div class="course-mgr-row">
-                            <label>Visible</label>
-                            <div class="course-mgr-toggle">
-                                <div class="toggle-track ${c.is_visible ? 'active' : ''}" data-id="${c.id}" data-field="is_visible"></div>
-                                <span class="toggle-label-text">${c.is_visible ? 'Shown on site' : 'Hidden'}</span>
+                <div class="course-accord" data-course-id="${c.id}">
+                    <!-- ━━ SUMMARY ROW (always visible) ━━ -->
+                    <div class="course-accord-summary">
+                        <div class="course-accord-left">
+                            <span class="course-accord-status-dot ${c.status}"></span>
+                            <div class="course-accord-info">
+                                <h3 class="course-accord-name">${esc(c.title)}</h3>
+                                <span class="course-accord-meta">${esc(c.instructor || 'No instructor')} · ${priceDisplay}</span>
                             </div>
                         </div>
+                        <div class="course-accord-right">
+                            <span class="course-mgr-status-badge ${c.status}">${statusLabels[c.status] || c.status}</span>
+                            <button class="course-accord-toggle" type="button">Edit ▾</button>
+                        </div>
                     </div>
 
-                    <div class="course-mgr-footer">
-                        ${c.page_url ? `<a href="${c.page_url}" target="_blank" class="course-mgr-page-link">View Page →</a>` : ''}
-                        <button class="btn btn-primary btn-sm course-save-btn" data-id="${c.id}">Save Changes</button>
+                    <!-- ━━ EXPANDED EDITOR (hidden by default) ━━ -->
+                    <div class="course-accord-body">
+
+                        <!-- Section: General -->
+                        <div class="course-editor-section">
+                            <div class="course-editor-section-title">General Information</div>
+                            <div class="course-editor-grid">
+                                <div class="ce-field">
+                                    <label>Subtitle</label>
+                                    <input type="text" class="course-subtitle form-control" value="${esc(c.subtitle || '')}" placeholder="Course subtitle...">
+                                </div>
+                                <div class="ce-field">
+                                    <label>Instructor</label>
+                                    <input type="text" class="course-instructor form-control" value="${esc(c.instructor || '')}" placeholder="Dr. Name">
+                                </div>
+                                <div class="ce-field">
+                                    <label>Format</label>
+                                    <select class="course-format-select form-control">
+                                        <option value="online" ${c.format === 'online' ? 'selected' : ''}>🌐 Online</option>
+                                        <option value="phygital" ${c.format === 'phygital' ? 'selected' : ''}>🏥 Phygital</option>
+                                        <option value="physical" ${c.format === 'physical' ? 'selected' : ''}>📍 Physical</option>
+                                    </select>
+                                </div>
+                                <div class="ce-field">
+                                    <label>Status</label>
+                                    <select class="course-status-select form-control">
+                                        <option value="active" ${c.status === 'active' ? 'selected' : ''}>🟢 Active</option>
+                                        <option value="coming_soon" ${c.status === 'coming_soon' ? 'selected' : ''}>🟡 Coming Soon</option>
+                                        <option value="completed" ${c.status === 'completed' ? 'selected' : ''}>🔵 Completed</option>
+                                        <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>⚪ Draft</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Pricing -->
+                        <div class="course-editor-section">
+                            <div class="course-editor-section-title">Pricing Tiers</div>
+                            <div class="course-tiers-list">
+                                ${tiers.map((t, idx) => `
+                                <div class="tier-edit-row">
+                                    <div class="tier-field"><label>Name</label><input type="text" class="tier-name form-control" value="${esc(t.name || '')}" placeholder="e.g. Early Bird"></div>
+                                    <div class="tier-field"><label>Price</label><input type="number" class="tier-price form-control" value="${t.price || ''}" placeholder="5000"></div>
+                                    <div class="tier-field tier-field-sm"><label>Currency</label>
+                                        <select class="tier-currency form-control">
+                                            <option value="EGP" ${(t.currency||'EGP') === 'EGP' ? 'selected' : ''}>EGP</option>
+                                            <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn-remove-tier" title="Remove tier" type="button">✕</button>
+                                </div>`).join('')}
+                            </div>
+                            <button class="add-tier-btn" type="button">+ Add Pricing Tier</button>
+                        </div>
+
+                        <!-- Section: Highlights -->
+                        <div class="course-editor-section">
+                            <div class="course-editor-section-title">Course Highlights</div>
+                            <textarea class="course-highlights-text form-control" placeholder="One highlight per line...">${highlights.map(h => h.text || h).join('\n')}</textarea>
+                        </div>
+
+                        <!-- Section: Schedule -->
+                        <div class="course-editor-section">
+                            <div class="course-editor-section-title">Schedule & Visibility</div>
+                            <div class="course-editor-grid">
+                                <div class="ce-field">
+                                    <label>Start Date</label>
+                                    <input type="date" class="course-start-date form-control" value="${c.start_date || ''}">
+                                </div>
+                                <div class="ce-field">
+                                    <label>Next Batch</label>
+                                    <input type="text" class="course-next-batch form-control" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Starts June 6, 2026">
+                                </div>
+                                <div class="ce-field">
+                                    <label>Visible on Site</label>
+                                    <div class="course-mgr-toggle" style="margin-top:0.4rem">
+                                        <div class="toggle-track ${c.is_visible ? 'active' : ''}" data-field="is_visible"></div>
+                                        <span class="toggle-label-text">${c.is_visible ? 'Shown' : 'Hidden'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="course-editor-footer">
+                            ${c.page_url ? `<a href="${c.page_url}" target="_blank" class="course-mgr-page-link">View Live Page →</a>` : '<span></span>'}
+                            <button class="btn btn-primary course-save-btn">Save Changes</button>
+                        </div>
                     </div>
                 </div>`;
             }).join('');
 
-            // Bind toggle clicks
+            // Bind accordion toggles
+            container.querySelectorAll('.course-accord-toggle').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const accord = this.closest('.course-accord');
+                    const isOpen = accord.classList.toggle('open');
+                    this.textContent = isOpen ? 'Close ▴' : 'Edit ▾';
+                });
+            });
+
+            // Bind toggle clicks (visibility)
             container.querySelectorAll('.toggle-track[data-field="is_visible"]').forEach(t => {
                 t.addEventListener('click', function() {
                     this.classList.toggle('active');
                     const label = this.nextElementSibling;
-                    label.textContent = this.classList.contains('active') ? 'Shown on site' : 'Hidden';
+                    label.textContent = this.classList.contains('active') ? 'Shown' : 'Hidden';
                 });
             });
 
             // Bind status select change — update badge live
             container.querySelectorAll('.course-status-select').forEach(sel => {
                 sel.addEventListener('change', function() {
-                    const card = this.closest('.course-mgr-card');
-                    const badge = card.querySelector('.course-mgr-status-badge');
+                    const accord = this.closest('.course-accord');
+                    const badge = accord.querySelector('.course-mgr-status-badge');
+                    const dot = accord.querySelector('.course-accord-status-dot');
                     const labels = { active: 'Active', completed: 'Completed', coming_soon: 'Coming Soon', draft: 'Draft' };
                     badge.className = 'course-mgr-status-badge ' + this.value;
                     badge.textContent = labels[this.value] || this.value;
-                    card.classList.toggle('is-active', this.value === 'active');
+                    dot.className = 'course-accord-status-dot ' + this.value;
                 });
             });
 
             // Bind save buttons
             container.querySelectorAll('.course-save-btn').forEach(btn => {
-                btn.addEventListener('click', () => saveCourse(btn.dataset.id));
+                btn.addEventListener('click', function() {
+                    const id = this.closest('.course-accord').dataset.courseId;
+                    saveCourse(id);
+                });
             });
 
             // Bind Add Tier buttons
@@ -693,12 +731,14 @@
                     const row = document.createElement('div');
                     row.className = 'tier-edit-row';
                     row.innerHTML = `
-                        <input type="text" class="tier-name form-control" value="" placeholder="Tier Name">
-                        <input type="number" class="tier-price form-control" value="" placeholder="Price">
-                        <select class="tier-currency form-control">
-                            <option value="EGP">EGP</option>
-                            <option value="USD">USD</option>
-                        </select>
+                        <div class="tier-field"><label>Name</label><input type="text" class="tier-name form-control" placeholder="Tier Name"></div>
+                        <div class="tier-field"><label>Price</label><input type="number" class="tier-price form-control" placeholder="Price"></div>
+                        <div class="tier-field tier-field-sm"><label>Currency</label>
+                            <select class="tier-currency form-control">
+                                <option value="EGP">EGP</option>
+                                <option value="USD">USD</option>
+                            </select>
+                        </div>
                         <button class="btn-remove-tier" title="Remove" type="button">✕</button>
                     `;
                     list.appendChild(row);
@@ -707,9 +747,8 @@
 
             // Delegate Remove Tier clicks
             container.addEventListener('click', function(e) {
-                const removeBtn = e.target.closest('.btn-remove-tier');
-                if (removeBtn) {
-                    removeBtn.closest('.tier-edit-row').remove();
+                if (e.target.closest('.btn-remove-tier')) {
+                    e.target.closest('.tier-edit-row').remove();
                 }
             });
         } catch (e) {
@@ -719,7 +758,7 @@
     }
 
     async function saveCourse(courseId) {
-        const card = $(`[data-course-id="${courseId}"]`);
+        const card = document.querySelector(`.course-accord[data-course-id="${courseId}"]`);
         if (!card) return;
         
         const status = card.querySelector('.course-status-select').value;
