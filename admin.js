@@ -234,33 +234,6 @@
         logAudit('export_members', 'Exported members CSV');
     });
 
-    // ─── COURSES ───
-    async function loadCourses() {
-        const { data } = await sbFetch('courses', { params: { select: '*', order: 'sort_order.asc' } });
-        renderCourses(data || []);
-    }
-
-    function renderCourses(courses) {
-        const container = $('#coursesList');
-        if (!courses.length) { container.innerHTML = '<p class="empty-state">No courses found</p>'; return; }
-        container.innerHTML = `<table class="admin-table">
-            <thead><tr><th>Course</th><th>Status</th><th>Visible</th><th>Pricing</th><th>Batch</th><th>Order</th></tr></thead>
-            <tbody>${courses.map(c => `<tr>
-                <td><strong>${esc(c.title)}</strong>${c.subtitle ? '<br><span class="text-muted">' + esc(c.subtitle) + '</span>' : ''}</td>
-                <td><select class="form-control form-control-sm" onchange="AdminPanel.updateCourseStatus('${c.id}', this.value)">
-                    <option value="active" ${c.status==='active'?'selected':''}>Active</option>
-                    <option value="coming_soon" ${c.status==='coming_soon'?'selected':''}>Coming Soon</option>
-                    <option value="completed" ${c.status==='completed'?'selected':''}>Completed</option>
-                    <option value="draft" ${c.status==='draft'?'selected':''}>Draft</option>
-                </select></td>
-                <td><div class="toggle-track ${c.is_visible ? 'active' : ''}" onclick="AdminPanel.toggleCourseVisibility('${c.id}', ${!c.is_visible})"></div></td>
-                <td class="text-muted">${c.pricing_tiers?.length ? c.pricing_tiers.map(t => t.name + ': ' + t.price + ' ' + (t.currency || 'EGP')).join('<br>') : '—'}</td>
-                <td class="text-muted">${esc(c.batch_info || '—')}</td>
-                <td class="text-muted">${c.sort_order ?? '—'}</td>
-            </tr>`).join('')}</tbody>
-        </table>`;
-    }
-
     // ─── ENROLLMENTS ───
     async function loadEnrollments() {
         const { data } = await sbFetch('enrollments', { params: { select: '*, profiles(first_name,last_name,email), courses(title)', order: 'enrolled_at.desc' } });
@@ -1214,7 +1187,8 @@
         const status = $('#blogPostStatus').value;
         const postData = {
             title,
-            slug: slugify(title),
+            // Only generate slug for new posts — editing a post must not break its URL
+            ...(!id && { slug: slugify(title) }),
             category: $('#blogCategory').value,
             tags: $('#blogTags').value.split(',').map(t => t.trim()).filter(Boolean),
             excerpt: $('#blogExcerpt').value.trim(),
@@ -1289,7 +1263,8 @@
                             </select></div>
                         <p style="font-size:0.72rem;color:rgba(255,255,255,0.3);margin:0">Joined: ${formatDate(m.created_at)}</p>
                     </div>
-                    <div class="admin-modal-actions" style="margin-top:1.5rem">
+                    <div class="admin-modal-actions" style="margin-top:1.5rem;justify-content:space-between;display:flex;gap:0.5rem">
+                        <button class="btn btn-sm" id="mEditDelete" style="background:rgba(239,68,68,0.1);color:#f87171;border:1px solid rgba(239,68,68,0.25);margin-right:auto">Delete Account</button>
                         <button class="btn btn-secondary btn-sm" id="mEditCancel">Cancel</button>
                         <button class="btn btn-primary btn-sm" id="mEditSave">Save Changes</button>
                     </div>
@@ -1313,6 +1288,26 @@
                     loadMembers();
                 } catch (e) {
                     showToast('Failed to save: ' + e.message, 'error');
+                }
+            };
+            overlay.querySelector('#mEditDelete').onclick = async () => {
+                const yes = await adminConfirm('Delete this account?', 'This permanently deletes the user and all their data. This cannot be undone.');
+                if (!yes) return;
+                try {
+                    const session = await KaizenAuth.getSession();
+                    const res = await fetch('/api/delete-user', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: id })
+                    });
+                    const result = await res.json();
+                    if (!res.ok) { showToast(result.error || 'Failed to delete', 'error'); return; }
+                    showToast('Account deleted', 'success');
+                    logAudit('delete_member', `Deleted account ${id}`);
+                    overlay.remove();
+                    loadMembers();
+                } catch (e) {
+                    showToast('Failed to delete: ' + e.message, 'error');
                 }
             };
         },
@@ -1350,7 +1345,19 @@
             // Show permissions modal
             const result = await adminPermsModal(fields, labels, perms);
             if (!result) return;
-            await sbFetch(`permissions?user_id=eq.${userId}`, { method: 'PATCH', body: { ...result, updated_at: new Date().toISOString() } });
+            // Use upsert so it works whether a row already exists or not
+            const session = await KaizenAuth.getSession();
+            const token = session?.access_token || SB_KEY;
+            await fetch(`${SB_URL}/rest/v1/permissions?on_conflict=user_id`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SB_KEY,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'resolution=merge-duplicates,return=minimal'
+                },
+                body: JSON.stringify({ user_id: userId, ...result, updated_at: new Date().toISOString() })
+            });
             showToast('Permissions updated!', 'success');
             logAudit('update_permissions', `Updated perms for ${userId}`);
             loadTeam();
@@ -1368,7 +1375,4 @@
 
     // ─── BOOT ───
     init();
-
-    // Wire up global logout button
-    $('#logoutBtn')?.addEventListener('click', () => KaizenAuth.signOut());
 })();
