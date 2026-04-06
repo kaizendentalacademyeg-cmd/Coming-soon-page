@@ -703,32 +703,45 @@
         }
 
         // 2. Pricing Tiers
+        // Helper: format deadline date nicely (e.g. "2026-05-15" → "Until May 15, 2026")
+        function formatDeadline(deadline, icon) {
+            if (!deadline) return '';
+            const d = new Date(deadline + 'T00:00:00');
+            if (isNaN(d)) return '';
+            return icon + ' Until ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
         const tiers = {};
         if (courseData.pricing_tiers && Array.isArray(courseData.pricing_tiers)) {
             courseData.pricing_tiers.forEach((t, idx) => {
                 const nameLower = t.name.toLowerCase();
                 const priceStr = Number(t.price).toLocaleString();
-                
+
                 // Map to UI IDs based on index fallback for guaranteed matching
                 let matchType = '';
                 if (nameLower.includes('bird') || nameLower.includes('early')) matchType = 'early';
                 else if (nameLower.includes('owl') || nameLower.includes('late') || nameLower.includes('standard')) matchType = 'late';
                 else matchType = 'grad';
 
+                // Build deadline text: use deadline date if set, otherwise fall back to condition text
+                const deadlineText = (icon) => t.deadline ? formatDeadline(t.deadline, icon) : (t.condition ? icon + ' ' + t.condition : '');
+
                 if (matchType === 'early' || (!matchType && idx === 0)) {
                     const el = document.getElementById('earlyBirdPrice');
                     if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
                     const dl = document.getElementById('earlyBirdDeadline');
-                    if (dl && t.condition) dl.textContent = '⏰ ' + t.condition;
+                    const dlText = deadlineText('⏰');
+                    if (dl && dlText) dl.textContent = dlText;
                     const tl = document.getElementById('earlyBirdTitle');
                     if (tl && t.name) tl.textContent = t.name;
                     tiers['early_bird'] = { label: '🐦 ' + t.name, price: t.price };
-                } 
+                }
                 else if (matchType === 'late' || (!matchType && idx === 1)) {
                     const el = document.getElementById('lateOwlPrice');
                     if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
                     const dl = document.getElementById('lateOwlDeadline');
-                    if (dl && t.condition) dl.textContent = '📅 ' + t.condition;
+                    const dlText = deadlineText('📅');
+                    if (dl && dlText) dl.textContent = dlText;
                     const tl = document.getElementById('lateOwlTitle');
                     if (tl && t.name) tl.textContent = t.name;
                     tiers['late_owl'] = { label: '🦉 ' + t.name, price: t.price };
@@ -737,7 +750,8 @@
                     const el = document.getElementById('gradPrice');
                     if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
                     const dl = document.getElementById('gradDeadline');
-                    if (dl && t.condition) dl.textContent = '🌱 ' + t.condition;
+                    const dlText = deadlineText('🌱');
+                    if (dl && dlText) dl.textContent = dlText;
                     const tl = document.getElementById('gradTitle');
                     if (tl && t.name) tl.textContent = t.name;
                     tiers['fresh_graduate'] = { label: '🎓 ' + t.name, price: t.price };

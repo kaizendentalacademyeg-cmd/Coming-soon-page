@@ -639,6 +639,9 @@
                                             <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
                                         </select>
                                     </div>
+                                    <div class="tier-field"><label>Deadline Date</label>
+                                        <input type="date" class="tier-deadline form-control" value="${t.deadline || ''}">
+                                    </div>
                                     <div class="tier-field" style="flex: 1.5"><label>Extra Info</label>
                                         <input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}" placeholder="Optional info (e.g. Class of 2024)">
                                     </div>
@@ -739,6 +742,7 @@
                                 <option value="USD">USD</option>
                             </select>
                         </div>
+                        <div class="tier-field"><label>Deadline Date</label><input type="date" class="tier-deadline form-control"></div>
                         <div class="tier-field" style="flex: 1.5"><label>Extra Info</label><input type="text" class="tier-condition form-control" placeholder="Optional info (e.g. Class of 2024)"></div>
                         <button class="btn-remove-tier" title="Remove" type="button">✕</button>
                     `;
@@ -776,6 +780,7 @@
             name: row.querySelector('.tier-name').value.trim(),
             price: parseFloat(row.querySelector('.tier-price').value) || 0,
             currency: row.querySelector('.tier-currency').value,
+            deadline: row.querySelector('.tier-deadline') ? row.querySelector('.tier-deadline').value : '',
             condition: row.querySelector('.tier-condition') ? row.querySelector('.tier-condition').value.trim() : ''
         })).filter(t => t.name || t.price);
 
