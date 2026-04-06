@@ -89,18 +89,29 @@
     }
 
     async function showDashboard() {
-        // Redirect admin/employee users to admin panel BEFORE showing any UI
+        // 1. Admin/Employee bypass
         if (currentProfile?.role === 'admin' || currentProfile?.role === 'employee') {
             window.location.replace('admin.html');
             return;
         }
-        // If there's an enrollment intent, redirect to payment
+
+        // 2. Clear the preloader immediately if we are staying here
+        if (typeof window.KaizenPreloader !== 'undefined') {
+            window.KaizenPreloader.hide();
+        }
+
+        // 3. Handle Enrollment Intent (The Secure AJAX Redirect)
         if (await checkEnrollmentIntent()) return;
 
+        // 4. Force reveal of the student dashboard on my-account.html
         $('#authScreen').style.display = 'none';
-        $('#dashboard').style.display = '';
-        const name = (currentProfile?.first_name || '') + ' ' + (currentProfile?.last_name || '') || currentUser?.email?.split('@')[0] || 'Student';
-        $('#userName').textContent = name.trim();
+        $('#dashboard').style.display = 'block'; // Ensure it's block
+        
+        const firstName = currentProfile?.first_name || '';
+        const lastName = currentProfile?.last_name || '';
+        const name = (firstName + ' ' + lastName).trim() || currentUser?.email?.split('@')[0] || 'Student';
+        
+        $('#userName').textContent = name;
         $('#userEmail').textContent = currentUser?.email || '';
         loadCourses();
     }
