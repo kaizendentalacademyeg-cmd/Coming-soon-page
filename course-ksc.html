@@ -420,7 +420,7 @@
                 <div class="pricing-card featured">
                     <div class="pricing-icon bird">🐦</div>
                     <div class="pricing-label">EARLY BIRD</div>
-                    <div class="pricing-name">Early Registration</div>
+                    <div class="pricing-name" id="earlyBirdTitle">Early Registration</div>
                     <div class="pricing-amount" id="earlyBirdPrice">5,000 <span class="pricing-currency">EGP</span></div>
                     <div class="pricing-deadline" id="earlyBirdDeadline">⏰ Before April 30, 2026</div>
                     <div class="pricing-condition">Register before the deadline and save 1,000 EGP. Same full access — just rewarded for planning ahead.</div>
@@ -431,7 +431,7 @@
                 <div class="pricing-card">
                     <div class="pricing-icon owl">🦉</div>
                     <div class="pricing-label">LATE OWL</div>
-                    <div class="pricing-name">Standard Registration</div>
+                    <div class="pricing-name" id="lateOwlTitle">Standard Registration</div>
                     <div class="pricing-amount" id="lateOwlPrice">6,000 <span class="pricing-currency">EGP</span></div>
                     <div class="pricing-deadline" id="lateOwlDeadline">📅 After April 30, 2026</div>
                     <div class="pricing-condition">Register after the early bird deadline. Full access to all 12 sessions, recordings, and community.</div>
@@ -442,9 +442,9 @@
                 <div class="pricing-card graduate">
                     <div class="pricing-icon grad">🎓</div>
                     <div class="pricing-label">COMMUNITY COMMITMENT</div>
-                    <div class="pricing-name">Fresh Graduates</div>
+                    <div class="pricing-name" id="gradTitle">Fresh Graduates</div>
                     <div class="pricing-amount" id="gradPrice">3,000 <span class="pricing-currency">EGP</span></div>
-                    <div class="pricing-deadline" style="background:rgba(34,197,94,0.1);color:#86efac">🌱 Class of 2024 & 2025</div>
+                    <div class="pricing-deadline" id="gradDeadline" style="background:rgba(34,197,94,0.1);color:#86efac">🌱 Class of 2024 & 2025</div>
                     <div class="pricing-condition">Our commitment to supporting young dentists from day one. Exclusive discount for recent graduates — verify your graduation year during registration.</div>
                     <a href="my-account.html" class="pricing-btn pricing-action-btn" data-tier="fresh_graduate"><span>Register Now</span> <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
                 </div>
@@ -709,24 +709,37 @@
                 const nameLower = t.name.toLowerCase();
                 const priceStr = Number(t.price).toLocaleString();
                 
-                // Map to UI IDs based on name keywords
-                if (nameLower.includes('bird')) {
+                // Map to UI IDs based on index fallback for guaranteed matching
+                let matchType = '';
+                if (nameLower.includes('bird') || nameLower.includes('early')) matchType = 'early';
+                else if (nameLower.includes('owl') || nameLower.includes('late') || nameLower.includes('standard')) matchType = 'late';
+                else matchType = 'grad';
+
+                if (matchType === 'early' || (!matchType && idx === 0)) {
                     const el = document.getElementById('earlyBirdPrice');
                     if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
                     const dl = document.getElementById('earlyBirdDeadline');
                     if (dl && t.condition) dl.textContent = '⏰ ' + t.condition;
+                    const tl = document.getElementById('earlyBirdTitle');
+                    if (tl && t.name) tl.textContent = t.name;
                     tiers['early_bird'] = { label: '🐦 ' + t.name, price: t.price };
                 } 
-                else if (nameLower.includes('owl')) {
+                else if (matchType === 'late' || (!matchType && idx === 1)) {
                     const el = document.getElementById('lateOwlPrice');
                     if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
                     const dl = document.getElementById('lateOwlDeadline');
                     if (dl && t.condition) dl.textContent = '📅 ' + t.condition;
+                    const tl = document.getElementById('lateOwlTitle');
+                    if (tl && t.name) tl.textContent = t.name;
                     tiers['late_owl'] = { label: '🦉 ' + t.name, price: t.price };
                 }
-                else if (nameLower.includes('grad') || nameLower.includes('fresh')) {
+                else {
                     const el = document.getElementById('gradPrice');
                     if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
+                    const dl = document.getElementById('gradDeadline');
+                    if (dl && t.condition) dl.textContent = '🌱 ' + t.condition;
+                    const tl = document.getElementById('gradTitle');
+                    if (tl && t.name) tl.textContent = t.name;
                     tiers['fresh_graduate'] = { label: '🎓 ' + t.name, price: t.price };
                 }
             });
