@@ -573,14 +573,14 @@
             <div class="course-date-section">
                 <div class="course-date-card">
                     <div class="course-date-content">
-                        <div class="batch-badge" style="background: linear-gradient(135deg, #22c55e, #16a34a); border-color: #22c55e; color: #ffffff;">✓ 2 Batches Completed</div>
+                        <div class="batch-badge" id="bioprintingBatchBadge" style="background: linear-gradient(135deg, #22c55e, #16a34a); border-color: #22c55e; color: #ffffff;">✓ 2 Batches Completed</div>
                         <div class="course-date-duration">
                             <span class="duration-number">3</span>
                             <span class="duration-label" data-en="Days" data-ar="أيام">Days</span>
                         </div>
                         <div style="margin: 1.5rem 0; padding: 1.5rem 2rem; background: rgba(198, 112, 17, 0.1); border: 2px solid rgba(198, 112, 17, 0.3); border-radius: 15px;">
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-accent); margin-bottom: 0.5rem;">🗓️ Next Batch</div>
-                            <div style="font-size: 2rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Coming Soon</div>
+                            <div id="bioprintingNextBatchText" style="font-size: 2rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Coming Soon</div>
                             <div style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem;">Stay tuned for the 3rd batch announcement!</div>
                         </div>
                         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
@@ -926,6 +926,66 @@
     </a>
 
     <script src="course-script.js?v=14" defer></script>
+    <script>
+    (async function() {
+        const SUPABASE_URL = 'https://cwkohmqprgcfyzcjcqsn.supabase.co';
+        const ANON_KEY = typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3a29obXFwcmdjZnl6Y2pjcXNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzODM5NzEsImV4cCI6MjA5MDk1OTk3MX0.zpiIrHKCEjPy8baKUzY-kh9ALMrqeETcXzdC3lVIIcY';
+
+        let settings = {};
+        let courseData = null;
+
+        try {
+            // 1. Fetch Global Payment Settings
+            const setRes = await fetch(SUPABASE_URL + '/rest/v1/site_settings?key=in.("payment_method","instapay_link")&select=key,value', {
+                headers: { 'apikey': ANON_KEY }
+            });
+            if (setRes.ok) {
+                const sData = await setRes.json();
+                sData.forEach(r => {
+                    let v = r.value;
+                    if (typeof v === 'string') v = v.replace(/^"|"$/g, '');
+                    settings[r.key] = v;
+                });
+            }
+
+            // 2. Fetch Course Specific Data
+            const courseRes = await fetch(SUPABASE_URL + '/rest/v1/courses?slug=eq.3d-bioprinting&select=*', {
+                headers: { 'apikey': ANON_KEY }
+            });
+            if (courseRes.ok) {
+                const cData = await courseRes.json();
+                if (cData.length > 0) courseData = cData[0];
+            }
+        } catch(e) { console.error("Data fetch error:", e); }
+
+        if (!courseData) return;
+
+        // Update Badge
+        if (courseData.batch_info) {
+            const badge = document.getElementById('bioprintingBatchBadge');
+            if (badge) badge.textContent = courseData.batch_info;
+        }
+
+        // Update Next Batch Text
+        if (courseData.next_batch_info) {
+            const nextText = document.getElementById('bioprintingNextBatchText');
+            if (nextText) nextText.textContent = courseData.next_batch_info;
+        }
+
+        // Pricing logic (if tiers are added in database later)
+        if (courseData.pricing_tiers && courseData.pricing_tiers.length > 0) {
+            // Placeholder for future dynamic pricing cards
+        }
+
+        // InstaPay Link update
+        const instapayLink = settings.instapay_link || '';
+        if (instapayLink) {
+            const payLink = document.querySelector('.payment-btn');
+            if (payLink) payLink.href = instapayLink;
+        }
+
+    })();
+    </script>
 </body>
 </html>
 

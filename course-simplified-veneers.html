@@ -787,19 +787,19 @@
             <div class="course-date-section">
                 <div class="course-date-card">
                     <div class="course-date-content">
-                        <div class="batch-badge">1st Batch</div>
+                        <div class="batch-badge" id="veneersBatchBadge">1st Batch</div>
                         <div class="course-date-duration">
                             <span class="duration-number">3</span>
                             <span class="duration-label">Days</span>
                         </div>
-                        <div class="course-date-dates">
+                        <div class="course-date-dates" id="veneersDatesContainer">
                             <span class="date-item">12</span>
                             <span class="date-separator">-</span>
                             <span class="date-item">13</span>
                             <span class="date-separator">-</span>
                             <span class="date-item">14</span>
                         </div>
-                        <div class="course-date-month">February 2026</div>
+                        <div class="course-date-month" id="veneersDateMonth">February 2026</div>
                     </div>
                 </div>
             </div>
@@ -1135,6 +1135,91 @@
     </a>
 
     <script src="course-script.js?v=15" defer></script>
+    <script>
+    (async function() {
+        const SUPABASE_URL = 'https://cwkohmqprgcfyzcjcqsn.supabase.co';
+        const ANON_KEY = typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3a29obXFwcmdjZnl6Y2pjcXNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzODM5NzEsImV4cCI6MjA5MDk1OTk3MX0.zpiIrHKCEjPy8baKUzY-kh9ALMrqeETcXzdC3lVIIcY';
+
+        let settings = {};
+        let courseData = null;
+
+        try {
+            // 1. Fetch Global Payment Settings
+            const setRes = await fetch(SUPABASE_URL + '/rest/v1/site_settings?key=in.("payment_method","instapay_link")&select=key,value', {
+                headers: { 'apikey': ANON_KEY }
+            });
+            if (setRes.ok) {
+                const sData = await setRes.json();
+                sData.forEach(r => {
+                    let v = r.value;
+                    if (typeof v === 'string') v = v.replace(/^"|"$/g, '');
+                    settings[r.key] = v;
+                });
+            }
+
+            // 2. Fetch Course Specific Data
+            const courseRes = await fetch(SUPABASE_URL + '/rest/v1/courses?slug=eq.simplified-veneers&select=*', {
+                headers: { 'apikey': ANON_KEY }
+            });
+            if (courseRes.ok) {
+                const cData = await courseRes.json();
+                if (cData.length > 0) courseData = cData[0];
+            }
+        } catch(e) { console.error("Data fetch error:", e); }
+
+        if (!courseData) return;
+
+        // Update Badge
+        if (courseData.batch_info) {
+            const badge = document.getElementById('veneersBatchBadge');
+            if (badge) badge.textContent = courseData.batch_info;
+        }
+
+        // Update Dates if highlights contain date info (like "Feb 12-14, 2026")
+        if (courseData.highlights && Array.isArray(courseData.highlights)) {
+            const dateHighlight = courseData.highlights.find(h => h.text && (h.text.includes('202') || h.text.includes('-')));
+            if (dateHighlight) {
+                const text = dateHighlight.text;
+                // Simple parsing attempt for "Month DD-DD, YYYY"
+                const match = text.match(/([a-zA-Z]+)\s+(\d+)-(\d+),\s+(\d+)/);
+                if (match) {
+                    const [_, month, d1, d2, year] = match;
+                    const monthEl = document.getElementById('veneersDateMonth');
+                    if (monthEl) monthEl.textContent = `${month} ${year}`;
+                    
+                    const container = document.getElementById('veneersDatesContainer');
+                    if (container) {
+                        // Keep it simple if 3 dates are implied, otherwise just show the range
+                        container.innerHTML = `<span class="date-item">${d1}</span><span class="date-separator">-</span><span class="date-item">${d2}</span>`;
+                    }
+                } else {
+                     // Fallback for non-standard date strings
+                     const monthEl = document.getElementById('veneersDateMonth');
+                     if (monthEl) monthEl.textContent = text;
+                }
+            }
+        }
+
+        // Pricing logic (if tiers are added in database later)
+        if (courseData.pricing_tiers && courseData.pricing_tiers.length > 0) {
+            // Future-proofing: if this course gets pricing cards, we can map them here
+        }
+
+        // InstaPay Link update
+        const instapayLink = settings.instapay_link || '';
+        if (instapayLink) {
+            const payLink = document.querySelector('.payment-btn');
+            if (payLink) payLink.href = instapayLink;
+            
+            const waLink = document.querySelector('.whatsapp-verification-btn');
+            if (waLink) {
+                const currentHref = waLink.href;
+                // Keep the WA message as is, but ensure link works
+            }
+        }
+
+    })();
+    </script>
 </body>
 </html>
 

@@ -665,100 +665,124 @@
         const SUPABASE_URL = 'https://cwkohmqprgcfyzcjcqsn.supabase.co';
         const ANON_KEY = typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3a29obXFwcmdjZnl6Y2pjcXNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzODM5NzEsImV4cCI6MjA5MDk1OTk3MX0.zpiIrHKCEjPy8baKUzY-kh9ALMrqeETcXzdC3lVIIcY';
 
-        // Fetch all needed settings in one request
         let settings = {};
+        let courseData = null;
+
         try {
-            const res = await fetch(SUPABASE_URL + '/rest/v1/site_settings?key=in.("ksc_early_bird_price","ksc_late_owl_price","ksc_graduate_price","ksc_early_bird_deadline","ksc_start_date","payment_method","instapay_link")&select=key,value', {
+            // 1. Fetch Global Payment Settings
+            const setRes = await fetch(SUPABASE_URL + '/rest/v1/site_settings?key=in.("payment_method","instapay_link")&select=key,value', {
                 headers: { 'apikey': ANON_KEY }
             });
-            if (res.ok) {
-                const data = await res.json();
-                data.forEach(r => {
+            if (setRes.ok) {
+                const sData = await setRes.json();
+                sData.forEach(r => {
                     let v = r.value;
                     if (typeof v === 'string') v = v.replace(/^"|"$/g, '');
                     settings[r.key] = v;
                 });
             }
-        } catch(e) { /* fallback to hardcoded */ }
 
-        // ── Update Prices ──
-        if (settings.ksc_early_bird_price) {
-            document.getElementById('earlyBirdPrice').innerHTML = Number(settings.ksc_early_bird_price).toLocaleString() + ' <span class="pricing-currency">EGP</span>';
-        }
-        if (settings.ksc_late_owl_price) {
-            document.getElementById('lateOwlPrice').innerHTML = Number(settings.ksc_late_owl_price).toLocaleString() + ' <span class="pricing-currency">EGP</span>';
-        }
-        if (settings.ksc_graduate_price) {
-            document.getElementById('gradPrice').innerHTML = Number(settings.ksc_graduate_price).toLocaleString() + ' <span class="pricing-currency">EGP</span>';
-        }
-        if (settings.ksc_early_bird_deadline) {
-            const d = new Date(settings.ksc_early_bird_deadline);
-            const fmt = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-            document.getElementById('earlyBirdDeadline').textContent = '⏰ Before ' + fmt;
-            document.getElementById('lateOwlDeadline').textContent = '📅 After ' + fmt;
-        }
-        if (settings.ksc_start_date) {
-            const d = new Date(settings.ksc_start_date);
-            const fmt = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            // 2. Fetch Course Specific Data
+            const courseRes = await fetch(SUPABASE_URL + '/rest/v1/courses?slug=eq.ksc&select=*', {
+                headers: { 'apikey': ANON_KEY }
+            });
+            if (courseRes.ok) {
+                const cData = await courseRes.json();
+                if (cData.length > 0) courseData = cData[0];
+            }
+        } catch(e) { console.error("Data fetch error:", e); }
+
+        if (!courseData) return; // Fallback to HTML defaults
+
+        // ─── UPDATE UI WITH COURSE DATA ───
+
+        // 1. Badge (Next Batch)
+        if (courseData.next_batch_info) {
             const badge = document.getElementById('kscStartBadge');
-            if (badge) badge.textContent = '🔴 Starts ' + fmt;
+            if (badge) badge.textContent = '🔴 ' + courseData.next_batch_info;
         }
 
-        // ── Payment Method Routing ──
+        // 2. Pricing Tiers
+        const tiers = {};
+        if (courseData.pricing_tiers && Array.isArray(courseData.pricing_tiers)) {
+            courseData.pricing_tiers.forEach((t, idx) => {
+                const nameLower = t.name.toLowerCase();
+                const priceStr = Number(t.price).toLocaleString();
+                
+                // Map to UI IDs based on name keywords
+                if (nameLower.includes('bird')) {
+                    const el = document.getElementById('earlyBirdPrice');
+                    if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
+                    const dl = document.getElementById('earlyBirdDeadline');
+                    if (dl && t.condition) dl.textContent = '⏰ ' + t.condition;
+                    tiers['early_bird'] = { label: '🐦 ' + t.name, price: t.price };
+                } 
+                else if (nameLower.includes('owl')) {
+                    const el = document.getElementById('lateOwlPrice');
+                    if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
+                    const dl = document.getElementById('lateOwlDeadline');
+                    if (dl && t.condition) dl.textContent = '📅 ' + t.condition;
+                    tiers['late_owl'] = { label: '🦉 ' + t.name, price: t.price };
+                }
+                else if (nameLower.includes('grad') || nameLower.includes('fresh')) {
+                    const el = document.getElementById('gradPrice');
+                    if (el) el.innerHTML = `${priceStr} <span class="pricing-currency">EGP</span>`;
+                    tiers['fresh_graduate'] = { label: '🎓 ' + t.name, price: t.price };
+                }
+            });
+        }
+
+        // 3. Highlights (Hero Stats)
+        if (courseData.highlights && Array.isArray(courseData.highlights)) {
+            const statItems = document.querySelectorAll('.course-hero-stats .stat-item');
+            courseData.highlights.forEach((h, idx) => {
+                if (statItems[idx]) {
+                    const text = h.text || '';
+                    const match = text.match(/^(\d+)\s+(.*)$/);
+                    if (match) {
+                        statItems[idx].querySelector('.stat-number').textContent = match[1];
+                        statItems[idx].querySelector('.stat-label').textContent = match[2];
+                    } else {
+                        statItems[idx].querySelector('.stat-number').textContent = '';
+                        statItems[idx].querySelector('.stat-label').textContent = text;
+                    }
+                }
+            });
+        }
+
+        // ── Payment Method Routine ──
         const paymentMethod = (typeof settings.payment_method === 'object' && settings.payment_method.active)
             ? settings.payment_method.active
             : (typeof settings.payment_method === 'string' ? settings.payment_method : 'instapay');
         const instapayLink = settings.instapay_link || '';
         const isInstaPay = paymentMethod === 'instapay';
 
-        // Tier info for InstaPay form
-        const tiers = {
-            early_bird:     { label: '🐦 Early Bird',       price: settings.ksc_early_bird_price || '5000' },
-            late_owl:       { label: '🦉 Late Owl',         price: settings.ksc_late_owl_price || '6000' },
-            fresh_graduate: { label: '🎓 Fresh Graduate',   price: settings.ksc_graduate_price || '3000' }
-        };
-
-        // Auto-switch: if early bird deadline has passed, default to late owl
+        // Set default selected tier based on date condition if possible
         let selectedTier = 'early_bird';
-        if (settings.ksc_early_bird_deadline) {
-            const deadline = new Date(settings.ksc_early_bird_deadline);
-            deadline.setHours(23, 59, 59, 999); // end of deadline day
-            if (new Date() > deadline) {
-                selectedTier = 'late_owl';
-            }
-        }
-        // Update the default tier display in enrollment form
-        const defaultT = tiers[selectedTier];
-        const tierBadgeEl = document.getElementById('selectedTierBadge');
-        const tierPriceEl = document.getElementById('selectedTierPrice');
-        const tierHiddenEl = document.getElementById('enrollTierHidden');
-        if (tierBadgeEl) tierBadgeEl.textContent = defaultT.label;
-        if (tierPriceEl) tierPriceEl.textContent = Number(defaultT.price).toLocaleString() + ' EGP';
-        if (tierHiddenEl) tierHiddenEl.value = selectedTier;
+        // (Existing auto-switch logic could be enhanced here if deadlines were actual date fields)
 
         if (isInstaPay) {
-            // Show the enrollment section
             const ipSection = document.getElementById('instapay-enrollment');
             if (ipSection) ipSection.style.display = '';
 
-            // Set InstaPay link
             const ipPayLink = document.getElementById('instapayPayLink');
             if (ipPayLink && instapayLink) ipPayLink.href = instapayLink;
 
-            // Wire pricing buttons to scroll to form + select tier
             document.querySelectorAll('.pricing-action-btn').forEach(btn => {
                 btn.href = '#instapay-enrollment';
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    selectedTier = this.dataset.tier;
-                    const t = tiers[selectedTier];
+                    const tierKey = this.dataset.tier;
+                    const t = tiers[tierKey];
+                    if (!t) return;
+                    
                     document.getElementById('selectedTierBadge').textContent = t.label;
                     document.getElementById('selectedTierPrice').textContent = Number(t.price).toLocaleString() + ' EGP';
-                    // Update hidden tier field for form submission
                     const tierHidden = document.getElementById('enrollTierHidden');
-                    if (tierHidden) tierHidden.value = selectedTier;
+                    if (tierHidden) tierHidden.value = tierKey;
+                    
                     document.getElementById('instapay-enrollment').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    // Meta Pixel: InitiateCheckout
+                    
                     if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
                         content_name: 'KSC - ' + t.label, content_ids: ['KSC'], content_type: 'product',
                         value: Number(t.price), currency: 'EGP'
@@ -766,13 +790,12 @@
                 });
             });
         } else {
-            // Paymob: update hrefs to carry enrollment intent through login
             document.querySelectorAll('.pricing-action-btn').forEach(btn => {
-                const tier = btn.dataset.tier;
-                btn.href = `my-account.html?action=enroll&course=ksc&tier=${tier}`;
+                const tierKey = btn.dataset.tier;
+                btn.href = `my-account.html?action=enroll&course=ksc&tier=${tierKey}`;
                 btn.addEventListener('click', function() {
                     const t = tiers[this.dataset.tier];
-                    if (typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
+                    if (t && typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
                         content_name: 'KSC - ' + t.label, content_ids: ['KSC'], content_type: 'product',
                         value: Number(t.price), currency: 'EGP'
                     });
