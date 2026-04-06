@@ -661,13 +661,10 @@
                         <div class="course-editor-section">
                             <div class="course-editor-section-title">Schedule & Visibility</div>
                             <div class="course-editor-grid">
-                                <div class="ce-field">
-                                    <label>Start Date</label>
+                                <div class="ce-field" style="flex:1">
+                                    <label>Course Start Date</label>
                                     <input type="date" class="course-start-date form-control" value="${c.start_date || ''}">
-                                </div>
-                                <div class="ce-field">
-                                    <label>Next Batch</label>
-                                    <input type="text" class="course-next-batch form-control" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Starts June 6, 2026">
+                                    <span class="ce-hint" style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:0.25rem;display:block">This date appears on the homepage card, course page badge, and hero section automatically.</span>
                                 </div>
                                 <div class="ce-field">
                                     <label>Visible on Site</label>
@@ -769,9 +766,15 @@
         const status = card.querySelector('.course-status-select').value;
         const format = card.querySelector('.course-format-select').value;
         const startDate = card.querySelector('.course-start-date').value || null;
-        const nextBatch = card.querySelector('.course-next-batch')?.value || null;
         const subtitle = card.querySelector('.course-subtitle')?.value || '';
         const instructor = card.querySelector('.course-instructor')?.value || '';
+
+        // Auto-generate "next_batch_info" display text from the start date
+        let nextBatch = null;
+        if (startDate) {
+            const d = new Date(startDate + 'T00:00:00');
+            if (!isNaN(d)) nextBatch = 'Starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
         const isVisible = card.querySelector('.toggle-track[data-field="is_visible"]').classList.contains('active');
 
         // Parse Prices (Row-based)
