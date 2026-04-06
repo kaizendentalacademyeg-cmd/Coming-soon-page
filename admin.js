@@ -640,6 +640,7 @@
                                             <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
                                         </select>
                                     </div>
+                                    <div class="tier-field"><label>Condition/Date</label><input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}" placeholder="e.g. Until June 6"></div>
                                     <button class="btn-remove-tier" title="Remove tier" type="button">✕</button>
                                 </div>`).join('')}
                             </div>
@@ -737,6 +738,7 @@
                                 <option value="USD">USD</option>
                             </select>
                         </div>
+                        <div class="tier-field"><label>Condition/Date</label><input type="text" class="tier-condition form-control" placeholder="e.g. Until June 6"></div>
                         <button class="btn-remove-tier" title="Remove" type="button">✕</button>
                     `;
                     list.appendChild(row);
@@ -772,7 +774,8 @@
         const pricingTiers = Array.from(tierRows).map(row => ({
             name: row.querySelector('.tier-name').value.trim(),
             price: parseFloat(row.querySelector('.tier-price').value) || 0,
-            currency: row.querySelector('.tier-currency').value
+            currency: row.querySelector('.tier-currency').value,
+            condition: row.querySelector('.tier-condition') ? row.querySelector('.tier-condition').value.trim() : ''
         })).filter(t => t.name || t.price);
 
         // Parse Highlights
