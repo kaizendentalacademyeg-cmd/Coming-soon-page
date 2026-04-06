@@ -63,8 +63,8 @@ export default async function handler(req, res) {
             .digest('hex');
 
         if (calculatedHmac !== hmacHeader) {
-            console.warn('HMAC mismatch — possible tampering');
-            // Continue processing but log the mismatch
+            console.error('HMAC mismatch — rejecting webhook');
+            return res.status(401).json({ error: 'Invalid signature' });
         }
 
         // Extract transaction details
@@ -85,7 +85,8 @@ export default async function handler(req, res) {
         }
 
         // Update enrollment status in Supabase
-        const paymentStatus = success ? 'confirmed' : 'failed';
+        // Use 'paid' to match admin panel's expected status values
+        const paymentStatus = success ? 'paid' : 'failed';
 
         const updateRes = await fetch(
             `${SB_URL}/rest/v1/enrollments?user_id=eq.${userId}&course_id=eq.${courseId}&payment_method=eq.paymob&payment_status=eq.pending&order=created_at.desc&limit=1`,

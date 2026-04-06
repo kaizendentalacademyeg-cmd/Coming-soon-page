@@ -28,12 +28,26 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Get params from query (GET redirect) or body (POST)
+        // ── Verify caller's identity via JWT ──
+        const authHeader = req.headers['authorization'] || '';
+        const token = authHeader.replace('Bearer ', '');
         const courseId = req.query.course_id || req.body?.course_id;
         const userId = req.query.user_id || req.body?.user_id;
+        const selectedTier = req.query.tier || req.body?.tier || null;
 
         if (!courseId || !userId) {
             return res.status(400).json({ error: 'Missing course_id or user_id' });
+        }
+
+        // Validate the JWT belongs to the claimed user
+        if (token && SB_URL) {
+            const userRes = await fetch(`${SB_URL}/auth/v1/user`, {
+                headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${token}` }
+            });
+            const authUser = await userRes.json();
+            if (!authUser?.id || authUser.id !== userId) {
+                return res.status(403).json({ error: 'Unauthorized — user mismatch' });
+            }
         }
 
         // Fetch course details from Supabase
@@ -50,12 +64,17 @@ export default async function handler(req, res) {
             return res.status(404).json({ error: 'Course not found' });
         }
 
-        // Determine price from pricing_tiers (use first available tier)
+        // Determine price from pricing_tiers — use selected tier if provided, else first
         let priceEGP = 0;
         let tierName = 'Standard';
         if (Array.isArray(course.pricing_tiers) && course.pricing_tiers.length > 0) {
-            // Use first tier as default price
-            const tier = course.pricing_tiers[0];
+            let tier = course.pricing_tiers[0]; // default to first
+            if (selectedTier) {
+                const match = course.pricing_tiers.find(t =>
+                    t.name && t.name.toLowerCase().replace(/\s+/g, '_') === selectedTier.toLowerCase()
+                );
+                if (match) tier = match;
+            }
             priceEGP = Number(tier.price) || 0;
             tierName = tier.name || 'Standard';
         }
@@ -133,7 +152,7 @@ export default async function handler(req, res) {
 
         if (!intentionRes.ok || !intention.client_secret) {
             console.error('Paymob intention error:', JSON.stringify(intention));
-            return res.status(502).json({ error: 'Failed to create payment', details: intention.message || intention });
+            return res.status(502).json({ error: 'Failed to create payment. Please try again or contact support.' });
         }
 
         // Redirect user to Paymob checkout

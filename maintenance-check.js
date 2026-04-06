@@ -24,7 +24,7 @@
             if (sessionRaw) {
                 try {
                     var session = JSON.parse(sessionRaw);
-                    if (session && session.access_token && session.expires_at > Date.now()) {
+                    if (session && session.access_token && (session.expires_at * 1000) > Date.now()) {
                         var profileRes = await fetch(SB_URL + '/rest/v1/profiles?id=eq.' + session.user.id + '&select=role', {
                             headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + session.access_token }
                         });

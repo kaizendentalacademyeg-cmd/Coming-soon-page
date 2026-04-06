@@ -344,9 +344,10 @@ const KaizenAuth = {
         
         this._notifyListeners('SIGNED_IN', this._session);
 
-        // Auto-refresh before expiry
+        // Auto-refresh before expiry — cancel previous timer to prevent accumulation
+        if (this._refreshTimer) clearTimeout(this._refreshTimer);
         if (data.expires_in) {
-            setTimeout(() => {
+            this._refreshTimer = setTimeout(() => {
                 if (this._session?.refresh_token) {
                     this._refreshToken(this._session.refresh_token);
                 }

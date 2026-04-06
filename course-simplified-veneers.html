@@ -1169,10 +1169,10 @@
 
         if (!courseData) return;
 
-        // Update Badge
-        if (courseData.batch_info) {
+        // Update Badge (next_batch_info is the field saved by admin panel)
+        if (courseData.next_batch_info || courseData.batch_info) {
             const badge = document.getElementById('veneersBatchBadge');
-            if (badge) badge.textContent = courseData.batch_info;
+            if (badge) badge.textContent = courseData.next_batch_info || courseData.batch_info;
         }
 
         // Update Dates if highlights contain date info (like "Feb 12-14, 2026")
@@ -1205,17 +1205,34 @@
             // Future-proofing: if this course gets pricing cards, we can map them here
         }
 
-        // InstaPay Link update
+        // ── Payment Method Router ──
+        const paymentMethod = (typeof settings.payment_method === 'object' && settings.payment_method.active)
+            ? settings.payment_method.active
+            : (typeof settings.payment_method === 'string' ? settings.payment_method : 'instapay');
         const instapayLink = settings.instapay_link || '';
-        if (instapayLink) {
-            const payLink = document.querySelector('.payment-btn');
-            if (payLink) payLink.href = instapayLink;
-            
-            const waLink = document.querySelector('.whatsapp-verification-btn');
-            if (waLink) {
-                const currentHref = waLink.href;
-                // Keep the WA message as is, but ensure link works
-            }
+        const payLink = document.querySelector('.payment-btn');
+
+        if (paymentMethod === 'paymob' && payLink) {
+            // Paymob: redirect to server-side payment creation (requires login)
+            payLink.href = '#';
+            payLink.addEventListener('click', async function(e) {
+                e.preventDefault();
+                try {
+                    if (typeof KaizenAuth === 'undefined') { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                    const session = await KaizenAuth.getSession();
+                    if (!session?.access_token) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                    const user = await KaizenAuth.getUser();
+                    if (!user?.id) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                    window.location.href = '/api/create-payment?course_id=' + courseData.id + '&user_id=' + user.id;
+                } catch(err) {
+                    console.error('Payment redirect error:', err);
+                    window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
+                }
+            });
+            const spanEl = payLink.querySelector('span');
+            if (spanEl) spanEl.textContent = 'Pay Online';
+        } else if (instapayLink && payLink) {
+            payLink.href = instapayLink;
         }
 
     })();

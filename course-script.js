@@ -134,18 +134,11 @@ if ((whatsappButton || pdfButton) && footer) {
 // Enrollment Form Handler - All data sent to Make.com webhook
 // const MAKE_WEBHOOK_URL is defined inline in the form handler
 
-console.log('🔧 Course script loaded!');
-console.log('📍 Looking for enrollment form...');
-
 const enrollmentForm = document.getElementById('enrollmentForm');
 const transactionFileInput = document.getElementById('transactionScreenshot');
 
-console.log('📋 Enrollment form found:', enrollmentForm ? 'YES ✅' : 'NO ❌');
-console.log('📎 File input found:', transactionFileInput ? 'YES ✅' : 'NO ❌');
-
 // Update file label when file is selected
 if (transactionFileInput) {
-    console.log('📎 Setting up file input listener...');
     transactionFileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         const label = this.nextElementSibling;
@@ -305,8 +298,6 @@ function hideLoading() {
 }
 
 if (enrollmentForm) {
-    console.log('✅ Setting up form submit listener...');
-    
     enrollmentForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -325,9 +316,8 @@ if (enrollmentForm) {
         if (transaction) {
             makeFormData.delete("transaction");
             makeFormData.append("transaction", transaction);
-            console.log('✅ File appended to Make.com FormData:', transaction.name, '(' + transaction.size + ' bytes)');
         }
-        
+
         // ===== STEP 2: Prepare FormData for Apps Script (TEXT FIELDS ONLY - NO FILE) =====
         const appsScriptFormData = new FormData();
         
@@ -349,26 +339,7 @@ if (enrollmentForm) {
         makeFormData.append("course", courseName);
         // NO FILE - Apps Script doesn't handle files
         
-        console.log('📤 Sending to Make.com (with file):');
-        for (const [key, value] of makeFormData.entries()) {
-            if (value instanceof File) {
-                console.log('  ' + key + ': [File] ' + value.name + ' (' + value.size + ' bytes)');
-            } else {
-                console.log('  ' + key + ': ' + value);
-            }
-        }
-        
-        console.log('📤 Sending to Apps Script (text only):');
-        for (const [key, value] of appsScriptFormData.entries()) {
-            console.log('  ' + key + ': ' + value);
-        }
-        
         try {
-            // Send both requests in parallel - each runs independently
-            // This ensures both Make.com and Apps Script receive data even if one fails
-            console.log('🚀 Starting parallel submission to both endpoints...');
-        console.log('🔗 Make.com webhook URL:', MAKE_WEBHOOK_URL);
-        console.log('🔗 Apps Script URL:', APPS_SCRIPT_URL);
             
             const makePromise = fetch(MAKE_WEBHOOK_URL, {
                 method: 'POST',
@@ -378,57 +349,32 @@ if (enrollmentForm) {
                 console.log('✅ Make.com webhook: Request sent successfully (Status:', res.status + ')');
                 console.log('📡 Make.com response status:', res.status, res.statusText);
                 
-                // Try to read response (optional, but helpful for debugging)
-                try {
-                    const responseText = await res.text();
-                    console.log('📥 Make.com response:', responseText.substring(0, 200));
-                } catch (e) {
-                    console.log('ℹ️ Could not read Make.com response body');
-                }
-                
                 return { success: true, source: 'Make.com', status: res.status };
             }).catch(err => {
-                console.error('❌ Make.com webhook error:', err);
-                console.error('❌ Error details:', {
-                    name: err.name,
-                    message: err.message,
-                    stack: err.stack
-                });
                 return { success: false, source: 'Make.com', error: err.message || err.toString() };
             });
-            
+
             const appsScriptPromise = fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 body: appsScriptFormData,
                 mode: 'no-cors'  // Required for Apps Script CORS
             }).then(() => {
-                console.log('✅ Apps Script: Request sent successfully');
                 return { success: true, source: 'Apps Script' };
             }).catch(err => {
-                console.error('❌ Apps Script error:', err);
                 return { success: false, source: 'Apps Script', error: err };
             });
-            
+
             // Wait for both to complete (they run in parallel)
             const [makeResult, appsScriptResult] = await Promise.allSettled([
                 makePromise,
                 appsScriptPromise
             ]);
-            
+
             // Check results
             const makeSuccess = makeResult.status === 'fulfilled' && makeResult.value?.success;
             const appsScriptSuccess = appsScriptResult.status === 'fulfilled' && appsScriptResult.value?.success;
-            
-            console.log('📊 Submission Results:');
-            console.log('  Make.com webhook:', makeSuccess ? '✅ Success' : '❌ Failed');
-            console.log('  Apps Script:', appsScriptSuccess ? '✅ Success' : '❌ Failed');
-            console.log('  Both endpoints were called in parallel');
-            
-            // Both endpoints are called independently - show success if at least one succeeded
-            // Note: Both requests are sent regardless, so both will receive data
+
             if (makeSuccess || appsScriptSuccess) {
-                console.log('✅ Form submitted successfully!');
-                console.log('📝 Both Make.com and Apps Script received the submission (data sent to both endpoints)');
                 
                 // Show success message
                 showFormMessage(
@@ -453,14 +399,10 @@ if (enrollmentForm) {
                 // Scroll to top to see the message
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                // Both failed
-                console.error('❌ Both endpoints failed');
                 throw new Error('Both submission endpoints failed');
             }
-            
+
         } catch (err) {
-            console.error('❌ Submission error:', err);
-            
             // Show elegant error message
             showFormMessage(
                 'There was an error submitting your enrollment. Please try again or contact us directly.',
@@ -471,10 +413,6 @@ if (enrollmentForm) {
         }
     });
     
-    console.log('✅ Form submit listener attached successfully!');
-} else {
-    console.error('❌ ERROR: Enrollment form NOT FOUND! The form with id="enrollmentForm" does not exist in the page.');
-    console.log('💡 TIP: Make sure the script is loaded AFTER the form HTML, or wrap it in DOMContentLoaded.');
 }
 
 // Function to show form messages

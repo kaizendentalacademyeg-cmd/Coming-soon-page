@@ -608,6 +608,7 @@
         t.className = `sp-toast ${type} show`;
         setTimeout(() => t.classList.remove('show'), 3500);
     }
+    const showToast = toast; // alias used in some code paths
 
     // ═══════════════════════════════════════════
     //  PUBLIC API

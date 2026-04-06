@@ -730,7 +730,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         try {
             if (typeof SUPABASE_URL === 'undefined') return;
-            const res = await fetch(SUPABASE_URL + '/rest/v1/courses?select=slug,next_batch_info,subtitle', {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/courses?select=slug,next_batch_info,subtitle,status,is_visible&is_visible=eq.true&status=neq.draft', {
                 headers: { 'apikey': SUPABASE_ANON_KEY }
             });
             if (!res.ok) return;

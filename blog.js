@@ -333,8 +333,8 @@
                         body: JSON.stringify({
                             post_id: postId,
                             user_id: profile.id,
-                            content: content,
-                            is_approved: true
+                            content: content
+                            // is_approved is NOT set here — must be managed by admin or DB default
                         })
                     });
 

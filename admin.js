@@ -277,11 +277,10 @@
 
     function renderEnrollments(rows) {
         const tbody = $('#enrollmentsTableBody');
-        if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.3);padding:2rem">No enrollments</td></tr>'; return; }
+        if (!rows.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,0.3);padding:2rem">No enrollments</td></tr>'; return; }
         tbody.innerHTML = rows.map(r => `<tr>
             <td>${esc(r.profiles ? (r.profiles.first_name || '') + ' ' + (r.profiles.last_name || '') : '—')}</td>
             <td>${esc(r.courses?.title || '—')}</td>
-            <td><span class="badge badge-${paymentBadge(r.payment_status)}">${r.payment_status}</span></td>
             <td><span class="badge badge-${paymentBadge(r.payment_status)}">${r.payment_status}</span></td>
             <td>${formatDate(r.created_at)}</td>
             <td>
@@ -433,7 +432,7 @@
             google_maps_url: $('#settMaps').value,
         };
         for (const [key, value] of Object.entries(settings)) {
-            await sbFetch('site_settings', { method: 'POST', body: { key, value }, params: {} });
+            await upsertSetting(key, value);
         }
         showToast('Settings saved!', 'success');
         logAudit('update_settings', 'Updated site settings');
@@ -679,7 +678,7 @@
 
                         <!-- Footer -->
                         <div class="course-editor-footer">
-                            ${c.page_url ? `<a href="${c.page_url}" target="_blank" class="course-mgr-page-link">View Live Page →</a>` : '<span></span>'}
+                            ${c.page_url && (c.page_url.startsWith('https://') || c.page_url.startsWith('/')) ? `<a href="${esc(c.page_url)}" target="_blank" class="course-mgr-page-link">View Live Page →</a>` : '<span></span>'}
                             <button class="btn btn-primary course-save-btn">Save Changes</button>
                         </div>
                     </div>
