@@ -555,11 +555,25 @@
         const renderedColumns = data.columns.map(column => (column.blocks || []).map(renderBlogBlock).filter(Boolean).join('\n'));
         if (!renderedColumns.some(Boolean)) return '';
 
+        const isMultiColumn = data.columns.length > 1;
+        const sectionClasses = [
+            'post-section',
+            `post-section--width-${data.width}`,
+            `post-section--surface-${data.surface}`,
+            isMultiColumn ? 'post-section--multi' : 'post-section--single'
+        ].join(' ');
+        const gridClasses = [
+            'post-section__grid',
+            `post-section__grid--${data.layout}`,
+            `post-section__grid--gap-${data.gap}`,
+            `post-section__grid--cols-${data.columns.length}`
+        ].join(' ');
+
         return `
-            <section class="post-section post-section--width-${data.width} post-section--surface-${data.surface}">
+            <section class="${sectionClasses}">
                 <div class="post-section__inner">
-                    <div class="post-section__grid post-section__grid--${data.layout} post-section__grid--gap-${data.gap}">
-                        ${renderedColumns.map(columnHtml => `<div class="post-section__column">${columnHtml}</div>`).join('')}
+                    <div class="${gridClasses}">
+                        ${renderedColumns.map((columnHtml, columnIndex) => `<div class="post-section__column${isMultiColumn ? ' post-section__column--panel' : ''}" data-column="${columnIndex + 1}">${columnHtml}</div>`).join('')}
                     </div>
                 </div>
             </section>
@@ -591,4 +605,5 @@
         return `<div class="post-layout">${sections.map(renderBlogSection).filter(Boolean).join('\n')}</div>`;
     }
 })();
+
 
