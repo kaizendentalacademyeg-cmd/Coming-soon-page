@@ -578,31 +578,33 @@
                 return `
                 <div class="course-mgr-card ${isActive ? 'is-active' : ''}" data-course-id="${c.id}">
                     <div class="course-mgr-header">
-                        <div>
+                        <div style="flex:1">
                             <div class="course-mgr-title">${esc(c.title)}</div>
-                            ${c.subtitle ? `<div class="course-mgr-subtitle">${esc(c.subtitle)}</div>` : ''}
                             <div class="course-mgr-slug">/${esc(c.slug)}</div>
                         </div>
                         <span class="course-mgr-status-badge ${c.status}">${statusLabels[c.status] || c.status}</span>
                     </div>
 
-                    <div class="course-mgr-info">
-                        ${c.instructor ? `<div class="course-mgr-info-item"><span class="info-label">👨‍⚕️ Instructor</span><span class="info-value">${esc(c.instructor)}</span></div>` : ''}
-                        ${c.format ? `<div class="course-mgr-info-item"><span class="info-label">Format</span><span class="info-value">${formatLabels[c.format] || c.format}</span></div>` : ''}
-                        ${c.batch_info ? `<div class="course-mgr-info-item"><span class="info-label">📋 Batch</span><span class="info-value">${esc(c.batch_info)}</span></div>` : ''}
-                        ${c.next_batch_info ? `<div class="course-mgr-info-item"><span class="info-label">🗓️ Next</span><span class="info-value" style="color:#e7af20;font-weight:600">${esc(c.next_batch_info)}</span></div>` : ''}
+                    <div class="course-mgr-edit-grid">
+                        <div class="course-mgr-row-stack">
+                            <label>Subtitle</label>
+                            <input type="text" class="course-subtitle form-control" data-id="${c.id}" value="${esc(c.subtitle || '')}" placeholder="e.g. Master the art of...">
+                        </div>
+                        <div class="course-mgr-row-stack">
+                            <label>Instructor</label>
+                            <input type="text" class="course-instructor form-control" data-id="${c.id}" value="${esc(c.instructor || '')}" placeholder="e.g. Dr. Jane Doe">
+                        </div>
                     </div>
 
-                    ${highlights.length ? `<div class="course-mgr-highlights">${highlights.map(h => `<span class="course-mgr-highlight">✦ ${esc(h.text)}</span>`).join('')}</div>` : ''}
-
-                    ${tiers.length ? `<div class="course-mgr-tiers">
-                        ${tiers.map(t => `<div class="course-mgr-tier">
-                            <span class="tier-name">${esc(t.name)}</span>
-                            <span class="tier-price">${Number(t.price).toLocaleString()} ${esc(t.currency || 'EGP')}</span>
-                        </div>`).join('')}
-                    </div>` : ''}
-
-                    <div class="course-mgr-controls">
+                    <div class="course-mgr-info-edit">
+                        <div class="course-mgr-row">
+                            <label>Format</label>
+                            <select class="course-format-select" data-id="${c.id}">
+                                <option value="online" ${c.format === 'online' ? 'selected' : ''}>🌐 Online</option>
+                                <option value="phygital" ${c.format === 'phygital' ? 'selected' : ''}>🏥 Phygital</option>
+                                <option value="onsite" ${c.format === 'onsite' ? 'selected' : ''}>📍 On-site</option>
+                            </select>
+                        </div>
                         <div class="course-mgr-row">
                             <label>Status</label>
                             <select class="course-status-select" data-id="${c.id}">
@@ -612,13 +614,23 @@
                                 <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>⚪ Draft (Hidden)</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="course-mgr-section-title">Pricing Tiers (JSON)</div>
+                    <textarea class="course-tiers-json" data-id="${c.id}" placeholder='[{"name": "Early Bird", "price": 5000, "currency": "EGP"}]'>${JSON.stringify(tiers, null, 2)}</textarea>
+                    <div class="text-muted" style="margin-bottom:1rem; font-size:0.7rem">Edit the list of prices above. Format: Name, Price, Currency.</div>
+
+                    <div class="course-mgr-section-title">Course Highlights (One per line)</div>
+                    <textarea class="course-highlights-text" data-id="${c.id}" placeholder="Enter highlights...">${highlights.map(h => h.text || h).join('\n')}</textarea>
+
+                    <div class="course-mgr-controls">
                         <div class="course-mgr-row">
                             <label>Start Date</label>
                             <input type="date" class="course-start-date" data-id="${c.id}" value="${c.start_date || ''}">
                         </div>
                         <div class="course-mgr-row">
                             <label>Next Batch</label>
-                            <input type="text" class="course-next-batch form-control" data-id="${c.id}" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Starts June 6, 2026" style="flex:1;background:var(--admin-surface-2);border:1px solid var(--admin-border);color:var(--admin-text);padding:0.5rem 0.75rem;border-radius:var(--radius-sm);font-size:0.85rem">
+                            <input type="text" class="course-next-batch form-control" data-id="${c.id}" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Starts June 6, 2026">
                         </div>
                         <div class="course-mgr-row">
                             <label>Visible</label>
@@ -628,6 +640,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="course-mgr-footer">
                         ${c.page_url ? `<a href="${c.page_url}" target="_blank" class="course-mgr-page-link">View Page →</a>` : ''}
                         <button class="btn btn-primary btn-sm course-save-btn" data-id="${c.id}">Save Changes</button>
@@ -669,14 +682,44 @@
     async function saveCourse(courseId) {
         const card = $(`[data-course-id="${courseId}"]`);
         if (!card) return;
+        
         const status = card.querySelector('.course-status-select').value;
+        const format = card.querySelector('.course-format-select').value;
         const startDate = card.querySelector('.course-start-date').value || null;
         const nextBatch = card.querySelector('.course-next-batch')?.value || null;
+        const subtitle = card.querySelector('.course-subtitle')?.value || '';
+        const instructor = card.querySelector('.course-instructor')?.value || '';
         const isVisible = card.querySelector('.toggle-track[data-field="is_visible"]').classList.contains('active');
+
+        // Parse Prices
+        let pricingTiers = [];
+        try {
+            pricingTiers = JSON.parse(card.querySelector('.course-tiers-json').value);
+        } catch (e) {
+            showToast('Invalid Pricing Tiers JSON format', 'error');
+            return;
+        }
+
+        // Parse Highlights
+        const highlightsText = card.querySelector('.course-highlights-text').value;
+        const highlights = highlightsText.split('\n').filter(h => h.trim()).map(h => ({ text: h.trim() }));
 
         const btn = card.querySelector('.course-save-btn');
         btn.textContent = 'Saving...';
         btn.disabled = true;
+
+        const updateData = { 
+            status, 
+            format,
+            start_date: startDate, 
+            next_batch_info: nextBatch, 
+            subtitle,
+            instructor,
+            pricing_tiers: pricingTiers,
+            highlights,
+            is_visible: isVisible, 
+            updated_at: new Date().toISOString() 
+        };
 
         try {
             const session = await KaizenAuth.getSession();
@@ -689,8 +732,9 @@
                     'Content-Type': 'application/json',
                     'Prefer': 'return=representation'
                 },
-                body: JSON.stringify({ status, start_date: startDate, next_batch_info: nextBatch, is_visible: isVisible, updated_at: new Date().toISOString() })
+                body: JSON.stringify(updateData)
             });
+
             if (res.ok) {
                 showToast(`Course updated successfully!`, 'success');
                 logAudit('update_course', `Course ${courseId}: status=${status}, visible=${isVisible}, start_date=${startDate}`);
