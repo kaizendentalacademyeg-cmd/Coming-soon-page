@@ -841,15 +841,55 @@
                 });
             });
         } else {
+            // Paymob flow — call API then redirect to checkout
             document.querySelectorAll('.pricing-action-btn').forEach(btn => {
-                const tierKey = btn.dataset.tier;
-                btn.href = `my-account.html?action=enroll&course=ksc&tier=${tierKey}`;
-                btn.addEventListener('click', function() {
-                    const t = tiers[this.dataset.tier];
+                btn.href = '#'; // prevent default navigation
+                btn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    const tierKey = this.dataset.tier;
+                    const t = tiers[tierKey];
+
+                    // Must be logged in
+                    const session = await KaizenAuth.getSession();
+                    if (!session?.access_token) {
+                        window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
+                        return;
+                    }
+                    const user = await KaizenAuth.getUser();
+                    if (!user) {
+                        window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
+                        return;
+                    }
+
+                    // Fire Meta pixel
                     if (t && typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
-                        content_name: 'KSC - ' + t.label, content_ids: ['KSC'], content_type: 'product',
-                        value: Number(t.price), currency: 'EGP'
+                        content_name: 'KSC - ' + (t.label || tierKey), content_ids: ['KSC'],
+                        content_type: 'product', value: Number(t?.price || 0), currency: 'EGP'
                     });
+
+                    // Show loading state
+                    const origText = this.querySelector('span')?.textContent;
+                    if (this.querySelector('span')) this.querySelector('span').textContent = 'Processing...';
+                    this.style.opacity = '0.7';
+                    this.style.pointerEvents = 'none';
+
+                    try {
+                        const res = await fetch(`/api/create-payment?course_id=055b906f-0cec-4bdd-84d7-65a71c053d44&user_id=${user.id}&tier=${tierKey}`, {
+                            headers: { 'Authorization': `Bearer ${session.access_token}` }
+                        });
+                        const data = await res.json();
+                        if (data.payment_url) {
+                            window.location.href = data.payment_url;
+                        } else {
+                            alert(data.error || 'Payment setup failed. Please contact support.');
+                        }
+                    } catch (err) {
+                        alert('Connection error. Please try again.');
+                    } finally {
+                        if (this.querySelector('span') && origText) this.querySelector('span').textContent = origText;
+                        this.style.opacity = '';
+                        this.style.pointerEvents = '';
+                    }
                 });
             });
         }
