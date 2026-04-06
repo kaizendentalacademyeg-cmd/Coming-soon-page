@@ -967,53 +967,54 @@
         }
         if (mountEl) mountEl.innerHTML = '';
 
-        editorInstance = new EditorJS({
-            holder: 'editorjs',
-            data: savedData,
-            placeholder: 'Start writing — press Tab or click + to add a block…',
-            inlineToolbar: ['bold', 'italic', 'link', 'inlineCode'],
-            tools: {
-                header: {
-                    class: Header,
-                    config: { levels: [2, 3, 4], defaultLevel: 2 }
-                },
-                list: {
-                    class: List,
-                    inlineToolbar: true,
-                    config: { defaultStyle: 'unordered' }
-                },
-                image: {
-                    class: ImageTool,
-                    config: {
-                        uploader: {
-                            uploadByFile: async (file) => {
-                                try {
-                                    const url = await uploadBlogImage(file);
-                                    return { success: 1, file: { url } };
-                                } catch (e) {
-                                    showToast('Image upload failed: ' + e.message, 'error');
-                                    return { success: 0 };
-                                }
-                            },
-                            uploadByUrl: async (url) => {
-                                return { success: 1, file: { url } };
+        try {
+            editorInstance = new EditorJS({
+                holder: 'editorjs',
+                data: savedData,
+                placeholder: 'Start writing — press Tab or click + to add a block…',
+                inlineToolbar: ['bold', 'italic', 'link'],
+                tools: {
+                    header: {
+                        class: Header,
+                        config: { levels: [2, 3, 4], defaultLevel: 2 }
+                    },
+                    list: {
+                        class: List,
+                        inlineToolbar: true
+                    },
+                    image: {
+                        class: ImageTool,
+                        config: {
+                            uploader: {
+                                uploadByFile: async (file) => {
+                                    try {
+                                        const url = await uploadBlogImage(file);
+                                        return { success: 1, file: { url } };
+                                    } catch (e) {
+                                        showToast('Image upload failed: ' + e.message, 'error');
+                                        return { success: 0 };
+                                    }
+                                },
+                                uploadByUrl: async (url) => ({ success: 1, file: { url } })
                             }
                         }
-                    }
-                },
-                quote: {
-                    class: Quote,
-                    inlineToolbar: true,
-                    config: { quotePlaceholder: 'Quote…', captionPlaceholder: 'Author' }
-                },
-                embed: {
-                    class: Embed,
-                    config: { services: { youtube: true, facebook: true, instagram: true } }
-                },
-                delimiter: Delimiter,
-                inlineCode: { class: InlineCode }
-            }
-        });
+                    },
+                    quote: {
+                        class: Quote,
+                        inlineToolbar: true,
+                        config: { quotePlaceholder: 'Quote…', captionPlaceholder: 'Author' }
+                    },
+                    embed: {
+                        class: Embed,
+                        config: { services: { youtube: true, facebook: true } }
+                    },
+                    delimiter: Delimiter
+                }
+            });
+        } catch (err) {
+            console.error('EditorJS init failed:', err);
+            showToast('Editor failed to load: ' + err.message, 'error');
+        }
     }
 
      // Custom modal prompt (replaces ugly browser prompt)
