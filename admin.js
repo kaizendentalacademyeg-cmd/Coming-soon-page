@@ -640,7 +640,9 @@
                                             <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
                                         </select>
                                     </div>
-                                    <div class="tier-field"><label>Condition/Date</label><input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}" placeholder="e.g. Until June 6"></div>
+                                    <div class="tier-field" style="flex: 2"><label>Text (Deadline or Condition)</label>
+                                        <input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}" placeholder="Type here (e.g. Before April 30, or Class of 2024)">
+                                    </div>
                                     <button class="btn-remove-tier" title="Remove tier" type="button">✕</button>
                                 </div>`).join('')}
                             </div>
