@@ -493,11 +493,13 @@
         } catch(e) { /* silent */ }
     }
 
+    let _toastTimer = null;
     function showToast(message, type = 'success') {
         const toast = $('#adminToast');
+        clearTimeout(_toastTimer);
         $('#toastMessage').textContent = message;
         toast.className = `admin-toast ${type} show`;
-        setTimeout(() => toast.classList.remove('show'), 3000);
+        _toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
     function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
