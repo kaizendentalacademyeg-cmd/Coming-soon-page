@@ -160,7 +160,8 @@
                 currentUser = session.user || await KaizenAuth.getUser();
                 currentProfile = await KaizenAuth.getProfile();
                 await loadSiteSettings();
-                showDashboard();
+                await showDashboard();
+                showToast('Welcome back!', 'success');
             } else {
                 throw new Error('No session returned');
             }
@@ -626,4 +627,7 @@
 
     // ─── BOOT ───
     init();
+
+    // Wire up global logout button
+    $('#logoutBtn')?.addEventListener('click', () => KaizenAuth.signOut());
 })();

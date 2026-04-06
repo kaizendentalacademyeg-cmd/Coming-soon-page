@@ -57,21 +57,23 @@
         try {
             if (typeof KaizenAuth === 'undefined') return;
             const session = await KaizenAuth.getSession();
-            if (!session?.access_token) return;
-
             const btn = $('#navAccountBtn');
+            const signoutBtn = $('#navSignOutBtn');
             const text = $('#navAccountText');
             if (!btn || !text) return;
 
-            const profile = await KaizenAuth.getProfile();
-            if (profile) {
-                const name = (profile.first_name || '').trim();
-                if (name) {
-                    text.textContent = name;
-                    btn.classList.add('logged-in');
-                }
-                if (profile.role === 'admin' || profile.role === 'employee') {
-                    btn.href = 'admin.html';
+            if (session) {
+                const profile = await KaizenAuth.getProfile();
+                if (profile) {
+                    const name = (profile.first_name || '').trim();
+                    if (name) {
+                        text.textContent = name;
+                        btn.classList.add('logged-in');
+                        if (signoutBtn) signoutBtn.style.display = 'flex';
+                    }
+                    if (profile.role === 'admin' || profile.role === 'employee') {
+                        btn.href = 'admin.html';
+                    }
                 }
             }
         } catch (e) { /* silent */ }
@@ -220,10 +222,135 @@
                 // Load related posts
                 loadRelated(post.category, post.id);
 
+                // ═══ LOAD COMMENTS ═══
+                loadComments(post.id);
+
             } catch (e) {
                 console.error('Failed to load post:', e);
                 $('#postContent').innerHTML = '<p>Failed to load post.</p>';
             }
+        }
+
+        async function loadComments(postId) {
+            try {
+                const list = $('#commentsList');
+                if (!list) return;
+
+                const comments = await sbFetch('blog_comments', {
+                    select: '*,profiles(first_name,last_name)',
+                    post_id: `eq.${postId}`,
+                    is_approved: 'eq.true',
+                    order: 'created_at.desc'
+                });
+
+                renderComments(comments);
+                
+                // Show form based on auth
+                const session = await KaizenAuth.getSession();
+                setupCommentForm(postId, session);
+            } catch (e) {
+                console.error('Failed to load comments:', e);
+                const list = $('#commentsList');
+                if (list) list.innerHTML = '<p class="blog-loading">Comments system temporarily offline.</p>';
+            }
+        }
+
+        function renderComments(comments) {
+            const list = $('#commentsList');
+            const count = $('#commentsCount');
+            if (!list || !count) return;
+
+            if (!Array.isArray(comments) || !comments.length) {
+                list.innerHTML = '<p class="blog-loading">No comments yet. Be the first to start the conversation!</p>';
+                count.textContent = '0 Comments';
+                return;
+            }
+
+            count.textContent = `${comments.length} Comment${comments.length === 1 ? '' : 's'}`;
+            list.innerHTML = comments.map(c => {
+                const name = c.profiles ? `${c.profiles.first_name || ''} ${c.profiles.last_name || ''}`.trim() : 'Academy Student';
+                const date = new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="comment-card">
+                        <div class="comment-meta">
+                            <span class="comment-user">${esc(name)}</span>
+                            <span class="comment-date">${date}</span>
+                        </div>
+                        <div class="comment-body">${esc(c.content)}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function setupCommentForm(postId, session) {
+            const container = $('#commentFormContainer');
+            if (!container) return;
+
+            if (!session) {
+                container.innerHTML = `
+                    <div class="login-to-comment">
+                        <p>Join the discussion! <a href="my-account.html">Log in to your account</a> to post a comment.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="comment-form-wrap">
+                    <h4 class="comment-form-title">Post a Comment</h4>
+                    <textarea class="comment-textarea" id="commentText" placeholder="What are your thoughts on this?"></textarea>
+                    <button class="submit-comment-btn" id="submitComment">
+                        <span>Post Comment</span>
+                    </button>
+                    <div id="commentError" style="color:#ff4d4d; margin-top:1rem; display:none; font-size:0.85rem;"></div>
+                </div>
+            `;
+
+            const btn = $('#submitComment');
+            const text = $('#commentText');
+            const err = $('#commentError');
+
+            btn?.addEventListener('click', async () => {
+                const content = text.value.trim();
+                if (!content) return;
+
+                btn.disabled = true;
+                btn.innerHTML = '<span>Posting...</span>';
+                err.style.display = 'none';
+
+                try {
+                    const profile = await KaizenAuth.getProfile();
+                    if (!profile) throw new Error('Could not verify account identity.');
+
+                    const res = await fetch(`${SB_URL}/rest/v1/blog_comments`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SB_KEY,
+                            'Authorization': `Bearer ${session.access_token}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({
+                            post_id: postId,
+                            user_id: profile.id,
+                            content: content,
+                            is_approved: true
+                        })
+                    });
+
+                    if (!res.ok) throw new Error('Failed to save comment. Please try again.');
+
+                    text.value = '';
+                    await loadComments(postId); // Refresh list
+                    if (typeof showToast !== 'undefined') showToast('Comment posted! ✓', 'success');
+                } catch (e) {
+                    err.textContent = e.message;
+                    err.style.display = 'block';
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Post Comment</span>';
+                }
+            });
         }
 
         async function incrementViews(id, current) {

@@ -2,6 +2,32 @@
 const typewriterElement = document.getElementById('typewriter');
 let typewriterTimeout;
 
+// ─── AUTH-AWARE NAVBAR ───
+(async function initAuth() {
+    if (typeof KaizenAuth === 'undefined') return;
+    try {
+        const session = await KaizenAuth.getSession();
+        const accountBtn = document.getElementById('navAccountBtn');
+        const signoutBtn = document.getElementById('navSignOutBtn');
+        const accountText = document.getElementById('navAccountText');
+
+        if (session) {
+            const profile = await KaizenAuth.getProfile();
+            if (profile && accountBtn && accountText) {
+                const firstName = profile.first_name || 'My Account';
+                accountText.textContent = firstName;
+                accountBtn.classList.add('logged-in');
+                if (signoutBtn) signoutBtn.style.display = 'flex';
+                
+                // If admin, change link
+                if (profile.role === 'admin' || profile.role === 'employee') {
+                    accountBtn.href = 'admin.html';
+                }
+            }
+        }
+    } catch (e) { console.error('Auth init error:', e); }
+})();
+
 function startTypewriter() {
     const text = 'Kaizen Dental Academy';
     typewriterElement.textContent = '';

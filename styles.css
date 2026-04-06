@@ -323,6 +323,33 @@ body {
     color: #e7af20;
 }
 
+.nav-signout-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.nav-signout-btn:hover {
+    background: rgba(199, 113, 17, 0.1);
+    border-color: rgba(199, 113, 17, 0.3);
+    color: #c77111;
+    transform: translateY(-2px);
+}
+
+.nav-signout-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
 .blog-nav-active {
     color: var(--text-accent) !important;
 }

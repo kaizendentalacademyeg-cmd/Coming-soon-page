@@ -73,6 +73,8 @@ const KaizenAuth = {
             } catch (e) { /* ignore */ }
         }
         this._clearSession();
+        // Global redirect strictly on explicit logout
+        window.location.href = 'index.html';
     },
 
     // ─── Auth: Get Current Session ───
@@ -356,3 +358,6 @@ const KaizenAuth = {
 (async () => {
     await KaizenAuth.getSession();
 })();
+
+// Export globally
+window.KaizenAuth = KaizenAuth;

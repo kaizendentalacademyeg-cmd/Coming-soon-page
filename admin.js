@@ -1190,4 +1190,7 @@
 
     // ─── BOOT ───
     init();
+
+    // Wire up global logout button
+    $('#logoutBtn')?.addEventListener('click', () => KaizenAuth.signOut());
 })();
