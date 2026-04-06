@@ -72,7 +72,7 @@ const KaizenAuth = {
                 });
             } catch (e) { /* ignore */ }
         }
-        this._clearSession();
+        await this._clearSession();
         // Global redirect strictly on explicit logout
         window.location.href = 'index.html';
     },
@@ -86,14 +86,39 @@ const KaizenAuth = {
                 try {
                     const parsed = JSON.parse(stored);
                     if (parsed.expires_at && parsed.expires_at * 1000 > Date.now()) {
-                        this._session = parsed;
+                        // Double check with DB to prevent 'ghosting'
+                        if (parsed.session_id) {
+                            try {
+                                const res = await fetch(`${SUPABASE_URL}/rest/v1/session_logs?session_id=eq.${parsed.session_id}&select=is_active`, {
+                                    headers: {
+                                        'apikey': SUPABASE_ANON_KEY,
+                                        'Authorization': `Bearer ${parsed.access_token}`
+                                    }
+                                });
+                                const logs = await res.json();
+                                if (logs && logs.length > 0 && logs[0].is_active) {
+                                    this._session = parsed;
+                                    this.startHeartbeat(); // Resume heartbeat
+                                } else {
+                                    await this._clearSession();
+                                    return null;
+                                }
+                            } catch (err) {
+                                // If network error, trust local for now but keep trying heartbeat
+                                this._session = parsed;
+                                this.startHeartbeat();
+                            }
+                        } else {
+                            this._session = parsed;
+                            this.startHeartbeat();
+                        }
                     } else if (parsed.refresh_token) {
                         await this._refreshToken(parsed.refresh_token);
                     } else {
-                        this._clearSession();
+                        await this._clearSession();
                     }
                 } catch (e) {
-                    this._clearSession();
+                    await this._clearSession();
                 }
             }
         }
@@ -308,9 +333,14 @@ const KaizenAuth = {
             refresh_token: data.refresh_token,
             expires_at: Math.floor(Date.now() / 1000) + (data.expires_in || 3600),
             token_type: data.token_type || 'bearer',
-            user: data.user
+            user: data.user,
+            session_id: this._session?.session_id // Preserve ID if refreshing
         };
         localStorage.setItem('kda_session', JSON.stringify(this._session));
+        
+        // Start recording & heartbeat
+        this.startHeartbeat();
+        
         this._notifyListeners('SIGNED_IN', this._session);
 
         // Auto-refresh before expiry
@@ -324,7 +354,19 @@ const KaizenAuth = {
     },
 
     // ─── Internal: Clear Session ───
-    _clearSession() {
+    async _clearSession() {
+        if (this._session?.session_id) {
+            // Tell server this session is dead
+            try {
+                fetch(`${SUPABASE_URL}/rest/v1/session_logs?session_id=eq.${this._session.session_id}`, {
+                    method: 'PATCH',
+                    headers: this._headers(),
+                    body: JSON.stringify({ is_active: false })
+                });
+            } catch (e) { /* ignore */ }
+        }
+
+        this.stopHeartbeat();
         this._session = null;
         localStorage.removeItem('kda_session');
         this._notifyListeners('SIGNED_OUT', null);
@@ -351,6 +393,57 @@ const KaizenAuth = {
         this._listeners.forEach(cb => {
             try { cb(event, session); } catch (e) { /* ignore */ }
         });
+    },
+
+    // ─── Internal: Log Session ───
+    async _logSession() {
+        if (!this._session?.user?.id) return;
+        
+        // Generate a persistent session ID for this browser if not exists
+        if (!this._session.session_id) {
+            this._session.session_id = Math.random().toString(36).substring(2, 15) + Date.now();
+            localStorage.setItem('kda_session', JSON.stringify(this._session));
+        }
+
+        try {
+            await fetch(`${SUPABASE_URL}/rest/v1/session_logs`, {
+                method: 'POST',
+                headers: {
+                    ...this._headers(),
+                    'Prefer': 'resolution=merge-duplicates'
+                },
+                body: JSON.stringify({
+                    user_id: this._session.user.id,
+                    session_id: this._session.session_id,
+                    user_agent: navigator.userAgent,
+                    last_active: new Date().toISOString(),
+                    is_active: true
+                })
+            });
+        } catch (e) { /* silent */ }
+    },
+
+    // ─── Internal: Heartbeat ───
+    _heartbeatInterval: null,
+    startHeartbeat() {
+        if (this._heartbeatInterval) return;
+        
+        // Initial log
+        this._logSession();
+
+        this._heartbeatInterval = setInterval(() => {
+            if (this._session) {
+                this._logSession();
+            } else {
+                this.stopHeartbeat();
+            }
+        }, 5 * 60 * 1000); // 5 minutes
+    },
+    stopHeartbeat() {
+        if (this._heartbeatInterval) {
+            clearInterval(this._heartbeatInterval);
+            this._heartbeatInterval = null;
+        }
     }
 };
 
