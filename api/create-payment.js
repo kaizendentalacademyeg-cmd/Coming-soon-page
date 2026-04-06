@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const INTEGRATION_ID = process.env.PAYMOB_INTEGRATION_ID;
     const SB_URL = process.env.SUPABASE_URL;
     const SB_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-    const SITE_URL = process.env.SITE_URL || 'https://kaizendentalacademy.com';
+    const SITE_URL = process.env.SITE_URL || 'https://kaizendentalacademy.org';
 
     if (!PAYMOB_SECRET || !INTEGRATION_ID) {
         return res.status(500).json({ error: 'Paymob not configured' });
@@ -82,7 +82,7 @@ export default async function handler(req, res) {
             }
         });
         const authUser = await authRes.json();
-        const email = authUser?.email || 'student@kaizendentalacademy.com';
+        const email = authUser?.email || 'student@kaizendentalacademy.org';
 
         // Amount in cents (Paymob requires smallest currency unit)
         const amountCents = Math.round(priceEGP * 100);
