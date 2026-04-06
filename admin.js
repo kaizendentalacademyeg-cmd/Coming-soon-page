@@ -641,7 +641,8 @@
                                         </select>
                                     </div>
                                     <div class="tier-field" style="flex: 2"><label>Text (Deadline or Condition)</label>
-                                        <input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}" placeholder="Type here (e.g. Before April 30, or Class of 2024)">
+                                        <input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}">
+                                        <span style="font-size: 0.75rem; color: #888; margin-top: 0.25rem; display: block;">Empty box = No condition shown. Type to override.</span>
                                     </div>
                                     <button class="btn-remove-tier" title="Remove tier" type="button">✕</button>
                                 </div>`).join('')}
