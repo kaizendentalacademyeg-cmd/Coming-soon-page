@@ -409,68 +409,186 @@
     }
 
     function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+    function plainText(value) { const d = document.createElement('div'); d.innerHTML = value || ''; return (d.textContent || '').replace(/\\s+/g, ' ').trim(); }
 
-    // ─── EDITOR.JS BLOCK RENDERER ───
-    function renderEditorJsBlocks(blocks) {
-        if (!Array.isArray(blocks)) return '';
-        return blocks.map(block => {
-            const d = block.data || {};
-            switch (block.type) {
-                case 'paragraph':
-                    return `<p>${d.text || ''}</p>`;
+    // ─── BLOG LAYOUT RENDERER ───
+    const BLOG_SECTION_LAYOUTS = {
+        single: 1,
+        split: 2,
+        featureLeft: 2,
+        featureRight: 2,
+        triple: 3
+    };
 
-                case 'header': {
-                    const lvl = Math.min(Math.max(d.level || 2, 2), 6);
-                    return `<h${lvl} class="post-heading">${d.text || ''}</h${lvl}>`;
-                }
+    function getBlogLayoutColumnCount(layout) {
+        return BLOG_SECTION_LAYOUTS[layout] || 1;
+    }
 
-                case 'list': {
-                    const tag = d.style === 'ordered' ? 'ol' : 'ul';
-                    const items = (d.items || []).map(item => {
-                        const text = typeof item === 'string' ? item : (item.content || '');
-                        return `<li>${text}</li>`;
-                    }).join('');
-                    return `<${tag} class="post-list">${items}</${tag}>`;
-                }
+    function reflowBlogColumns(columns, targetCount) {
+        const next = Array.isArray(columns)
+            ? columns.map(column => ({ blocks: Array.isArray(column?.blocks) ? column.blocks.filter(block => block && block.type) : [] }))
+            : [];
 
-                case 'image': {
-                    const url = d.file?.url || d.url || '';
-                    if (!url) return '';
-                    const size = ['small', 'medium', 'large', 'full'].includes(d.size)
-                        ? d.size
-                        : (d.stretched ? 'full' : 'large');
-                    const cls = ['post-image',
-                        `post-image--size-${size}`,
-                        d.withBorder ? 'post-image--border' : '',
-                        d.withBackground ? 'post-image--bg' : '',
-                        d.stretched || size === 'full' ? 'post-image--stretched' : ''
-                    ].filter(Boolean).join(' ');
-                    const cap = d.caption ? `<figcaption class="post-image-caption">${d.caption}</figcaption>` : '';
-                    return `<figure class="${cls}"><img src="${esc(url)}" alt="${esc(d.caption || '')}" loading="lazy">${cap}</figure>`;
-                }
+        while (next.length < targetCount) next.push({ blocks: [] });
+        if (next.length > targetCount) {
+            const kept = next.slice(0, targetCount);
+            const overflow = next.slice(targetCount).flatMap(column => column.blocks || []);
+            kept[targetCount - 1].blocks.push(...overflow);
+            return kept;
+        }
+        return next;
+    }
 
-                case 'quote':
-                    return `<blockquote class="post-quote"><p>${d.text || ''}</p>${d.caption ? `<cite>— ${esc(d.caption)}</cite>` : ''}</blockquote>`;
+    function normalizeBlogSection(section) {
+        const data = section?.data || {};
+        const layout = BLOG_SECTION_LAYOUTS[data.layout] ? data.layout : 'single';
+        const width = ['narrow', 'wide', 'full'].includes(data.width) ? data.width : 'wide';
+        const surface = ['default', 'card', 'muted', 'accent'].includes(data.surface) ? data.surface : 'default';
+        const gap = ['compact', 'normal', 'loose'].includes(data.gap) ? data.gap : 'normal';
 
-                case 'delimiter':
-                    return `<div class="post-delimiter"><span>✦ ✦ ✦</span></div>`;
-
-                case 'embed': {
-                    const src = d.embed || '';
-                    if (!src) return '';
-                    const cap = d.caption ? `<p class="post-embed-caption">${esc(d.caption)}</p>` : '';
-                    return `<div class="post-embed"><iframe src="${esc(src)}" loading="lazy" allowfullscreen allow="autoplay; encrypted-media"></iframe>${cap}</div>`;
-                }
-
-                case 'code':
-                    return `<pre class="post-code"><code>${esc(d.code || '')}</code></pre>`;
-
-                default:
-                    return '';
+        return {
+            type: 'section',
+            data: {
+                layout,
+                width,
+                surface,
+                gap,
+                columns: reflowBlogColumns(data.columns, getBlogLayoutColumnCount(layout))
             }
-        }).join('\n');
+        };
+    }
+
+    function wrapLegacyBlogBlocks(blocks) {
+        return normalizeBlogSection({
+            data: {
+                layout: 'single',
+                width: 'narrow',
+                surface: 'default',
+                gap: 'normal',
+                columns: [{ blocks: Array.isArray(blocks) ? blocks.filter(block => block && block.type) : [] }]
+            }
+        });
+    }
+
+    function renderBlogBlock(block) {
+        if (!block || !block.type) return '';
+        const d = block.data || {};
+
+        switch (block.type) {
+            case 'paragraph':
+                return d.text ? `<p>${d.text}</p>` : '';
+
+            case 'header': {
+                const lvl = Math.min(Math.max(Number(d.level) || 2, 2), 6);
+                return d.text ? `<h${lvl} class="post-heading">${d.text}</h${lvl}>` : '';
+            }
+
+            case 'list': {
+                const tag = d.style === 'ordered' ? 'ol' : 'ul';
+                const items = (Array.isArray(d.items) ? d.items : []).map(item => {
+                    const text = typeof item === 'string' ? item : (item?.content || '');
+                    return plainText(text) ? `<li>${esc(plainText(text))}</li>` : '';
+                }).filter(Boolean).join('');
+                return items ? `<${tag} class="post-list">${items}</${tag}>` : '';
+            }
+
+            case 'image': {
+                const url = d.file?.url || d.url || '';
+                if (!url) return '';
+                const size = ['small', 'medium', 'large', 'full'].includes(d.size)
+                    ? d.size
+                    : (d.stretched ? 'full' : 'large');
+                const cls = [
+                    'post-image',
+                    `post-image--size-${size}`,
+                    d.withBorder ? 'post-image--border' : '',
+                    d.withBackground ? 'post-image--bg' : '',
+                    d.stretched || size === 'full' ? 'post-image--stretched' : ''
+                ].filter(Boolean).join(' ');
+                const cap = d.caption ? `<figcaption class="post-image-caption">${esc(d.caption)}</figcaption>` : '';
+                return `<figure class="${cls}"><img src="${esc(url)}" alt="${esc(d.caption || '')}" loading="lazy">${cap}</figure>`;
+            }
+
+            case 'quote': {
+                const text = d.text || '';
+                const caption = d.caption ? `<cite>${esc(d.caption)}</cite>` : '';
+                return text || caption ? `<blockquote class="post-quote"><p>${text}</p>${caption}</blockquote>` : '';
+            }
+
+            case 'callout': {
+                const tone = ['accent', 'info', 'success', 'warning'].includes(d.tone) ? d.tone : 'accent';
+                const title = d.title ? `<strong class="post-callout__title">${esc(d.title)}</strong>` : '';
+                const text = d.text ? `<div class="post-callout__body">${d.text}</div>` : '';
+                return title || text ? `<aside class="post-callout post-callout--${tone}">${title}${text}</aside>` : '';
+            }
+
+            case 'button': {
+                const url = d.url || '';
+                if (!url) return '';
+                const style = ['solid', 'outline', 'ghost'].includes(d.style) ? d.style : 'solid';
+                const align = ['left', 'center', 'right'].includes(d.align) ? d.align : 'left';
+                const text = esc(d.text || 'Learn More');
+                return `<div class="post-button-row post-button-row--${align}"><a class="post-button post-button--${style}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${text}</a></div>`;
+            }
+
+            case 'delimiter':
+                return `<div class="post-delimiter"><span>✦ ✦ ✦</span></div>`;
+
+            case 'embed': {
+                const src = d.embed || d.url || '';
+                if (!src) return '';
+                const cap = d.caption ? `<p class="post-embed-caption">${esc(d.caption)}</p>` : '';
+                return `<div class="post-embed"><iframe src="${esc(src)}" loading="lazy" allowfullscreen allow="autoplay; encrypted-media"></iframe>${cap}</div>`;
+            }
+
+            case 'code':
+                return d.code ? `<pre class="post-code"><code>${esc(d.code)}</code></pre>` : '';
+
+            default:
+                return '';
+        }
+    }
+
+    function renderBlogSection(section) {
+        const normalized = normalizeBlogSection(section);
+        const data = normalized.data;
+        const renderedColumns = data.columns.map(column => (column.blocks || []).map(renderBlogBlock).filter(Boolean).join('\n'));
+        if (!renderedColumns.some(Boolean)) return '';
+
+        return `
+            <section class="post-section post-section--width-${data.width} post-section--surface-${data.surface}">
+                <div class="post-section__inner">
+                    <div class="post-section__grid post-section__grid--${data.layout} post-section__grid--gap-${data.gap}">
+                        ${renderedColumns.map(columnHtml => `<div class="post-section__column">${columnHtml}</div>`).join('')}
+                    </div>
+                </div>
+            </section>
+        `;
+    }
+
+    function renderEditorJsBlocks(blocks) {
+        if (!Array.isArray(blocks) || !blocks.length) return '';
+
+        const sections = [];
+        let legacyBuffer = [];
+
+        blocks.forEach(block => {
+            if (!block || !block.type) return;
+            if (block.type === 'section') {
+                if (legacyBuffer.length) {
+                    sections.push(wrapLegacyBlogBlocks(legacyBuffer));
+                    legacyBuffer = [];
+                }
+                sections.push(normalizeBlogSection(block));
+                return;
+            }
+            legacyBuffer.push(block);
+        });
+
+        if (legacyBuffer.length) sections.push(wrapLegacyBlogBlocks(legacyBuffer));
+        if (!sections.length) return '';
+
+        return `<div class="post-layout">${sections.map(renderBlogSection).filter(Boolean).join('\n')}</div>`;
     }
 })();
-
-
 
