@@ -661,6 +661,7 @@
     </a>
 
 
+    <script src="supabase-auth.js"></script>
     <script src="course-script.js?v=16" defer></script>
     <script>
     // Dynamic pricing + payment method router
@@ -823,7 +824,7 @@
             return icon + ' Until ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
 
-        const tiers = {};
+        // Populate the tiers object declared above (for click handlers + UI updates)
         if (courseData.pricing_tiers && Array.isArray(courseData.pricing_tiers)) {
             courseData.pricing_tiers.forEach((t, idx) => {
                 const nameLower = t.name.toLowerCase();
