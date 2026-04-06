@@ -935,7 +935,7 @@
         }).join('');
     }
 
-    // ─── EDITOR.JS INSTANCE ───
+    // ─── BLOG BLOCK EDITOR ───
     let editorInstance = null;
 
     function openBlogEditor(post = null) {
@@ -950,16 +950,7 @@
         $('#blogPostStatus').value = post?.status || 'draft';
         updateCoverPreview();
 
-        // Parse stored content (JSON blocks or empty)
-        let savedData = { blocks: [] };
-        if (post?.content) {
-            try {
-                const parsed = JSON.parse(post.content);
-                if (parsed?.blocks) savedData = parsed;
-            } catch (_) { /* legacy HTML post — start fresh */ }
-        }
-
-        // Destroy previous instance before reinitialising
+        const savedContent = post?.content || '';
         const mountEl = $('#editorjs');
         if (editorInstance) {
             editorInstance.destroy();
@@ -968,56 +959,22 @@
         if (mountEl) mountEl.innerHTML = '';
 
         try {
-            editorInstance = new EditorJS({
-                holder: 'editorjs',
-                data: savedData,
-                placeholder: 'Start writing — press Tab or click + to add a block…',
-                inlineToolbar: ['bold', 'italic', 'link'],
-                tools: {
-                    header: {
-                        class: Header,
-                        config: { levels: [2, 3, 4], defaultLevel: 2 }
-                    },
-                    list: {
-                        class: List,
-                        inlineToolbar: true
-                    },
-                    image: {
-                        class: ImageTool,
-                        config: {
-                            uploader: {
-                                uploadByFile: async (file) => {
-                                    try {
-                                        const url = await uploadBlogImage(file);
-                                        return { success: 1, file: { url } };
-                                    } catch (e) {
-                                        showToast('Image upload failed: ' + e.message, 'error');
-                                        return { success: 0 };
-                                    }
-                                },
-                                uploadByUrl: async (url) => ({ success: 1, file: { url } })
-                            }
-                        }
-                    },
-                    quote: {
-                        class: Quote,
-                        inlineToolbar: true,
-                        config: { quotePlaceholder: 'Quote…', captionPlaceholder: 'Author' }
-                    },
-                    embed: {
-                        class: Embed,
-                        config: { services: { youtube: true, facebook: true } }
-                    },
-                    delimiter: Delimiter
-                }
+            if (typeof window.KaizenBlogEditor !== 'function') {
+                throw new Error('Local blog editor is unavailable.');
+            }
+            editorInstance = new window.KaizenBlogEditor({
+                holder: mountEl,
+                data: savedContent,
+                uploadImage: uploadBlogImage,
+                showToast
             });
         } catch (err) {
-            console.error('EditorJS init failed:', err);
+            console.error('Blog editor init failed:', err);
             showToast('Editor failed to load: ' + err.message, 'error');
         }
     }
 
-     // Custom modal prompt (replaces ugly browser prompt)
+    // Custom modal prompt (replaces ugly browser prompt)
     function adminPrompt(title, placeholder = '') {
         return new Promise(resolve => {
             const overlay = document.createElement('div');
@@ -1399,3 +1356,5 @@
     // ─── BOOT ───
     init();
 })();
+
+
