@@ -337,7 +337,11 @@ h4.post-heading { font-size: 1.05rem; font-weight: 600; color: rgba(255,255,255,
 .post-list li { margin-bottom: 0.4rem; color: rgba(255,255,255,0.85); }
 
 .post-image { margin: 2rem 0; text-align: center; }
-.post-image img { max-width: 100%; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.35); }
+.post-image img { width: 100%; max-width: 100%; margin: 0 auto; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.35); }
+.post-image--size-small img { max-width: 320px; }
+.post-image--size-medium img { max-width: 520px; }
+.post-image--size-large img { max-width: 720px; }
+.post-image--size-full img { max-width: 100%; width: 100%; }
 .post-image--border img { border: 1px solid rgba(255,255,255,0.12); }
 .post-image--bg { background: rgba(255,255,255,0.04); padding: 1rem; border-radius: 14px; }
 .post-image--stretched img { width: 100%; }
@@ -604,3 +608,5 @@ h4.post-heading { font-size: 1.05rem; font-weight: 600; color: rgba(255,255,255,
     .container-narrow { padding: 0 1.25rem; }
     .comments-header h3 { font-size: 1.2rem; }
 }
+
+

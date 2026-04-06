@@ -436,10 +436,14 @@
                 case 'image': {
                     const url = d.file?.url || d.url || '';
                     if (!url) return '';
+                    const size = ['small', 'medium', 'large', 'full'].includes(d.size)
+                        ? d.size
+                        : (d.stretched ? 'full' : 'large');
                     const cls = ['post-image',
+                        `post-image--size-${size}`,
                         d.withBorder ? 'post-image--border' : '',
                         d.withBackground ? 'post-image--bg' : '',
-                        d.stretched ? 'post-image--stretched' : ''
+                        d.stretched || size === 'full' ? 'post-image--stretched' : ''
                     ].filter(Boolean).join(' ');
                     const cap = d.caption ? `<figcaption class="post-image-caption">${d.caption}</figcaption>` : '';
                     return `<figure class="${cls}"><img src="${esc(url)}" alt="${esc(d.caption || '')}" loading="lazy">${cap}</figure>`;
@@ -467,3 +471,6 @@
         }).join('\n');
     }
 })();
+
+
+
