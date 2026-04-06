@@ -24,6 +24,74 @@
         return res.json();
     }
 
+    const BLOG_VIEW_TTL_MS = 12 * 60 * 60 * 1000;
+
+    function normalizeAuthorName(value) {
+        return String(value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function parseBlogContent(value) {
+        if (!value) return null;
+        if (typeof value === 'object') return value;
+        try { return JSON.parse(value); } catch (_) { return null; }
+    }
+
+    function getBlogMeta(value) {
+        const parsed = parseBlogContent(value);
+        return parsed && typeof parsed.meta === 'object' && parsed.meta ? parsed.meta : {};
+    }
+
+    function getProfileDisplayName(profile) {
+        if (!profile) return '';
+        return normalizeAuthorName(`${profile.first_name || ''} ${profile.last_name || ''}`);
+    }
+
+    async function loadAuthorProfiles(posts) {
+        const ids = [...new Set((Array.isArray(posts) ? posts : [])
+            .filter(post => post?.author_id && !getProfileDisplayName(post.profiles) && !normalizeAuthorName(getBlogMeta(post.content).authorName || ''))
+            .map(post => post.author_id))];
+
+        if (!ids.length) return {};
+
+        try {
+            const profiles = await sbFetch('profiles', {
+                select: 'id,first_name,last_name',
+                id: `in.(${ids.join(',')})`
+            });
+            return Object.fromEntries((Array.isArray(profiles) ? profiles : []).map(profile => [profile.id, profile]));
+        } catch (_) {
+            return {};
+        }
+    }
+
+    function getPostAuthorName(post, authorMap = {}) {
+        const metaName = normalizeAuthorName(getBlogMeta(post?.content).authorName || '');
+        const joinedName = getProfileDisplayName(post?.profiles);
+        const mappedName = getProfileDisplayName(authorMap?.[post?.author_id]);
+        return metaName || joinedName || mappedName || 'Kaizen Team';
+    }
+
+    function getViewStorageKey(postId) {
+        return `kda_blog_view:${postId}`;
+    }
+
+    function shouldCountView(postId) {
+        try {
+            const raw = localStorage.getItem(getViewStorageKey(postId));
+            if (!raw) return true;
+            const lastSeen = Number(raw);
+            return !lastSeen || (Date.now() - lastSeen) > BLOG_VIEW_TTL_MS;
+        } catch (_) {
+            return true;
+        }
+    }
+
+    function markViewCounted(postId) {
+        try {
+            localStorage.setItem(getViewStorageKey(postId), String(Date.now()));
+        } catch (_) { /* ignore storage issues */ }
+    }
+
     // ─── NAVBAR (same behavior as main site) ───
     const navbar = $('#navbar');
     const mobileToggle = $('#mobileMenuToggle');
@@ -84,16 +152,18 @@
     // ═══════════════════════════
     if (!isPostPage) {
         let allPosts = [];
+        let authorLookup = {};
         let activeCategory = 'all';
 
         async function loadPosts() {
             try {
                 const posts = await sbFetch('blog_posts', {
-                    select: 'id,slug,title,excerpt,cover_image_url,category,tags,author_id,status,published_at,created_at,views_count,is_featured,profiles(first_name,last_name)',
+                    select: 'id,slug,title,excerpt,cover_image_url,category,tags,author_id,content,status,published_at,created_at,views_count,is_featured,profiles(first_name,last_name)',
                     status: 'eq.published',
                     order: 'published_at.desc'
                 });
                 allPosts = Array.isArray(posts) ? posts : [];
+                authorLookup = await loadAuthorProfiles(allPosts);
                 renderPosts();
             } catch (e) {
                 console.error('Failed to load blog posts:', e);
@@ -118,7 +188,7 @@
             if (empty) empty.style.display = 'none';
 
             grid.innerHTML = filtered.map(p => {
-                const author = p.profiles ? `${p.profiles.first_name || ''} ${p.profiles.last_name || ''}`.trim() : 'Kaizen Team';
+                const author = getPostAuthorName(p, authorLookup);
                 const date = p.published_at ? new Date(p.published_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
                 const image = p.cover_image_url
                     ? `<div class="blog-card-image-wrap"><img class="blog-card-image" src="${esc(p.cover_image_url)}" alt="${esc(p.title)}" loading="lazy"></div>`
@@ -181,6 +251,8 @@
                     return;
                 }
 
+                const authorLookup = await loadAuthorProfiles(post ? [post] : []);
+
                 // Update page metadata
                 document.title = `${post.title} - Kaizen Dental Academy Blog`;
                 const metaDesc = $('meta[name="description"]');
@@ -193,7 +265,7 @@
                 }
 
                 // Post info
-                const author = post.profiles ? `${post.profiles.first_name || ''} ${post.profiles.last_name || ''}`.trim() : 'Kaizen Team';
+                const author = getPostAuthorName(post, authorLookup);
                 const date = post.published_at ? new Date(post.published_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : '';
 
                 if ($('#postCategory')) $('#postCategory').textContent = post.category || 'General';
@@ -215,8 +287,16 @@
                     $('#postContent').innerHTML = rendered;
                 }
 
-                // Increment views (fire and forget)
-                incrementViews(post.id, post.views_count || 0);
+                // Increment views once per browser window, even for guests
+                if (shouldCountView(post.id)) {
+                    incrementViews(post.id, post.views_count || 0).then(nextViews => {
+                        if (typeof nextViews === 'number' && nextViews > (post.views_count || 0)) {
+                            post.views_count = nextViews;
+                            markViewCounted(post.id);
+                            if ($('#postViews')) $('#postViews').textContent = `${nextViews} views`;
+                        }
+                    }).catch(() => {});
+                }
 
                 // Share buttons
                 const url = window.location.href;
@@ -365,17 +445,26 @@
 
         async function incrementViews(id, current) {
             try {
-                await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}`, {
+                const session = typeof KaizenAuth !== 'undefined' ? await KaizenAuth.getSession() : null;
+                const token = session?.access_token || SB_KEY;
+                const res = await fetch(`${SB_URL}/rest/v1/blog_posts?id=eq.${id}&select=views_count`, {
                     method: 'PATCH',
                     headers: {
                         'apikey': SB_KEY,
-                        'Authorization': `Bearer ${SB_KEY}`,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
+                        'Prefer': 'return=representation'
                     },
                     body: JSON.stringify({ views_count: (current || 0) + 1 })
                 });
-            } catch (e) { /* silent */ }
+                if (!res.ok) return null;
+                const data = await res.json().catch(() => []);
+                return Array.isArray(data) && data[0]?.views_count != null
+                    ? Number(data[0].views_count)
+                    : (current || 0) + 1;
+            } catch (e) {
+                return null;
+            }
         }
 
         async function loadRelated(category, excludeId) {
@@ -605,5 +694,13 @@
         return `<div class="post-layout">${sections.map(renderBlogSection).filter(Boolean).join('\n')}</div>`;
     }
 })();
+
+
+
+
+
+
+
+
 
 

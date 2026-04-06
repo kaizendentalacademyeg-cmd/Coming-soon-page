@@ -504,7 +504,42 @@
 
     function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
     function formatDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
-    function statusBadge(s) { return { active:'active', confirmed:'active', completed:'completed', coming_soon:'pending', draft:'draft', pending:'pending', cancelled:'cancelled' }[s] || 'draft'; }
+    function normalizeAuthorName(value) { return String(value || '').replace(/\s+/g, ' ').trim(); }
+    function parseBlogContent(content) {
+        if (!content) return null;
+        if (typeof content === 'object') return content;
+        try { return JSON.parse(content); } catch (_) { return null; }
+    }
+    function getBlogMeta(content) {
+        const parsed = parseBlogContent(content);
+        return parsed && typeof parsed.meta === 'object' && parsed.meta ? parsed.meta : {};
+    }
+    function getProfileDisplayName(profile) {
+        if (!profile) return '';
+        return normalizeAuthorName(`${profile.first_name || ''} ${profile.last_name || ''}`);
+    }
+    function getCurrentBlogAuthorName() {
+        return getProfileDisplayName(currentUser?.profile) || currentUser?.email || 'Kaizen Team';
+    }
+    function getPostAuthorName(post, fallback = 'Kaizen Team') {
+        const metaName = normalizeAuthorName(getBlogMeta(post?.content).authorName || '');
+        return metaName || getProfileDisplayName(post?.profiles) || fallback;
+    }
+    function mergeBlogMeta(outputData, meta = {}) {
+        const next = outputData && typeof outputData === 'object' ? outputData : { blocks: [] };
+        const merged = { ...(next.meta && typeof next.meta === 'object' ? next.meta : {}), ...meta };
+        const authorName = normalizeAuthorName(merged.authorName || '');
+        if (authorName) {
+            merged.authorName = authorName;
+            next.meta = merged;
+        } else if (Object.keys(merged).filter(key => key !== 'authorName').length) {
+            delete merged.authorName;
+            next.meta = merged;
+        } else {
+            delete next.meta;
+        }
+        return next;
+    }    function statusBadge(s) { return { active:'active', confirmed:'active', completed:'completed', coming_soon:'pending', draft:'draft', pending:'pending', cancelled:'cancelled' }[s] || 'draft'; }
     function paymentBadge(s) { return { paid:'active', pending:'pending', failed:'cancelled', refunded:'completed' }[s] || 'draft'; }
     function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
     function downloadCSV(csv, filename) { const b = new Blob([csv], {type:'text/csv'}); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = filename; a.click(); URL.revokeObjectURL(u); }
@@ -903,7 +938,7 @@
         container.classList.remove('admin-loading');
         if (!posts.length) { container.innerHTML = '<p style="color:rgba(255,255,255,0.3);text-align:center;padding:3rem">No blog posts yet. Click <strong>+ New Post</strong> to create one.</p>'; return; }
         container.innerHTML = posts.map(p => {
-            const author = p.profiles ? `${p.profiles.first_name || ''} ${p.profiles.last_name || ''}`.trim() : 'Unknown';
+            const author = getPostAuthorName(p, 'Unknown');
             const statusClass = p.status === 'published' ? 'active' : p.status === 'archived' ? 'cancelled' : 'draft';
             const statusIcon = p.status === 'published' ? '🟢' : p.status === 'archived' ? '🔴' : '⚪';
             const coverBg = p.cover_image_url ? `background-image:url('${esc(p.cover_image_url)}');background-size:cover;background-position:center;` : 'background:linear-gradient(135deg,var(--admin-surface-2),var(--admin-surface-3));display:flex;align-items:center;justify-content:center;';
@@ -943,6 +978,7 @@
         $('#blogEditorView').style.display = '';
         $('#blogPostId').value = post?.id || '';
         $('#blogTitle').value = post?.title || '';
+        $('#blogAuthorName').value = post ? getPostAuthorName(post, getCurrentBlogAuthorName()) : getCurrentBlogAuthorName();
         $('#blogCategory').value = post?.category || 'General';
         $('#blogTags').value = post?.tags?.join(', ') || '';
         $('#blogExcerpt').value = post?.excerpt || '';
@@ -1160,7 +1196,9 @@
 
         let outputData;
         try {
-            outputData = await editorInstance.save();
+            outputData = mergeBlogMeta(await editorInstance.save(), {
+                authorName: $('#blogAuthorName').value.trim() || getCurrentBlogAuthorName()
+            });
         } catch (e) {
             showToast('Could not read editor content', 'error'); return;
         }
@@ -1356,5 +1394,12 @@
     // ─── BOOT ───
     init();
 })();
+
+
+
+
+
+
+
 
 
