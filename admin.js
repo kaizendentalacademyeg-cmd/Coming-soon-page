@@ -709,10 +709,16 @@
                         <div class="course-editor-section">
                             <div class="course-editor-section-title">Schedule & Visibility</div>
                             <div class="course-editor-grid">
-                                <div class="ce-field" style="flex:1">
-                                    <label>Course Start Date</label>
+                                <div class="ce-field">
+                                    <label>Start Date</label>
                                     <input type="date" class="course-start-date form-control" value="${c.start_date || ''}">
-                                    <span class="ce-hint" style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:0.25rem;display:block">This date appears on the homepage card, course page badge, and hero section automatically.</span>
+                                </div>
+                                <div class="ce-field">
+                                    <label>End Date <span style="color:rgba(255,255,255,0.3);font-weight:400">(optional)</span></label>
+                                    <input type="date" class="course-end-date form-control" value="${c.end_date || ''}">
+                                </div>
+                                <div class="ce-field" style="grid-column:1/-1">
+                                    <span class="ce-hint">Sets the "Next Batch" label automatically — e.g. start+end = "May 14–16, 2026", start only = "Starts May 14, 2026". Override manually using the Next Batch Label field above.</span>
                                 </div>
                                 <div class="ce-field">
                                     <label>Visible on Site</label>
@@ -817,16 +823,29 @@
         const status = card.querySelector('.course-status-select').value;
         const format = card.querySelector('.course-format-select').value;
         const startDate = card.querySelector('.course-start-date').value || null;
+        const endDate = card.querySelector('.course-end-date').value || null;
         const subtitle = card.querySelector('.course-subtitle')?.value || '';
         const instructor = card.querySelector('.course-instructor')?.value || '';
         const batchInfo = card.querySelector('.course-batch-info')?.value?.trim() || null;
         const nextBatchManual = card.querySelector('.course-next-batch')?.value?.trim() || null;
 
-        // Auto-generate next_batch_info from start date; fall back to manual field
+        // Auto-generate next_batch_info from dates; fall back to manual field
         let nextBatch = nextBatchManual;
         if (startDate) {
-            const d = new Date(startDate + 'T00:00:00');
-            if (!isNaN(d)) nextBatch = 'Starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const s = new Date(startDate + 'T00:00:00');
+            const e = endDate ? new Date(endDate + 'T00:00:00') : null;
+            if (!isNaN(s)) {
+                if (e && !isNaN(e)) {
+                    const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+                    if (sameMonth) {
+                        nextBatch = s.toLocaleDateString('en-US', { month: 'long' }) + ' ' + s.getDate() + '–' + e.getDate() + ', ' + s.getFullYear();
+                    } else {
+                        nextBatch = s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' – ' + e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    }
+                } else {
+                    nextBatch = 'Starts ' + s.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                }
+            }
         }
         const isVisible = card.querySelector('.toggle-track[data-field="is_visible"]').classList.contains('active');
 
@@ -852,6 +871,7 @@
             status,
             format,
             start_date: startDate,
+            end_date: endDate,
             next_batch_info: nextBatch,
             batch_info: batchInfo,
             subtitle,
