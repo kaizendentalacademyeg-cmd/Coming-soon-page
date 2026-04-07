@@ -670,6 +670,7 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
     transition: border-color 0.15s;
 }
 .ce-field .form-control:focus { outline: none; border-color: var(--admin-accent); }
+.ce-hint { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 0.2rem; display: block; }
 
 /* ── Pricing Tier Rows ── */
 .course-tiers-list { display: flex; flex-direction: column; gap: 0.6rem; }

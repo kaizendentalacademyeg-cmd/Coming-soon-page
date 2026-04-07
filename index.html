@@ -730,7 +730,7 @@
     document.addEventListener('DOMContentLoaded', async () => {
         try {
             if (typeof SUPABASE_URL === 'undefined') return;
-            const res = await fetch(SUPABASE_URL + '/rest/v1/courses?select=slug,start_date,next_batch_info,subtitle,status,is_visible&is_visible=eq.true&status=neq.draft', {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/courses?select=slug,start_date,next_batch_info,batch_info,status,is_visible&is_visible=eq.true&status=neq.draft', {
                 headers: { 'apikey': SUPABASE_ANON_KEY }
             });
             if (!res.ok) return;
@@ -743,20 +743,33 @@
                 return 'Starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             }
 
+            const badgeColors = {
+                active:      'linear-gradient(135deg, #ef4444, #dc2626)',
+                coming_soon: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                completed:   'linear-gradient(135deg, #22c55e, #16a34a)',
+                draft:       'linear-gradient(135deg, #6b7280, #4b5563)'
+            };
+
             data.forEach(course => {
                 const dateText = formatStartDate(course.start_date) || course.next_batch_info || '';
 
                 if (course.slug === 'simplified-veneers') {
                     const badge = document.getElementById('veneers-main-badge');
-                    if (badge && course.subtitle) badge.textContent = course.subtitle;
+                    if (badge) {
+                        if (course.batch_info) badge.textContent = course.batch_info;
+                        if (badgeColors[course.status]) badge.style.background = badgeColors[course.status];
+                    }
                     const nextText = document.getElementById('veneers-main-next');
-                    if (nextText && dateText) nextText.innerHTML = '🗓️ Next Batch: ' + dateText;
+                    if (nextText) nextText.innerHTML = dateText ? '🗓️ Next Batch: ' + dateText : '🗓️ Next Batch: Coming Soon';
                 }
                 else if (course.slug === '3d-bioprinting') {
                     const badge = document.getElementById('bioprint-main-badge');
-                    if (badge && course.subtitle) badge.textContent = course.subtitle;
+                    if (badge) {
+                        if (course.batch_info) badge.textContent = course.batch_info;
+                        if (badgeColors[course.status]) badge.style.background = badgeColors[course.status];
+                    }
                     const nextText = document.getElementById('bioprint-main-next');
-                    if (nextText && dateText) nextText.innerHTML = '🗓️ Next Batch: ' + dateText;
+                    if (nextText) nextText.innerHTML = dateText ? '🗓️ Next Batch: ' + dateText : '🗓️ Next Batch: Coming Soon';
                 }
                 else if (course.slug === 'ksc') {
                     const nextText = document.getElementById('ksc-main-next');

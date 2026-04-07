@@ -641,6 +641,16 @@
                                         <option value="draft" ${c.status === 'draft' ? 'selected' : ''}>⚪ Draft</option>
                                     </select>
                                 </div>
+                                <div class="ce-field">
+                                    <label>Card Badge Text</label>
+                                    <input type="text" class="course-batch-info form-control" value="${esc(c.batch_info || '')}" placeholder="e.g. 1st Batch Completed, New Program">
+                                    <span class="ce-hint">Shown on the homepage course card badge.</span>
+                                </div>
+                                <div class="ce-field">
+                                    <label>Next Batch Label</label>
+                                    <input type="text" class="course-next-batch form-control" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Coming Soon, Q3 2026">
+                                    <span class="ce-hint">Overridden automatically when Start Date is set.</span>
+                                </div>
                             </div>
                         </div>
 
@@ -809,9 +819,11 @@
         const startDate = card.querySelector('.course-start-date').value || null;
         const subtitle = card.querySelector('.course-subtitle')?.value || '';
         const instructor = card.querySelector('.course-instructor')?.value || '';
+        const batchInfo = card.querySelector('.course-batch-info')?.value?.trim() || null;
+        const nextBatchManual = card.querySelector('.course-next-batch')?.value?.trim() || null;
 
-        // Auto-generate "next_batch_info" display text from the start date
-        let nextBatch = null;
+        // Auto-generate next_batch_info from start date; fall back to manual field
+        let nextBatch = nextBatchManual;
         if (startDate) {
             const d = new Date(startDate + 'T00:00:00');
             if (!isNaN(d)) nextBatch = 'Starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
@@ -836,17 +848,18 @@
         btn.textContent = 'Saving...';
         btn.disabled = true;
 
-        const updateData = { 
-            status, 
+        const updateData = {
+            status,
             format,
-            start_date: startDate, 
-            next_batch_info: nextBatch, 
+            start_date: startDate,
+            next_batch_info: nextBatch,
+            batch_info: batchInfo,
             subtitle,
             instructor,
             pricing_tiers: pricingTiers,
             highlights,
-            is_visible: isVisible, 
-            updated_at: new Date().toISOString() 
+            is_visible: isVisible,
+            updated_at: new Date().toISOString()
         };
 
         try {
