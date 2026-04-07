@@ -1185,7 +1185,7 @@
             }
             return 'Starts ' + s.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
-        const startDisplayText = buildDateText(courseData.start_date, courseData.end_date) || courseData.next_batch_info || courseData.batch_info || '';
+        const startDisplayText = courseData.next_batch_info || buildDateText(courseData.start_date, courseData.end_date) || courseData.batch_info || '';
         if (startDisplayText) {
             const badge = document.getElementById('veneersBatchBadge');
             if (badge) badge.textContent = startDisplayText;

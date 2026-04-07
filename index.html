@@ -757,7 +757,7 @@
             };
 
             data.forEach(course => {
-                const dateText = buildDateText(course.start_date, course.end_date) || course.next_batch_info || '';
+                const dateText = course.next_batch_info || buildDateText(course.start_date, course.end_date) || '';
 
                 if (course.slug === 'simplified-veneers') {
                     const badge = document.getElementById('veneers-main-badge');

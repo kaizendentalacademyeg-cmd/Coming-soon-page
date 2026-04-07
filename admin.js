@@ -861,24 +861,8 @@
         const nextBatchManual = card.querySelector('.course-next-batch')?.value?.trim() || null;
         const nextBatchNote = card.querySelector('.course-next-batch-note')?.value?.trim() ?? null;
 
-        // Auto-generate next_batch_info from dates; fall back to manual field
-        let nextBatch = nextBatchManual;
-        if (startDate) {
-            const s = new Date(startDate + 'T00:00:00');
-            const e = endDate ? new Date(endDate + 'T00:00:00') : null;
-            if (!isNaN(s)) {
-                if (e && !isNaN(e)) {
-                    const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
-                    if (sameMonth) {
-                        nextBatch = s.toLocaleDateString('en-US', { month: 'long' }) + ' ' + s.getDate() + '–' + e.getDate() + ', ' + s.getFullYear();
-                    } else {
-                        nextBatch = s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' – ' + e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                    }
-                } else {
-                    nextBatch = 'Starts ' + s.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-                }
-            }
-        }
+        // Save exactly what's in the label field — auto-fill in the UI is just a suggestion
+        const nextBatch = nextBatchManual || null;
         const isVisible = card.querySelector('.toggle-track[data-field="is_visible"]').classList.contains('active');
 
         // Parse Prices (Row-based)
