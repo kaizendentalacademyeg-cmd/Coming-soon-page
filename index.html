@@ -730,17 +730,23 @@
     document.addEventListener('DOMContentLoaded', async () => {
         try {
             if (typeof SUPABASE_URL === 'undefined') return;
-            const res = await fetch(SUPABASE_URL + '/rest/v1/courses?select=slug,start_date,next_batch_info,batch_info,status,is_visible&is_visible=eq.true&status=neq.draft', {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/courses?select=slug,start_date,end_date,next_batch_info,batch_info,status,is_visible&is_visible=eq.true&status=neq.draft', {
                 headers: { 'apikey': SUPABASE_ANON_KEY }
             });
             if (!res.ok) return;
             const data = await res.json();
 
-            function formatStartDate(dateStr) {
-                if (!dateStr) return '';
-                const d = new Date(dateStr + 'T00:00:00');
-                if (isNaN(d)) return '';
-                return 'Starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            function buildDateText(start, end) {
+                if (!start) return '';
+                const s = new Date(start + 'T00:00:00');
+                const e = end ? new Date(end + 'T00:00:00') : null;
+                if (isNaN(s)) return '';
+                if (e && !isNaN(e)) {
+                    const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+                    if (sameMonth) return s.toLocaleDateString('en-US', { month: 'long' }) + ' ' + s.getDate() + '\u2013' + e.getDate() + ', ' + s.getFullYear();
+                    return s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' \u2013 ' + e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                }
+                return 'Starts ' + s.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
             }
 
             const badgeColors = {
@@ -751,7 +757,7 @@
             };
 
             data.forEach(course => {
-                const dateText = formatStartDate(course.start_date) || course.next_batch_info || '';
+                const dateText = buildDateText(course.start_date, course.end_date) || course.next_batch_info || '';
 
                 if (course.slug === 'simplified-veneers') {
                     const badge = document.getElementById('veneers-main-badge');
