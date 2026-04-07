@@ -943,3 +943,138 @@ h4.post-heading { font-size: 1.05rem; font-weight: 600; color: rgba(255,255,255,
         border-radius: 20px;
     }
 }
+
+/* ═══ KAIZEN BLOCK SPACING CONTROLS ═══ */
+.post-section__column {
+    gap: 0;
+}
+.post-section--single .post-section__column {
+    gap: 0;
+}
+.post-block {
+    min-width: 0;
+}
+.post-section__column > .post-block:first-child {
+    margin-top: 0 !important;
+}
+.post-section__column > .post-block:last-child {
+    margin-bottom: 0 !important;
+}
+.post-block > :first-child {
+    margin-top: 0 !important;
+}
+.post-block > :last-child {
+    margin-bottom: 0 !important;
+}
+.post-block--before-none { margin-top: 0; }
+.post-block--before-tight { margin-top: 0.35rem; }
+.post-block--before-normal { margin-top: 0.8rem; }
+.post-block--before-relaxed { margin-top: 1.35rem; }
+.post-block--before-airy { margin-top: 2rem; }
+.post-block--after-none { margin-bottom: 0; }
+.post-block--after-tight { margin-bottom: 0.45rem; }
+.post-block--after-normal { margin-bottom: 1rem; }
+.post-block--after-relaxed { margin-bottom: 1.6rem; }
+.post-block--after-airy { margin-bottom: 2.3rem; }
+@media (max-width: 768px) {
+    .post-block--before-airy { margin-top: 1.5rem; }
+    .post-block--after-airy { margin-bottom: 1.8rem; }
+    .post-block--before-relaxed { margin-top: 1.1rem; }
+    .post-block--after-relaxed { margin-bottom: 1.25rem; }
+}
+
+/* Kaizen section frame controls */
+.post-section__column--panel {
+    padding: clamp(1rem, 1.8vw, 1.35rem);
+    border-radius: 24px;
+    background: rgba(10,10,15,0.36);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.post-section--frame-auto.post-section--single .post-section__column--panel,
+.post-section--frame-none .post-section__column--panel {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+.post-section--frame-none.post-section--multi .post-section__inner {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+.post-section--frame-none.post-section--multi .post-section__grid::before {
+    display: none;
+}
+.post-section--frame-thin .post-section__column--panel {
+    border-width: 1px;
+    border-color: rgba(255,255,255,0.08);
+    background: rgba(12,12,18,0.34);
+}
+.post-section--frame-medium .post-section__column--panel {
+    border-width: 2px;
+    border-color: rgba(255,255,255,0.12);
+    background: rgba(14,14,20,0.42);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.post-section--frame-bold .post-section__column--panel {
+    border-width: 3px;
+    border-color: rgba(231,175,32,0.22);
+    background: linear-gradient(180deg, rgba(199,113,17,0.14), rgba(16,11,7,0.72));
+    box-shadow: 0 16px 34px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.post-section--surface-card.post-section--frame-bold .post-section__column--panel,
+.post-section--surface-accent.post-section--frame-bold .post-section__column--panel {
+    border-color: rgba(231,175,32,0.28);
+}
+@media (max-width: 1024px) {
+    .post-section__column--panel {
+        padding: 1rem;
+    }
+}
+@media (max-width: 768px) {
+    .post-section__column--panel {
+        border-radius: 20px;
+    }
+}
+
+/* Kaizen block border controls */
+.post-block--border-none {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+.post-block--border-thin {
+    padding: 0.85rem 1rem;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.022);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.post-block--border-medium {
+    padding: 1rem 1.1rem;
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.11);
+    background: rgba(255,255,255,0.03);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.post-block--border-bold {
+    padding: 1.1rem 1.2rem;
+    border-radius: 22px;
+    border: 3px solid rgba(231,175,32,0.18);
+    background: linear-gradient(180deg, rgba(199,113,17,0.1), rgba(20,14,9,0.56));
+    box-shadow: 0 16px 30px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+@media (max-width: 768px) {
+    .post-block--border-thin,
+    .post-block--border-medium,
+    .post-block--border-bold {
+        padding: 0.85rem 0.95rem;
+    }
+    .post-block--border-bold {
+        border-width: 2px;
+    }
+}

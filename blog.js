@@ -534,6 +534,7 @@
         const width = ['narrow', 'wide', 'full'].includes(data.width) ? data.width : 'wide';
         const surface = ['default', 'card', 'muted', 'accent'].includes(data.surface) ? data.surface : 'default';
         const gap = ['compact', 'normal', 'loose'].includes(data.gap) ? data.gap : 'normal';
+        const frame = ['auto', 'none', 'thin', 'medium', 'bold'].includes(data.frame) ? data.frame : 'auto';
 
         return {
             type: 'section',
@@ -542,6 +543,7 @@
                 width,
                 surface,
                 gap,
+                frame,
                 columns: reflowBlogColumns(data.columns, getBlogLayoutColumnCount(layout))
             }
         };
@@ -559,17 +561,33 @@
         });
     }
 
+    function normalizeBlogBlockSpacing(value, fallback = 'normal') {
+        return ['none', 'tight', 'normal', 'relaxed', 'airy'].includes(value) ? value : fallback;
+    }
+
+    function normalizeBlogBlockBorder(value, fallback = 'none') {
+        return ['none', 'thin', 'medium', 'bold'].includes(value) ? value : fallback;
+    }
+
+    function wrapRenderedBlogBlock(block, html) {
+        if (!html) return '';
+        const data = block?.data || {};
+        const before = normalizeBlogBlockSpacing(data.spaceBefore, 'none');
+        const after = normalizeBlogBlockSpacing(data.spaceAfter, 'normal');
+        const border = normalizeBlogBlockBorder(data.borderStyle, 'none');
+        return `<div class="post-block post-block--type-${esc(block.type || 'paragraph')} post-block--before-${before} post-block--after-${after} post-block--border-${border}">${html}</div>`;
+    }
     function renderBlogBlock(block) {
         if (!block || !block.type) return '';
         const d = block.data || {};
 
         switch (block.type) {
             case 'paragraph':
-                return d.text ? `<p>${d.text}</p>` : '';
+                return wrapRenderedBlogBlock(block, d.text ? `<p>${d.text}</p>` : '');
 
             case 'header': {
                 const lvl = Math.min(Math.max(Number(d.level) || 2, 2), 6);
-                return d.text ? `<h${lvl} class="post-heading">${d.text}</h${lvl}>` : '';
+                return wrapRenderedBlogBlock(block, d.text ? `<h${lvl} class="post-heading">${d.text}</h${lvl}>` : '');
             }
 
             case 'list': {
@@ -578,7 +596,7 @@
                     const text = typeof item === 'string' ? item : (item?.content || '');
                     return plainText(text) ? `<li>${esc(plainText(text))}</li>` : '';
                 }).filter(Boolean).join('');
-                return items ? `<${tag} class="post-list">${items}</${tag}>` : '';
+                return wrapRenderedBlogBlock(block, items ? `<${tag} class="post-list">${items}</${tag}>` : '');
             }
 
             case 'image': {
@@ -595,20 +613,20 @@
                     d.stretched || size === 'full' ? 'post-image--stretched' : ''
                 ].filter(Boolean).join(' ');
                 const cap = d.caption ? `<figcaption class="post-image-caption">${esc(d.caption)}</figcaption>` : '';
-                return `<figure class="${cls}"><img src="${esc(url)}" alt="${esc(d.caption || '')}" loading="lazy">${cap}</figure>`;
+                return wrapRenderedBlogBlock(block, `<figure class="${cls}"><img src="${esc(url)}" alt="${esc(d.caption || '')}" loading="lazy">${cap}</figure>`);
             }
 
             case 'quote': {
                 const text = d.text || '';
                 const caption = d.caption ? `<cite>${esc(d.caption)}</cite>` : '';
-                return text || caption ? `<blockquote class="post-quote"><p>${text}</p>${caption}</blockquote>` : '';
+                return wrapRenderedBlogBlock(block, text || caption ? `<blockquote class="post-quote"><p>${text}</p>${caption}</blockquote>` : '');
             }
 
             case 'callout': {
                 const tone = ['accent', 'info', 'success', 'warning'].includes(d.tone) ? d.tone : 'accent';
                 const title = d.title ? `<strong class="post-callout__title">${esc(d.title)}</strong>` : '';
                 const text = d.text ? `<div class="post-callout__body">${d.text}</div>` : '';
-                return title || text ? `<aside class="post-callout post-callout--${tone}">${title}${text}</aside>` : '';
+                return wrapRenderedBlogBlock(block, title || text ? `<aside class="post-callout post-callout--${tone}">${title}${text}</aside>` : '');
             }
 
             case 'button': {
@@ -617,27 +635,26 @@
                 const style = ['solid', 'outline', 'ghost'].includes(d.style) ? d.style : 'solid';
                 const align = ['left', 'center', 'right'].includes(d.align) ? d.align : 'left';
                 const text = esc(d.text || 'Learn More');
-                return `<div class="post-button-row post-button-row--${align}"><a class="post-button post-button--${style}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${text}</a></div>`;
+                return wrapRenderedBlogBlock(block, `<div class="post-button-row post-button-row--${align}"><a class="post-button post-button--${style}" href="${esc(url)}" target="_blank" rel="noopener noreferrer">${text}</a></div>`);
             }
 
             case 'delimiter':
-                return `<div class="post-delimiter"><span>✦ ✦ ✦</span></div>`;
+                return wrapRenderedBlogBlock(block, `<div class="post-delimiter"><span>✦ ✦ ✦</span></div>`);
 
             case 'embed': {
                 const src = d.embed || d.url || '';
                 if (!src) return '';
                 const cap = d.caption ? `<p class="post-embed-caption">${esc(d.caption)}</p>` : '';
-                return `<div class="post-embed"><iframe src="${esc(src)}" loading="lazy" allowfullscreen allow="autoplay; encrypted-media"></iframe>${cap}</div>`;
+                return wrapRenderedBlogBlock(block, `<div class="post-embed"><iframe src="${esc(src)}" loading="lazy" allowfullscreen allow="autoplay; encrypted-media"></iframe>${cap}</div>`);
             }
 
             case 'code':
-                return d.code ? `<pre class="post-code"><code>${esc(d.code)}</code></pre>` : '';
+                return wrapRenderedBlogBlock(block, d.code ? `<pre class="post-code"><code>${esc(d.code)}</code></pre>` : '');
 
             default:
                 return '';
         }
     }
-
     function renderBlogSection(section) {
         const normalized = normalizeBlogSection(section);
         const data = normalized.data;
@@ -645,10 +662,12 @@
         if (!renderedColumns.some(Boolean)) return '';
 
         const isMultiColumn = data.columns.length > 1;
+        const shouldFrameColumns = data.frame === 'auto' ? isMultiColumn : data.frame !== 'none';
         const sectionClasses = [
             'post-section',
             `post-section--width-${data.width}`,
             `post-section--surface-${data.surface}`,
+            `post-section--frame-${data.frame}`,
             isMultiColumn ? 'post-section--multi' : 'post-section--single'
         ].join(' ');
         const gridClasses = [
@@ -662,7 +681,7 @@
             <section class="${sectionClasses}">
                 <div class="post-section__inner">
                     <div class="${gridClasses}">
-                        ${renderedColumns.map((columnHtml, columnIndex) => `<div class="post-section__column${isMultiColumn ? ' post-section__column--panel' : ''}" data-column="${columnIndex + 1}">${columnHtml}</div>`).join('')}
+                        ${renderedColumns.map((columnHtml, columnIndex) => `<div class="post-section__column${shouldFrameColumns ? ' post-section__column--panel' : ''}" data-column="${columnIndex + 1}">${columnHtml}</div>`).join('')}
                     </div>
                 </div>
             </section>
@@ -694,6 +713,7 @@
         return `<div class="post-layout">${sections.map(renderBlogSection).filter(Boolean).join('\n')}</div>`;
     }
 })();
+
 
 
 

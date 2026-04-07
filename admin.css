@@ -1293,3 +1293,37 @@ select.form-control { appearance: none; background-image: url("data:image/svg+xm
         justify-content: flex-start;
     }
 }
+
+.layout-block-spacing-grid {
+    margin-top: 0.2rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Kaizen layout control expansion */
+.layout-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.layout-grid--five {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.layout-block-spacing-grid {
+    align-items: end;
+}
+@media (max-width: 1200px) {
+    .layout-grid--five {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+@media (max-width: 900px) {
+    .layout-grid--three,
+    .layout-grid--five {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 720px) {
+    .layout-grid--three,
+    .layout-grid--five {
+        grid-template-columns: 1fr;
+    }
+}

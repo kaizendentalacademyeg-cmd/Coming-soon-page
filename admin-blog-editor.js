@@ -28,6 +28,29 @@
         loose: 'Spacious'
     };
 
+    const BLOCK_SPACING_OPTIONS = {
+        none: 'None',
+        tight: 'Tight',
+        normal: 'Normal',
+        relaxed: 'Relaxed',
+        airy: 'Airy'
+    };
+
+    const BLOCK_BORDER_OPTIONS = {
+        none: 'No Border',
+        thin: 'Thin Border',
+        medium: 'Medium Border',
+        bold: 'Bold Border'
+    };
+
+    const SECTION_COLUMN_FRAMES = {
+        auto: 'Auto',
+        none: 'None',
+        thin: 'Thin',
+        medium: 'Medium',
+        bold: 'Bold'
+    };
+
     const BLOCK_DEFINITIONS = {
         header: { label: 'Heading', hint: 'Section title or eyebrow' },
         paragraph: { label: 'Paragraph', hint: 'Main story copy' },
@@ -162,21 +185,45 @@
         return SECTION_LAYOUTS[layout]?.columns || 1;
     }
 
-    function createDefaultBlock(type = 'paragraph') {
-        switch (type) {
-            case 'header': return { type: 'header', data: { text: '', level: 2 } };
-            case 'image': return { type: 'image', data: { url: '', caption: '', size: 'large', withBorder: false, withBackground: false } };
-            case 'list': return { type: 'list', data: { style: 'unordered', items: [] } };
-            case 'quote': return { type: 'quote', data: { text: '', caption: '' } };
-            case 'callout': return { type: 'callout', data: { title: '', text: '', tone: 'accent' } };
-            case 'button': return { type: 'button', data: { text: 'Learn More', url: '', style: 'solid', align: 'left' } };
-            case 'embed': return { type: 'embed', data: { url: '', caption: '' } };
-            case 'code': return { type: 'code', data: { code: '' } };
-            case 'delimiter': return { type: 'delimiter', data: {} };
-            default: return { type: 'paragraph', data: { text: '' } };
-        }
+    function normalizeBlockSpacingValue(value, fallback = 'normal') {
+        return Object.prototype.hasOwnProperty.call(BLOCK_SPACING_OPTIONS, value) ? value : fallback;
     }
 
+    function normalizeBlockBorderValue(value, fallback = 'none') {
+        return Object.prototype.hasOwnProperty.call(BLOCK_BORDER_OPTIONS, value) ? value : fallback;
+    }
+
+    function normalizeSectionFrameValue(value, fallback = 'auto') {
+        return Object.prototype.hasOwnProperty.call(SECTION_COLUMN_FRAMES, value) ? value : fallback;
+    }
+
+    function getDefaultBlockSpacing() {
+        return { spaceBefore: 'none', spaceAfter: 'normal', borderStyle: 'none' };
+    }
+
+    function withBlockSpacing(data = {}) {
+        return {
+            ...data,
+            ...getDefaultBlockSpacing(),
+            spaceBefore: normalizeBlockSpacingValue(data.spaceBefore, 'none'),
+            spaceAfter: normalizeBlockSpacingValue(data.spaceAfter, 'normal'),
+            borderStyle: normalizeBlockBorderValue(data.borderStyle, 'none')
+        };
+    }
+    function createDefaultBlock(type = 'paragraph') {
+        switch (type) {
+            case 'header': return { type: 'header', data: withBlockSpacing({ text: '', level: 2 }) };
+            case 'image': return { type: 'image', data: withBlockSpacing({ url: '', caption: '', size: 'large', withBorder: false, withBackground: false }) };
+            case 'list': return { type: 'list', data: withBlockSpacing({ style: 'unordered', items: [] }) };
+            case 'quote': return { type: 'quote', data: withBlockSpacing({ text: '', caption: '' }) };
+            case 'callout': return { type: 'callout', data: withBlockSpacing({ title: '', text: '', tone: 'accent' }) };
+            case 'button': return { type: 'button', data: withBlockSpacing({ text: 'Learn More', url: '', style: 'solid', align: 'left' }) };
+            case 'embed': return { type: 'embed', data: withBlockSpacing({ url: '', caption: '' }) };
+            case 'code': return { type: 'code', data: withBlockSpacing({ code: '' }) };
+            case 'delimiter': return { type: 'delimiter', data: withBlockSpacing({}) };
+            default: return { type: 'paragraph', data: withBlockSpacing({ text: '' }) };
+        }
+    }
     function createDefaultSection(layout = 'single') {
         const columns = Array.from({ length: getLayoutColumnCount(layout) }, () => ({ blocks: [] }));
         return {
@@ -186,6 +233,7 @@
                 width: 'wide',
                 surface: 'default',
                 gap: 'normal',
+                frame: 'auto',
                 columns
             }
         };
@@ -200,16 +248,18 @@
     function normalizeBlock(block) {
         if (!block || !block.type) return null;
         const data = block.data || {};
+        const spacing = withBlockSpacing(data);
 
         switch (block.type) {
             case 'header':
-                return { type: 'header', data: { text: cleanRichTextHtml(data.text || ''), level: clampHeadingLevel(data.level) } };
+                return { type: 'header', data: { ...spacing, text: cleanRichTextHtml(data.text || ''), level: clampHeadingLevel(data.level) } };
             case 'paragraph':
-                return { type: 'paragraph', data: { text: cleanRichTextHtml(data.text || '') } };
+                return { type: 'paragraph', data: { ...spacing, text: cleanRichTextHtml(data.text || '') } };
             case 'image':
                 return {
                     type: 'image',
                     data: {
+                        ...spacing,
                         url: String(data.file?.url || data.url || '').trim(),
                         caption: plainText(data.caption || ''),
                         size: normalizeImageSize(data.size, data.stretched),
@@ -218,13 +268,14 @@
                     }
                 };
             case 'list':
-                return { type: 'list', data: { style: data.style === 'ordered' ? 'ordered' : 'unordered', items: normalizeListItems(data.items) } };
+                return { type: 'list', data: { ...spacing, style: data.style === 'ordered' ? 'ordered' : 'unordered', items: normalizeListItems(data.items) } };
             case 'quote':
-                return { type: 'quote', data: { text: cleanRichTextHtml(data.text || ''), caption: plainText(data.caption || '') } };
+                return { type: 'quote', data: { ...spacing, text: cleanRichTextHtml(data.text || ''), caption: plainText(data.caption || '') } };
             case 'callout':
                 return {
                     type: 'callout',
                     data: {
+                        ...spacing,
                         title: plainText(data.title || ''),
                         text: cleanRichTextHtml(data.text || ''),
                         tone: Object.prototype.hasOwnProperty.call(CALLOUT_TONES, data.tone) ? data.tone : 'accent'
@@ -234,6 +285,7 @@
                 return {
                     type: 'button',
                     data: {
+                        ...spacing,
                         text: plainText(data.text || ''),
                         url: normalizeExternalUrl(data.url || ''),
                         style: Object.prototype.hasOwnProperty.call(BUTTON_STYLES, data.style) ? data.style : 'solid',
@@ -241,17 +293,16 @@
                     }
                 };
             case 'embed':
-                return { type: 'embed', data: { url: normalizeEmbedUrl(data.embed || data.url || ''), caption: plainText(data.caption || '') } };
+                return { type: 'embed', data: { ...spacing, url: normalizeEmbedUrl(data.embed || data.url || ''), caption: plainText(data.caption || '') } };
             case 'code':
-                return { type: 'code', data: { code: String(data.code || '') } };
+                return { type: 'code', data: { ...spacing, code: String(data.code || '') } };
             case 'delimiter':
-                return { type: 'delimiter', data: {} };
+                return { type: 'delimiter', data: { ...spacing } };
             default:
-                if (data.text) return { type: 'paragraph', data: { text: cleanRichTextHtml(data.text) } };
+                if (data.text) return { type: 'paragraph', data: { ...spacing, text: cleanRichTextHtml(data.text) } };
                 return null;
         }
     }
-
     function normalizeColumn(column) {
         return {
             blocks: (Array.isArray(column?.blocks) ? column.blocks : []).map(normalizeBlock).filter(Boolean)
@@ -280,6 +331,7 @@
                 width: Object.prototype.hasOwnProperty.call(SECTION_WIDTHS, data.width) ? data.width : 'wide',
                 surface: Object.prototype.hasOwnProperty.call(SECTION_SURFACES, data.surface) ? data.surface : 'default',
                 gap: Object.prototype.hasOwnProperty.call(SECTION_GAPS, data.gap) ? data.gap : 'normal',
+                frame: normalizeSectionFrameValue(data.frame, 'auto'),
                 columns: reflowColumns(data.columns, getLayoutColumnCount(layout))
             }
         };
@@ -464,10 +516,11 @@
                             <button type="button" class="layout-action layout-action--danger" data-action="delete-section" data-section="${sectionIndex}" title="Delete section">Delete</button>
                         </div>
                     </div>
-                    <div class="layout-grid layout-grid--four layout-section-controls">
+                    <div class="layout-grid layout-grid--five layout-section-controls">
                         ${this.renderSelectField('Layout', this.sectionAttrs(sectionIndex, 'layout', 'select'), data.layout, SECTION_LAYOUTS)}
                         ${this.renderSelectField('Width', this.sectionAttrs(sectionIndex, 'width', 'select'), data.width, SECTION_WIDTHS)}
                         ${this.renderSelectField('Surface', this.sectionAttrs(sectionIndex, 'surface', 'select'), data.surface, SECTION_SURFACES)}
+                        ${this.renderSelectField('Column Frame', this.sectionAttrs(sectionIndex, 'frame', 'select'), data.frame || 'auto', SECTION_COLUMN_FRAMES)}
                         ${this.renderSelectField('Spacing', this.sectionAttrs(sectionIndex, 'gap', 'select'), data.gap, SECTION_GAPS)}
                     </div>
                     <div class="layout-section-grid layout-section-grid--${data.layout} layout-section-grid--gap-${data.gap}">
@@ -510,6 +563,7 @@
 
         renderBlock(block, sectionIndex, columnIndex, blockIndex) {
             const meta = BLOCK_DEFINITIONS[block.type] || { label: 'Block', hint: '' };
+            const data = block.data || {};
             const showHorizontalMove = this.getSection(sectionIndex)?.data?.columns?.length > 1;
             return `
                 <article class="layout-block-card layout-block-card--${block.type}">
@@ -529,6 +583,7 @@
                     </div>
                     <div class="layout-block-card__body">
                         ${this.renderBlockBody(block, sectionIndex, columnIndex, blockIndex)}
+                        ${this.renderBlockSpacingFields(sectionIndex, columnIndex, blockIndex, data)}
                     </div>
                 </article>
             `;
@@ -642,6 +697,17 @@
             }
         }
 
+
+        renderBlockSpacingFields(sectionIndex, columnIndex, blockIndex, data) {
+            const attrs = (field) => this.blockAttrs(sectionIndex, columnIndex, blockIndex, field, 'select');
+            return `
+                <div class="layout-grid layout-grid--three layout-block-spacing-grid">
+                    ${this.renderSelectField('Space Before', attrs('spaceBefore'), data.spaceBefore || 'none', BLOCK_SPACING_OPTIONS)}
+                    ${this.renderSelectField('Space After', attrs('spaceAfter'), data.spaceAfter || 'normal', BLOCK_SPACING_OPTIONS)}
+                    ${this.renderSelectField('Block Border', attrs('borderStyle'), data.borderStyle || 'none', BLOCK_BORDER_OPTIONS)}
+                </div>
+            `;
+        }
         renderInputField(label, attrs, value, placeholder) {
             return `
                 <label class="layout-field">
@@ -874,11 +940,18 @@
             }
             if (field === 'gap') {
                 data.gap = Object.prototype.hasOwnProperty.call(SECTION_GAPS, value) ? value : 'normal';
+                return;
+            }
+            if (field === 'frame') {
+                data.frame = normalizeSectionFrameValue(value, 'auto');
             }
         }
 
         updateBlockField(block, field, value, commit) {
             const data = block.data || (block.data = {});
+            if (field === 'spaceBefore') { data.spaceBefore = normalizeBlockSpacingValue(value, 'none'); return; }
+            if (field === 'spaceAfter') { data.spaceAfter = normalizeBlockSpacingValue(value, 'normal'); return; }
+            if (field === 'borderStyle') { data.borderStyle = normalizeBlockBorderValue(value, 'none'); return; }
             switch (block.type) {
                 case 'header':
                     if (field === 'text') data.text = cleanRichTextHtml(value);
@@ -1143,4 +1216,8 @@
 
     window.KaizenBlogEditor = KaizenBlogEditor;
 })();
+
+
+
+
 
