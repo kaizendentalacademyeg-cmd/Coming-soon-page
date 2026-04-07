@@ -604,6 +604,18 @@
                 const highlights = Array.isArray(c.highlights) ? c.highlights : [];
                 const tiers = Array.isArray(c.pricing_tiers) ? c.pricing_tiers : [];
                 const priceDisplay = tiers.length ? tiers.map(t => `${t.name}: ${Number(t.price).toLocaleString()} ${t.currency || 'EGP'}`).join(' · ') : 'No pricing set';
+                // Extract Early Bird / Late Owl from tiers
+                const earlyBird = tiers.find(t => t.name === 'Early Bird');
+                const lateOwl  = tiers.find(t => t.name === 'Late Owl');
+                const otherTiersHtml = tiers.filter(t => t.name !== 'Early Bird' && t.name !== 'Late Owl').map(t => `
+                    <div class="tier-edit-row">
+                        <div class="tier-field"><label>Name</label><input type="text" class="tier-name form-control" value="${esc(t.name||'')}" placeholder="e.g. Special"></div>
+                        <div class="tier-field"><label>Price</label><input type="number" class="tier-price form-control" value="${t.price||''}"></div>
+                        <div class="tier-field tier-field-sm"><label>Currency</label><select class="tier-currency form-control"><option value="EGP" ${(t.currency||'EGP')==='EGP'?'selected':''}>EGP</option><option value="USD" ${t.currency==='USD'?'selected':''}>USD</option></select></div>
+                        <div class="tier-field"><label>Deadline</label><input type="date" class="tier-deadline form-control" value="${t.deadline||''}"></div>
+                        <div class="tier-field" style="flex:1.5"><label>Note</label><input type="text" class="tier-condition form-control" value="${esc(t.condition||'')}"></div>
+                        <button class="btn-remove-tier" type="button">✕</button>
+                    </div>`).join('');
 
                 return `
                 <div class="course-accord" data-course-id="${c.id}">
@@ -661,8 +673,8 @@
                                 </div>
                                 <div class="ce-field">
                                     <label>Next Batch Label</label>
-                                    <input type="text" class="course-next-batch form-control" value="${esc(buildAdminDateLabel(c.start_date, c.end_date) || c.next_batch_info || '')}" placeholder="e.g. Coming Soon, Q3 2026">
-                                    <span class="ce-hint">Auto-fills from Start/End Date. Edit manually to override.</span>
+                                    <input type="text" class="course-next-batch form-control" value="${esc(c.next_batch_info || buildAdminDateLabel(c.start_date, c.end_date) || '')}" placeholder="e.g. Coming Soon, Q3 2026">
+                                    <span class="ce-hint">What visitors see on the card and course page. Date pickers auto-suggest this.</span>
                                 </div>
                                 <div class="ce-field" style="grid-column:1/-1">
                                     <label>Next Batch Note <span style="color:rgba(255,255,255,0.3);font-weight:400">(tagline below the date)</span></label>
@@ -672,30 +684,41 @@
                             </div>
                         </div>
 
-                        <!-- Section: Pricing -->
+                        <!-- Section: Registrations -->
                         <div class="course-editor-section">
-                            <div class="course-editor-section-title">Pricing Tiers</div>
-                            <div class="course-tiers-list">
-                                ${tiers.map((t, idx) => `
-                                <div class="tier-edit-row">
-                                    <div class="tier-field"><label>Name</label><input type="text" class="tier-name form-control" value="${esc(t.name || '')}" placeholder="e.g. Early Bird"></div>
-                                    <div class="tier-field"><label>Price</label><input type="number" class="tier-price form-control" value="${t.price || ''}" placeholder="5000"></div>
-                                    <div class="tier-field tier-field-sm"><label>Currency</label>
-                                        <select class="tier-currency form-control">
-                                            <option value="EGP" ${(t.currency||'EGP') === 'EGP' ? 'selected' : ''}>EGP</option>
-                                            <option value="USD" ${t.currency === 'USD' ? 'selected' : ''}>USD</option>
-                                        </select>
-                                    </div>
-                                    <div class="tier-field"><label>Deadline Date</label>
-                                        <input type="date" class="tier-deadline form-control" value="${t.deadline || ''}">
-                                    </div>
-                                    <div class="tier-field" style="flex: 1.5"><label>Extra Info</label>
-                                        <input type="text" class="tier-condition form-control" value="${esc(t.condition || '')}" placeholder="Optional info (e.g. Class of 2024)">
-                                    </div>
-                                    <button class="btn-remove-tier" title="Remove tier" type="button">✕</button>
-                                </div>`).join('')}
+                            <div class="course-editor-section-title">Registrations</div>
+
+                            <!-- Early Bird -->
+                            <div class="reg-tier-row">
+                                <div class="reg-tier-header">
+                                    <div class="toggle-track ${earlyBird ? 'active' : ''}" data-field="early_bird_enabled"></div>
+                                    <span class="reg-tier-label">🐦 Early Bird <span class="ce-hint" style="display:inline;margin-left:0.4rem">Early registration</span></span>
+                                </div>
+                                <div class="reg-tier-fields ${earlyBird ? '' : 'reg-disabled'}">
+                                    <div class="tier-field"><label>Price</label><input type="number" class="reg-early-price form-control" value="${earlyBird?.price || ''}" placeholder="5000"></div>
+                                    <div class="tier-field tier-field-sm"><label>Currency</label><select class="reg-early-currency form-control"><option value="EGP" ${(earlyBird?.currency||'EGP')==='EGP'?'selected':''}>EGP</option><option value="USD" ${earlyBird?.currency==='USD'?'selected':''}>USD</option></select></div>
+                                    <div class="tier-field"><label>Deadline</label><input type="date" class="reg-early-deadline form-control" value="${earlyBird?.deadline||''}"></div>
+                                    <div class="tier-field" style="flex:1.5"><label>Note</label><input type="text" class="reg-early-note form-control" value="${esc(earlyBird?.condition||'')}" placeholder="e.g. Class of 2024"></div>
+                                </div>
                             </div>
-                            <button class="add-tier-btn" type="button">+ Add Pricing Tier</button>
+
+                            <!-- Late Owl -->
+                            <div class="reg-tier-row" style="margin-top:0.75rem">
+                                <div class="reg-tier-header">
+                                    <div class="toggle-track ${lateOwl ? 'active' : ''}" data-field="late_owl_enabled"></div>
+                                    <span class="reg-tier-label">🦉 Late Owl <span class="ce-hint" style="display:inline;margin-left:0.4rem">Late registration</span></span>
+                                </div>
+                                <div class="reg-tier-fields ${lateOwl ? '' : 'reg-disabled'}">
+                                    <div class="tier-field"><label>Price</label><input type="number" class="reg-late-price form-control" value="${lateOwl?.price||''}" placeholder="6000"></div>
+                                    <div class="tier-field tier-field-sm"><label>Currency</label><select class="reg-late-currency form-control"><option value="EGP" ${(lateOwl?.currency||'EGP')==='EGP'?'selected':''}>EGP</option><option value="USD" ${lateOwl?.currency==='USD'?'selected':''}>USD</option></select></div>
+                                    <div class="tier-field"><label>Deadline</label><input type="date" class="reg-late-deadline form-control" value="${lateOwl?.deadline||''}"></div>
+                                    <div class="tier-field" style="flex:1.5"><label>Note</label><input type="text" class="reg-late-note form-control" value="${esc(lateOwl?.condition||'')}" placeholder="Optional"></div>
+                                </div>
+                            </div>
+
+                            <!-- Other custom tiers -->
+                            <div class="course-tiers-list" style="margin-top:1rem">${otherTiersHtml}</div>
+                            <button class="add-tier-btn" type="button">+ Add Custom Tier</button>
                         </div>
 
                         <!-- Section: Highlights -->
@@ -826,6 +849,15 @@
                 }
             });
 
+            // Bind registration tier toggles (Early Bird / Late Owl)
+            container.querySelectorAll('.toggle-track[data-field="early_bird_enabled"], .toggle-track[data-field="late_owl_enabled"]').forEach(tog => {
+                tog.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const fields = this.closest('.reg-tier-row').querySelector('.reg-tier-fields');
+                    if (fields) fields.classList.toggle('reg-disabled', !this.classList.contains('active'));
+                });
+            });
+
             // Live-update Next Batch Label when dates change
             container.querySelectorAll('.course-accord').forEach(accord => {
                 const startEl = accord.querySelector('.course-start-date');
@@ -865,15 +897,35 @@
         const nextBatch = nextBatchManual || null;
         const isVisible = card.querySelector('.toggle-track[data-field="is_visible"]').classList.contains('active');
 
-        // Parse Prices (Row-based)
-        const tierRows = card.querySelectorAll('.tier-edit-row');
-        const pricingTiers = Array.from(tierRows).map(row => ({
-            name: row.querySelector('.tier-name').value.trim(),
-            price: parseFloat(row.querySelector('.tier-price').value) || 0,
-            currency: row.querySelector('.tier-currency').value,
-            deadline: row.querySelector('.tier-deadline') ? row.querySelector('.tier-deadline').value : '',
-            condition: row.querySelector('.tier-condition') ? row.querySelector('.tier-condition').value.trim() : ''
-        })).filter(t => t.name || t.price);
+        // Read Early Bird / Late Owl registration tiers
+        const pricingTiers = [];
+        const earlyEnabled = card.querySelector('.toggle-track[data-field="early_bird_enabled"]')?.classList.contains('active');
+        if (earlyEnabled) pricingTiers.push({
+            name: 'Early Bird',
+            price: parseFloat(card.querySelector('.reg-early-price')?.value) || 0,
+            currency: card.querySelector('.reg-early-currency')?.value || 'EGP',
+            deadline: card.querySelector('.reg-early-deadline')?.value || '',
+            condition: card.querySelector('.reg-early-note')?.value?.trim() || ''
+        });
+        const lateEnabled = card.querySelector('.toggle-track[data-field="late_owl_enabled"]')?.classList.contains('active');
+        if (lateEnabled) pricingTiers.push({
+            name: 'Late Owl',
+            price: parseFloat(card.querySelector('.reg-late-price')?.value) || 0,
+            currency: card.querySelector('.reg-late-currency')?.value || 'EGP',
+            deadline: card.querySelector('.reg-late-deadline')?.value || '',
+            condition: card.querySelector('.reg-late-note')?.value?.trim() || ''
+        });
+        // Add any other custom tiers
+        card.querySelectorAll('.tier-edit-row').forEach(row => {
+            const name = row.querySelector('.tier-name')?.value?.trim();
+            const price = parseFloat(row.querySelector('.tier-price')?.value) || 0;
+            if (name || price) pricingTiers.push({
+                name, price,
+                currency: row.querySelector('.tier-currency')?.value || 'EGP',
+                deadline: row.querySelector('.tier-deadline')?.value || '',
+                condition: row.querySelector('.tier-condition')?.value?.trim() || ''
+            });
+        });
 
         // Parse Highlights
         const highlightsText = card.querySelector('.course-highlights-text').value;
