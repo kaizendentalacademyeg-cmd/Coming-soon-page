@@ -578,13 +578,13 @@
                     <div class="course-date-content">
                         <div class="batch-badge" id="bioprintingBatchBadge" style="background: linear-gradient(135deg, #22c55e, #16a34a); border-color: #22c55e; color: #ffffff;">✓ 2 Batches Completed</div>
                         <div class="course-date-duration">
-                            <span class="duration-number">3</span>
+                            <span class="duration-number" id="bioprintingDurationNumber">3</span>
                             <span class="duration-label" data-en="Days" data-ar="أيام">Days</span>
                         </div>
                         <div style="margin: 1.5rem 0; padding: 1.5rem 2rem; background: rgba(198, 112, 17, 0.1); border: 2px solid rgba(198, 112, 17, 0.3); border-radius: 15px;">
                             <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-accent); margin-bottom: 0.5rem;">🗓️ Next Batch</div>
                             <div id="bioprintingNextBatchText" style="font-size: 2rem; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Coming Soon</div>
-                            <div style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem;">Stay tuned for the 3rd batch announcement!</div>
+                            <div id="bioprintingNextBatchNote" style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem;">Stay tuned for the 3rd batch announcement!</div>
                         </div>
                         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
                             <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 0.5rem 1rem; border-radius: 8px; color: #22c55e; font-size: 0.9rem;">✓ 1st Batch - Completed</div>
@@ -963,23 +963,43 @@
 
         if (!courseData) return;
 
-        // Update Badge — start_date is authoritative, next_batch_info is fallback
-        function formatStartDate(dateStr) {
-            if (!dateStr) return '';
-            const d = new Date(dateStr + 'T00:00:00');
-            if (isNaN(d)) return '';
-            return 'Starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        // Build date range text from start_date + end_date, or fall back to next_batch_info
+        function buildDateText(start, end) {
+            if (!start) return '';
+            const s = new Date(start + 'T00:00:00');
+            const e = end ? new Date(end + 'T00:00:00') : null;
+            if (isNaN(s)) return '';
+            if (e && !isNaN(e)) {
+                const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+                if (sameMonth) return s.toLocaleDateString('en-US', { month: 'long' }) + ' ' + s.getDate() + '–' + e.getDate() + ', ' + s.getFullYear();
+                return s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' – ' + e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            return 'Starts ' + s.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
-        const startDisplayText = formatStartDate(courseData.start_date) || courseData.next_batch_info || courseData.batch_info || '';
+        const startDisplayText = buildDateText(courseData.start_date, courseData.end_date) || courseData.next_batch_info || courseData.batch_info || '';
         if (startDisplayText) {
             const badge = document.getElementById('bioprintingBatchBadge');
             if (badge) badge.textContent = startDisplayText;
-        }
-
-        // Update Next Batch Text
-        if (startDisplayText) {
             const nextText = document.getElementById('bioprintingNextBatchText');
             if (nextText) nextText.textContent = startDisplayText;
+        }
+
+        // Update duration (number of days between start and end)
+        if (courseData.start_date && courseData.end_date) {
+            const s = new Date(courseData.start_date + 'T00:00:00');
+            const e = new Date(courseData.end_date + 'T00:00:00');
+            if (!isNaN(s) && !isNaN(e)) {
+                const days = Math.round((e - s) / 86400000) + 1;
+                const numEl = document.getElementById('bioprintingDurationNumber');
+                if (numEl) numEl.textContent = days;
+            }
+        }
+
+        // Update next batch note (tagline below the date)
+        const noteEl = document.getElementById('bioprintingNextBatchNote');
+        if (noteEl) {
+            if (courseData.next_batch_note) noteEl.textContent = courseData.next_batch_note;
+            else if (courseData.next_batch_note === '') noteEl.style.display = 'none';
         }
 
         // Pricing logic (if tiers are added in database later)

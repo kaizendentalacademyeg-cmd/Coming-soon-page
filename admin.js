@@ -651,6 +651,11 @@
                                     <input type="text" class="course-next-batch form-control" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Coming Soon, Q3 2026">
                                     <span class="ce-hint">Overridden automatically when Start Date is set.</span>
                                 </div>
+                                <div class="ce-field" style="grid-column:1/-1">
+                                    <label>Next Batch Note <span style="color:rgba(255,255,255,0.3);font-weight:400">(tagline below the date)</span></label>
+                                    <input type="text" class="course-next-batch-note form-control" value="${esc(c.next_batch_note || '')}" placeholder="e.g. Stay tuned for the 3rd batch announcement!">
+                                    <span class="ce-hint">Leave empty to hide this line on the course page.</span>
+                                </div>
                             </div>
                         </div>
 
@@ -828,6 +833,7 @@
         const instructor = card.querySelector('.course-instructor')?.value || '';
         const batchInfo = card.querySelector('.course-batch-info')?.value?.trim() || null;
         const nextBatchManual = card.querySelector('.course-next-batch')?.value?.trim() || null;
+        const nextBatchNote = card.querySelector('.course-next-batch-note')?.value?.trim() ?? null;
 
         // Auto-generate next_batch_info from dates; fall back to manual field
         let nextBatch = nextBatchManual;
@@ -873,6 +879,7 @@
             start_date: startDate,
             end_date: endDate,
             next_batch_info: nextBatch,
+            next_batch_note: nextBatchNote,
             batch_info: batchInfo,
             subtitle,
             instructor,

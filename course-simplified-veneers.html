@@ -378,7 +378,7 @@
                     </a>
                 </div>
                 <div style="margin-top: 1.5rem; background: rgba(198, 112, 17, 0.1); border: 1px solid rgba(198, 112, 17, 0.3); border-radius: 50px; padding: 1rem 2rem; display: inline-flex; align-items: center; gap: 0.5rem;">
-                    <span style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon — Stay Tuned!</span>
+                    <span id="veneersNextBatchNote" style="color: #c77111; font-weight: 600;">🗓️ Next Batch: Coming Soon — Stay Tuned!</span>
                 </div>
             </div>
         </div>
@@ -792,7 +792,7 @@
                     <div class="course-date-content">
                         <div class="batch-badge" id="veneersBatchBadge">1st Batch</div>
                         <div class="course-date-duration">
-                            <span class="duration-number">3</span>
+                            <span class="duration-number" id="veneersDurationNumber">3</span>
                             <span class="duration-label">Days</span>
                         </div>
                         <div class="course-date-dates" id="veneersDatesContainer">
@@ -1172,17 +1172,41 @@
 
         if (!courseData) return;
 
-        // Update Badge — start_date is authoritative, next_batch_info is fallback
-        function formatStartDate(dateStr) {
-            if (!dateStr) return '';
-            const d = new Date(dateStr + 'T00:00:00');
-            if (isNaN(d)) return '';
-            return 'Starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        // Build date range text from start_date + end_date, or fall back to next_batch_info
+        function buildDateText(start, end) {
+            if (!start) return '';
+            const s = new Date(start + 'T00:00:00');
+            const e = end ? new Date(end + 'T00:00:00') : null;
+            if (isNaN(s)) return '';
+            if (e && !isNaN(e)) {
+                const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+                if (sameMonth) return s.toLocaleDateString('en-US', { month: 'long' }) + ' ' + s.getDate() + '–' + e.getDate() + ', ' + s.getFullYear();
+                return s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' – ' + e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            return 'Starts ' + s.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
-        const startDisplayText = formatStartDate(courseData.start_date) || courseData.next_batch_info || courseData.batch_info || '';
+        const startDisplayText = buildDateText(courseData.start_date, courseData.end_date) || courseData.next_batch_info || courseData.batch_info || '';
         if (startDisplayText) {
             const badge = document.getElementById('veneersBatchBadge');
             if (badge) badge.textContent = startDisplayText;
+        }
+
+        // Update duration (number of days)
+        if (courseData.start_date && courseData.end_date) {
+            const s = new Date(courseData.start_date + 'T00:00:00');
+            const e = new Date(courseData.end_date + 'T00:00:00');
+            if (!isNaN(s) && !isNaN(e)) {
+                const days = Math.round((e - s) / 86400000) + 1;
+                const numEl = document.getElementById('veneersDurationNumber');
+                if (numEl) numEl.textContent = days;
+            }
+        }
+
+        // Update next batch note
+        const noteEl = document.getElementById('veneersNextBatchNote');
+        if (noteEl && courseData.next_batch_note !== undefined) {
+            if (courseData.next_batch_note) noteEl.textContent = '🗓️ ' + courseData.next_batch_note;
+            else if (courseData.next_batch_note === '') noteEl.style.display = 'none';
         }
 
         // Update Dates if highlights contain date info (like "Feb 12-14, 2026")
