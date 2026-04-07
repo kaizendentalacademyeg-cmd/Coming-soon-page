@@ -956,9 +956,10 @@
         try {
             const session = await KaizenAuth.getSession();
             const token = session?.access_token || SB_KEY;
-            const filename = `${courseId}.pdf`;
+            // Store as {courseId}/{originalFilename} so the real name is preserved in the URL
+            const storagePath = `${courseId}/${file.name}`;
 
-            const uploadRes = await fetch(`${SB_URL}/storage/v1/object/course-pdfs/${filename}`, {
+            const uploadRes = await fetch(`${SB_URL}/storage/v1/object/course-pdfs/${encodeURIComponent(storagePath).replace('%2F', '/')}`, {
                 method: 'POST',
                 headers: {
                     'apikey': SB_KEY,
@@ -974,7 +975,7 @@
                 throw new Error(err.message || `Upload failed (${uploadRes.status})`);
             }
 
-            const pdfUrl = `${SB_URL}/storage/v1/object/public/course-pdfs/${filename}`;
+            const pdfUrl = `${SB_URL}/storage/v1/object/public/course-pdfs/${courseId}/${encodeURIComponent(file.name)}`;
 
             const patchRes = await fetch(`${SB_URL}/rest/v1/courses?id=eq.${courseId}`, {
                 method: 'PATCH',
@@ -1008,6 +1009,13 @@
             const session = await KaizenAuth.getSession();
             const token = session?.access_token || SB_KEY;
 
+            // Extract storage path from the current pdf_url
+            const currentUrl = managerEl.querySelector('.pdf-current-link')?.href || '';
+            const marker = '/course-pdfs/';
+            const storagePath = currentUrl.includes(marker)
+                ? decodeURIComponent(currentUrl.split(marker)[1])
+                : `${courseId}.pdf`;
+
             await fetch(`${SB_URL}/storage/v1/object/course-pdfs`, {
                 method: 'DELETE',
                 headers: {
@@ -1015,7 +1023,7 @@
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ prefixes: [`${courseId}.pdf`] })
+                body: JSON.stringify({ prefixes: [storagePath] })
             });
 
             const patchRes = await fetch(`${SB_URL}/rest/v1/courses?id=eq.${courseId}`, {
