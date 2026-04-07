@@ -1019,6 +1019,26 @@
 
     })();
     </script>
+
+    <script>
+    // Dynamic PDF URL — loads from Supabase and replaces hardcoded PDF links
+    (async function() {
+        try {
+            const res = await fetch('https://cwkohmqprgcfyzcjcqsn.supabase.co/rest/v1/courses?slug=eq.3d-bioprinting&select=pdf_url', {
+                headers: { 'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3a29obXFwcmdjZnl6Y2pjcXNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzODM5NzEsImV4cCI6MjA5MDk1OTk3MX0.zpiIrHKCEjPy8baKUzY-kh9ALMrqeETcXzdC3lVIIcY' }
+            });
+            const [course] = await res.json();
+            if (!course) return;
+            const pdfBtns = document.querySelectorAll('.floating-pdf-btn, .pdf-btn');
+            if (course.pdf_url) {
+                pdfBtns.forEach(btn => { btn.href = course.pdf_url; });
+            } else if (course.pdf_url === '') {
+                pdfBtns.forEach(btn => { btn.style.display = 'none'; });
+            }
+            // null = not configured yet, keep static fallback
+        } catch(e) { /* keep static fallback */ }
+    })();
+    </script>
 </body>
 </html>
 

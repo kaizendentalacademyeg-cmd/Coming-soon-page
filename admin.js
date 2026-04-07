@@ -676,6 +676,25 @@
                             <textarea class="course-highlights-text form-control" placeholder="One highlight per line...">${highlights.map(h => h.text || h).join('\n')}</textarea>
                         </div>
 
+                        <!-- Section: Course PDF -->
+                        <div class="course-editor-section">
+                            <div class="course-editor-section-title">Course PDF</div>
+                            <div class="course-pdf-manager" data-course-id="${c.id}">
+                                ${c.pdf_url ? `
+                                <div class="pdf-current">
+                                    <span class="pdf-current-icon">📄</span>
+                                    <a href="${esc(c.pdf_url)}" target="_blank" class="pdf-current-link">Current PDF — click to preview</a>
+                                    <button class="btn btn-danger pdf-delete-btn" type="button">Delete PDF</button>
+                                </div>` : `<p class="pdf-none-msg">No PDF uploaded yet for this course.</p>`}
+                                <div class="pdf-upload-area">
+                                    <button class="btn btn-outline pdf-choose-btn" type="button">${c.pdf_url ? 'Replace PDF' : 'Upload PDF'}</button>
+                                    <input type="file" class="pdf-file-input" accept="application/pdf" style="display:none">
+                                    <span class="pdf-chosen-name"></span>
+                                    <button class="btn btn-primary pdf-upload-btn" type="button" style="display:none">Upload</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Section: Schedule -->
                         <div class="course-editor-section">
                             <div class="course-editor-section-title">Schedule & Visibility</div>
@@ -772,6 +791,9 @@
                     e.target.closest('.tier-edit-row').remove();
                 }
             });
+
+            // Bind PDF managers
+            container.querySelectorAll('.course-pdf-manager').forEach(m => bindPdfEvents(m));
         } catch (e) {
             console.error('Load courses error:', e);
             container.innerHTML = '<p class="empty-state">Failed to load courses.</p>';
@@ -855,6 +877,145 @@
             btn.textContent = 'Save Changes';
             btn.disabled = false;
         }
+    }
+
+    // ─── COURSE PDF MANAGEMENT ───
+    function bindPdfEvents(managerEl) {
+        const fileInput = managerEl.querySelector('.pdf-file-input');
+        const nameEl = managerEl.querySelector('.pdf-chosen-name');
+        const uploadBtn = managerEl.querySelector('.pdf-upload-btn');
+        const deleteBtn = managerEl.querySelector('.pdf-delete-btn');
+        const chooseBtn = managerEl.querySelector('.pdf-choose-btn');
+
+        chooseBtn?.addEventListener('click', () => fileInput?.click());
+
+        fileInput?.addEventListener('change', function() {
+            const name = this.files[0]?.name || '';
+            if (name) {
+                nameEl.textContent = name;
+                uploadBtn.style.display = '';
+            }
+        });
+
+        uploadBtn?.addEventListener('click', async function() {
+            const file = fileInput?.files[0];
+            if (!file) return;
+            await uploadCoursePdf(managerEl.dataset.courseId, file, managerEl);
+        });
+
+        deleteBtn?.addEventListener('click', async function() {
+            await deleteCoursePdf(managerEl.dataset.courseId, managerEl);
+        });
+    }
+
+    async function uploadCoursePdf(courseId, file, managerEl) {
+        const uploadBtn = managerEl.querySelector('.pdf-upload-btn');
+        const orig = uploadBtn?.textContent;
+        if (uploadBtn) { uploadBtn.textContent = 'Uploading...'; uploadBtn.disabled = true; }
+
+        try {
+            const session = await KaizenAuth.getSession();
+            const token = session?.access_token || SB_KEY;
+            const filename = `${courseId}.pdf`;
+
+            const uploadRes = await fetch(`${SB_URL}/storage/v1/object/course-pdfs/${filename}`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SB_KEY,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/pdf',
+                    'x-upsert': 'true'
+                },
+                body: file
+            });
+
+            if (!uploadRes.ok) {
+                const err = await uploadRes.json().catch(() => ({}));
+                throw new Error(err.message || `Upload failed (${uploadRes.status})`);
+            }
+
+            const pdfUrl = `${SB_URL}/storage/v1/object/public/course-pdfs/${filename}`;
+
+            const patchRes = await fetch(`${SB_URL}/rest/v1/courses?id=eq.${courseId}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SB_KEY,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ pdf_url: pdfUrl, updated_at: new Date().toISOString() })
+            });
+
+            if (!patchRes.ok) throw new Error('Failed to save PDF URL to database');
+
+            showToast('PDF uploaded!', 'success');
+            logAudit('update_course', `Course ${courseId}: PDF uploaded`);
+            renderPdfManager(managerEl, courseId, pdfUrl);
+        } catch (e) {
+            console.error('PDF upload error:', e);
+            showToast(`PDF upload failed: ${e.message}`, 'error');
+            if (uploadBtn) { uploadBtn.textContent = orig; uploadBtn.disabled = false; }
+        }
+    }
+
+    async function deleteCoursePdf(courseId, managerEl) {
+        if (!confirm('Delete the PDF for this course? This cannot be undone.')) return;
+        const deleteBtn = managerEl.querySelector('.pdf-delete-btn');
+        if (deleteBtn) { deleteBtn.textContent = 'Deleting...'; deleteBtn.disabled = true; }
+
+        try {
+            const session = await KaizenAuth.getSession();
+            const token = session?.access_token || SB_KEY;
+
+            await fetch(`${SB_URL}/storage/v1/object/course-pdfs`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': SB_KEY,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prefixes: [`${courseId}.pdf`] })
+            });
+
+            const patchRes = await fetch(`${SB_URL}/rest/v1/courses?id=eq.${courseId}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SB_KEY,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ pdf_url: '', updated_at: new Date().toISOString() })
+            });
+
+            if (!patchRes.ok) throw new Error('Failed to clear PDF URL');
+
+            showToast('PDF deleted.', 'success');
+            logAudit('update_course', `Course ${courseId}: PDF deleted`);
+            renderPdfManager(managerEl, courseId, null);
+        } catch (e) {
+            console.error('PDF delete error:', e);
+            showToast(`Delete failed: ${e.message}`, 'error');
+            if (deleteBtn) { deleteBtn.textContent = 'Delete PDF'; deleteBtn.disabled = false; }
+        }
+    }
+
+    function renderPdfManager(managerEl, courseId, pdfUrl) {
+        managerEl.innerHTML = `
+            ${pdfUrl ? `
+            <div class="pdf-current">
+                <span class="pdf-current-icon">📄</span>
+                <a href="${esc(pdfUrl)}" target="_blank" class="pdf-current-link">Current PDF — click to preview</a>
+                <button class="btn btn-danger pdf-delete-btn" type="button">Delete PDF</button>
+            </div>` : `<p class="pdf-none-msg">No PDF uploaded yet for this course.</p>`}
+            <div class="pdf-upload-area">
+                <button class="btn btn-outline pdf-choose-btn" type="button">${pdfUrl ? 'Replace PDF' : 'Upload PDF'}</button>
+                <input type="file" class="pdf-file-input" accept="application/pdf" style="display:none">
+                <span class="pdf-chosen-name"></span>
+                <button class="btn btn-primary pdf-upload-btn" type="button" style="display:none">Upload</button>
+            </div>`;
+        bindPdfEvents(managerEl);
     }
 
     // ─── TEAM MANAGEMENT ───
