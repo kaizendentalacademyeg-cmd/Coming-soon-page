@@ -561,6 +561,19 @@
     function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
     function downloadCSV(csv, filename) { const b = new Blob([csv], {type:'text/csv'}); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = filename; a.click(); URL.revokeObjectURL(u); }
     // ─── COURSE MANAGEMENT ───
+    function buildAdminDateLabel(start, end) {
+        if (!start) return '';
+        const s = new Date(start + 'T00:00:00');
+        const e = end ? new Date(end + 'T00:00:00') : null;
+        if (isNaN(s)) return '';
+        if (e && !isNaN(e)) {
+            const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+            if (sameMonth) return s.toLocaleDateString('en-US', { month: 'long' }) + ' ' + s.getDate() + '\u2013' + e.getDate() + ', ' + s.getFullYear();
+            return s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' \u2013 ' + e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        return 'Starts ' + s.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
     let coursesRefreshTimer = null;
     function startCoursesAutoRefresh() {
         stopCoursesAutoRefresh();
@@ -648,8 +661,8 @@
                                 </div>
                                 <div class="ce-field">
                                     <label>Next Batch Label</label>
-                                    <input type="text" class="course-next-batch form-control" value="${esc(c.next_batch_info || '')}" placeholder="e.g. Coming Soon, Q3 2026">
-                                    <span class="ce-hint">Overridden automatically when Start Date is set.</span>
+                                    <input type="text" class="course-next-batch form-control" value="${esc(buildAdminDateLabel(c.start_date, c.end_date) || c.next_batch_info || '')}" placeholder="e.g. Coming Soon, Q3 2026">
+                                    <span class="ce-hint">Auto-fills from Start/End Date. Edit manually to override.</span>
                                 </div>
                                 <div class="ce-field" style="grid-column:1/-1">
                                     <label>Next Batch Note <span style="color:rgba(255,255,255,0.3);font-weight:400">(tagline below the date)</span></label>
@@ -811,6 +824,19 @@
                 if (e.target.closest('.btn-remove-tier')) {
                     e.target.closest('.tier-edit-row').remove();
                 }
+            });
+
+            // Live-update Next Batch Label when dates change
+            container.querySelectorAll('.course-accord').forEach(accord => {
+                const startEl = accord.querySelector('.course-start-date');
+                const endEl = accord.querySelector('.course-end-date');
+                const labelEl = accord.querySelector('.course-next-batch');
+                function refreshLabel() {
+                    const auto = buildAdminDateLabel(startEl.value, endEl.value);
+                    if (auto) labelEl.value = auto;
+                }
+                startEl?.addEventListener('change', refreshLabel);
+                endEl?.addEventListener('change', refreshLabel);
             });
 
             // Bind PDF managers
