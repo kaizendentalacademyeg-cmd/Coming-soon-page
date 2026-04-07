@@ -41,6 +41,20 @@
         return parsed && typeof parsed.meta === 'object' && parsed.meta ? parsed.meta : {};
     }
 
+    function getStoredBlogAuthorName(value) {
+        const parsed = parseBlogContent(value);
+        const meta = getBlogMeta(value);
+        return normalizeAuthorName(
+            meta.authorName ||
+            meta.author_name ||
+            meta.author ||
+            parsed?.authorName ||
+            parsed?.author_name ||
+            parsed?.author ||
+            ''
+        );
+    }
+
     function getProfileDisplayName(profile) {
         if (!profile) return '';
         return normalizeAuthorName(`${profile.first_name || ''} ${profile.last_name || ''}`);
@@ -48,7 +62,7 @@
 
     async function loadAuthorProfiles(posts) {
         const ids = [...new Set((Array.isArray(posts) ? posts : [])
-            .filter(post => post?.author_id && !getProfileDisplayName(post.profiles) && !normalizeAuthorName(getBlogMeta(post.content).authorName || ''))
+            .filter(post => post?.author_id && !getProfileDisplayName(post.profiles) && !getStoredBlogAuthorName(post.content))
             .map(post => post.author_id))];
 
         if (!ids.length) return {};
@@ -65,10 +79,11 @@
     }
 
     function getPostAuthorName(post, authorMap = {}) {
-        const metaName = normalizeAuthorName(getBlogMeta(post?.content).authorName || '');
+        const metaName = getStoredBlogAuthorName(post?.content);
+        const directName = normalizeAuthorName(post?.authorName || post?.author_name || post?.author || '');
         const joinedName = getProfileDisplayName(post?.profiles);
         const mappedName = getProfileDisplayName(authorMap?.[post?.author_id]);
-        return metaName || joinedName || mappedName || 'Kaizen Team';
+        return metaName || directName || joinedName || mappedName || 'Kaizen Team';
     }
 
     function getViewStorageKey(postId) {

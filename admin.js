@@ -514,6 +514,19 @@
         const parsed = parseBlogContent(content);
         return parsed && typeof parsed.meta === 'object' && parsed.meta ? parsed.meta : {};
     }
+    function getStoredBlogAuthorName(content) {
+        const parsed = parseBlogContent(content);
+        const meta = getBlogMeta(content);
+        return normalizeAuthorName(
+            meta.authorName ||
+            meta.author_name ||
+            meta.author ||
+            parsed?.authorName ||
+            parsed?.author_name ||
+            parsed?.author ||
+            ''
+        );
+    }
     function getProfileDisplayName(profile) {
         if (!profile) return '';
         return normalizeAuthorName(`${profile.first_name || ''} ${profile.last_name || ''}`);
@@ -522,13 +535,16 @@
         return getProfileDisplayName(currentUser?.profile) || currentUser?.email || 'Kaizen Team';
     }
     function getPostAuthorName(post, fallback = 'Kaizen Team') {
-        const metaName = normalizeAuthorName(getBlogMeta(post?.content).authorName || '');
-        return metaName || getProfileDisplayName(post?.profiles) || fallback;
+        const metaName = getStoredBlogAuthorName(post?.content);
+        const directName = normalizeAuthorName(post?.authorName || post?.author_name || post?.author || '');
+        return metaName || directName || getProfileDisplayName(post?.profiles) || fallback;
     }
     function mergeBlogMeta(outputData, meta = {}) {
         const next = outputData && typeof outputData === 'object' ? outputData : { blocks: [] };
         const merged = { ...(next.meta && typeof next.meta === 'object' ? next.meta : {}), ...meta };
-        const authorName = normalizeAuthorName(merged.authorName || '');
+        const authorName = normalizeAuthorName(merged.authorName || merged.author_name || merged.author || '');
+        delete merged.author;
+        delete merged.author_name;
         if (authorName) {
             merged.authorName = authorName;
             next.meta = merged;
@@ -539,7 +555,8 @@
             delete next.meta;
         }
         return next;
-    }    function statusBadge(s) { return { active:'active', confirmed:'active', completed:'completed', coming_soon:'pending', draft:'draft', pending:'pending', cancelled:'cancelled' }[s] || 'draft'; }
+    }
+    function statusBadge(s) { return { active:'active', confirmed:'active', completed:'completed', coming_soon:'pending', draft:'draft', pending:'pending', cancelled:'cancelled' }[s] || 'draft'; }
     function paymentBadge(s) { return { paid:'active', pending:'pending', failed:'cancelled', refunded:'completed' }[s] || 'draft'; }
     function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
     function downloadCSV(csv, filename) { const b = new Blob([csv], {type:'text/csv'}); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = filename; a.click(); URL.revokeObjectURL(u); }
