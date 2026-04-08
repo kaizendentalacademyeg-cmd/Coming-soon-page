@@ -12,15 +12,17 @@ let typewriterTimeout;
         const accountText = document.getElementById('navAccountText');
 
         if (session) {
+            const user = await KaizenAuth.getUser();
             const profile = await KaizenAuth.getProfile();
-            if (profile && accountBtn && accountText) {
-                const firstName = profile.first_name || 'My Account';
-                accountText.textContent = firstName;
+            if (accountBtn && accountText) {
+                const googleName = user?.user_metadata?.full_name?.split(' ')[0]
+                    || user?.user_metadata?.name?.split(' ')[0];
+                const displayName = profile?.first_name || googleName || 'My Account';
+                accountText.textContent = displayName;
                 accountBtn.classList.add('logged-in');
                 if (signoutBtn) signoutBtn.style.display = 'flex';
-                
-                // If admin, change link
-                if (profile.role === 'admin' || profile.role === 'employee') {
+
+                if (profile?.role === 'admin' || profile?.role === 'employee') {
                     accountBtn.href = 'admin.html';
                 }
             }
@@ -488,17 +490,21 @@ console.log('%c1% better every single day', 'font-size: 14px; font-style: italic
         const text = document.getElementById('navAccountText');
         if (!btn || !text) return;
         
+        const user = await KaizenAuth.getUser();
         const profile = await KaizenAuth.getProfile();
-        if (profile) {
-            const name = (profile.first_name || '').trim();
-            if (name) {
-                text.textContent = name;
-                btn.classList.add('logged-in');
-            }
-            // Admin/employee → point to admin panel
-            if (profile.role === 'admin' || profile.role === 'employee') {
-                btn.href = 'admin.html';
-            }
+        const googleName = user?.user_metadata?.full_name?.split(' ')[0]
+            || user?.user_metadata?.name?.split(' ')[0];
+        const displayName = (profile?.first_name || googleName || '').trim();
+        if (displayName) {
+            text.textContent = displayName;
+            btn.classList.add('logged-in');
+        } else {
+            btn.classList.add('logged-in');
+        }
+        const signoutBtn = document.getElementById('navSignOutBtn');
+        if (signoutBtn) signoutBtn.style.display = 'flex';
+        if (profile?.role === 'admin' || profile?.role === 'employee') {
+            btn.href = 'admin.html';
         }
     } catch (e) { /* silent — non-critical */ }
 })();

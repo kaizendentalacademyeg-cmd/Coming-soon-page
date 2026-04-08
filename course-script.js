@@ -10,13 +10,18 @@
         const accountText = document.getElementById('navAccountText');
 
         if (session) {
+            const user = await KaizenAuth.getUser();
             const profile = await KaizenAuth.getProfile();
-            if (profile && accountBtn && accountText) {
-                accountText.textContent = profile.first_name || 'My Account';
+            if (accountBtn && accountText) {
+                // Use profile first_name → Google full_name → email prefix → fallback
+                const googleName = user?.user_metadata?.full_name?.split(' ')[0]
+                    || user?.user_metadata?.name?.split(' ')[0];
+                const displayName = profile?.first_name || googleName || 'My Account';
+                accountText.textContent = displayName;
                 accountBtn.classList.add('logged-in');
                 if (signoutBtn) signoutBtn.style.display = 'flex';
 
-                if (profile.role === 'admin' || profile.role === 'employee') {
+                if (profile?.role === 'admin' || profile?.role === 'employee') {
                     accountBtn.href = 'admin.html';
                 }
             }

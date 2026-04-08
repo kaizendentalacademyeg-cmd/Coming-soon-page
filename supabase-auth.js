@@ -152,6 +152,9 @@ const KaizenAuth = {
         const session = await this.getSession();
         if (!session?.access_token) return null;
 
+        // Return cached user if available (avoids extra API call)
+        if (this._session?.user?.id) return this._session.user;
+
         const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
             headers: this._headers()
         });
@@ -162,7 +165,13 @@ const KaizenAuth = {
             }
             return null;
         }
-        return await res.json();
+        const user = await res.json();
+        // Cache user in session so _logSession() can run and nav shows the name
+        if (user?.id && this._session) {
+            this._session.user = user;
+            localStorage.setItem('kda_session', JSON.stringify(this._session));
+        }
+        return user;
     },
 
     // ─── Profile: Get Current User's Profile ───

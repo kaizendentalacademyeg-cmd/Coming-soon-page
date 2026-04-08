@@ -95,12 +95,26 @@
             return;
         }
 
-        // 2. Clear the preloader immediately if we are staying here
+        // 2. Handle ?redirect= — send logged-in student back to where they came from
+        const params = new URLSearchParams(window.location.search);
+        const redirectTo = params.get('redirect');
+        if (redirectTo) {
+            try {
+                const url = new URL(redirectTo);
+                // Only redirect to our own domain for security
+                if (url.hostname === window.location.hostname) {
+                    window.location.replace(redirectTo);
+                    return;
+                }
+            } catch(e) { /* invalid URL — ignore, fall through to dashboard */ }
+        }
+
+        // 3. Clear the preloader immediately if we are staying here
         if (typeof window.KaizenPreloader !== 'undefined') {
             window.KaizenPreloader.hide();
         }
 
-        // 3. Handle Enrollment Intent (The Secure AJAX Redirect)
+        // 4. Handle Enrollment Intent (The Secure AJAX Redirect)
         if (await checkEnrollmentIntent()) return;
 
         // 4. Force reveal of the student dashboard on my-account.html
