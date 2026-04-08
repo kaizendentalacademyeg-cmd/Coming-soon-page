@@ -780,7 +780,7 @@
                         const pData = await pRes.json();
                         const role = pData[0]?.role;
                         if (role === 'admin' || role === 'employee') {
-                            window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
+                            alert('Admin and employee accounts cannot enroll in courses. Please use a student account.');
                             return;
                         }
                     } catch(e) { /* continue */ }
