@@ -263,7 +263,35 @@
     async function loadPolicies() {
         const { data } = await sbFetch('policies', { params: { select: '*', order: 'updated_at.desc' } });
         renderPolicies(data || []);
+        loadRefundPolicy();
     }
+
+    // ─── COURSE REFUND POLICY ───
+    async function loadRefundPolicy() {
+        const { data } = await sbFetch('site_settings', { params: { select: 'value', key: 'eq.course_refund_policy' } });
+        if (data?.length) {
+            let rp = data[0].value;
+            if (typeof rp === 'string') { try { rp = JSON.parse(rp); } catch(e) {} }
+            if (typeof rp === 'object' && rp) {
+                $('#refundRuleGreen').value = rp.rule_green || '';
+                $('#refundRuleYellow').value = rp.rule_yellow || '';
+                $('#refundRuleRed').value = rp.rule_red || '';
+                $('#refundWarningText').value = rp.warning || '';
+            }
+        }
+    }
+
+    $('#saveRefundPolicyBtn')?.addEventListener('click', async () => {
+        const rp = {
+            rule_green: $('#refundRuleGreen').value,
+            rule_yellow: $('#refundRuleYellow').value,
+            rule_red: $('#refundRuleRed').value,
+            warning: $('#refundWarningText').value
+        };
+        await upsertSetting('course_refund_policy', rp);
+        showToast('Refund policy saved!', 'success');
+        logAudit('update_refund_policy', 'Updated course refund policy');
+    });
 
     function renderPolicies(policies) {
         const container = $('#policiesList');

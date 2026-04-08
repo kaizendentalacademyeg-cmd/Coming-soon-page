@@ -281,6 +281,17 @@
 
                 <!-- ═══ POLICIES ═══ -->
                 <div id="panel-policies" class="admin-panel">
+                    <!-- Course Refund Policy Editor -->
+                    <div class="panel-section" style="margin-bottom:2rem">
+                        <h3 style="font-size:1rem;font-weight:700;margin-bottom:0.4rem">Course Refund Policy</h3>
+                        <p style="font-size:0.82rem;color:rgba(255,255,255,0.4);margin-bottom:1.2rem">Displayed on all course pages. HTML tags like &lt;strong&gt; are supported.</p>
+                        <div class="form-group"><label style="font-size:0.85rem;color:rgba(255,255,255,0.5)">Green Rule (&gt;14 days)</label><input type="text" class="form-control" id="refundRuleGreen" placeholder="More than 14 days before the program start date: &lt;strong&gt;Full refund (100%)&lt;/strong&gt; is available."></div>
+                        <div class="form-group"><label style="font-size:0.85rem;color:rgba(255,255,255,0.5)">Yellow Rule (7–14 days)</label><input type="text" class="form-control" id="refundRuleYellow" placeholder="Between 7 to 14 days before the program start date: A &lt;strong&gt;partial refund (50%)&lt;/strong&gt; will be issued."></div>
+                        <div class="form-group"><label style="font-size:0.85rem;color:rgba(255,255,255,0.5)">Red Rule (&lt;7 days)</label><input type="text" class="form-control" id="refundRuleRed" placeholder="Less than 7 days before the program start date: &lt;strong style='color:#ef4444'&gt;No refunds will be issued.&lt;/strong&gt;"></div>
+                        <div class="form-group"><label style="font-size:0.85rem;color:rgba(255,255,255,0.5)">After Start Warning</label><textarea class="form-control" id="refundWarningText" rows="3" style="font-size:0.88rem" placeholder="Once the program has started, or access has been granted to any part of the program (including Telegram groups, sessions, or shared resources), &lt;strong&gt;NO REFUNDS WILL BE ISSUED&lt;/strong&gt; under any circumstances."></textarea></div>
+                        <button class="btn btn-primary btn-sm" id="saveRefundPolicyBtn">Save Refund Policy</button>
+                    </div>
+                    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.07);margin-bottom:1.5rem">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
                         <h3 style="font-size:1.1rem;font-weight:700">Policy Pages</h3>
                         <button class="btn btn-primary btn-sm" id="addPolicyBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Policy</button>

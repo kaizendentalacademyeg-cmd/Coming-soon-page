@@ -599,12 +599,12 @@
             <div class="refund-block">
                 <h3>Before Program Start</h3>
                 <ul>
-                    <li><span class="refund-dot green"></span>More than 14 days before the program start date: <strong>Full refund (100%)</strong> is available.</li>
-                    <li><span class="refund-dot yellow"></span>Between 7 to 14 days before the program start date: A <strong>partial refund (50%)</strong> will be issued.</li>
-                    <li><span class="refund-dot red"></span>Less than 7 days before the program start date: <strong style="color:#ef4444">No refunds will be issued.</strong></li>
+                    <li><span class="refund-dot green"></span><span id="refund-rule-green">More than 14 days before the program start date: <strong>Full refund (100%)</strong> is available.</span></li>
+                    <li><span class="refund-dot yellow"></span><span id="refund-rule-yellow">Between 7 to 14 days before the program start date: A <strong>partial refund (50%)</strong> will be issued.</span></li>
+                    <li><span class="refund-dot red"></span><span id="refund-rule-red">Less than 7 days before the program start date: <strong style="color:#ef4444">No refunds will be issued.</strong></span></li>
                 </ul>
                 <h3>After Program Start</h3>
-                <div class="refund-warning">Once the program has started, or access has been granted to any part of the program (including Telegram groups, sessions, or shared resources), <strong>NO REFUNDS WILL BE ISSUED</strong> under any circumstances.</div>
+                <div class="refund-warning" id="refund-after-warning">Once the program has started, or access has been granted to any part of the program (including Telegram groups, sessions, or shared resources), <strong>NO REFUNDS WILL BE ISSUED</strong> under any circumstances.</div>
             </div>
         </div>
     </section>
@@ -693,6 +693,28 @@
             if (courseRes.ok) {
                 const cData = await courseRes.json();
                 if (cData.length > 0) courseData = cData[0];
+            }
+
+            // 3. Fetch Course Refund Policy
+            const rpRes = await fetch(SUPABASE_URL + '/rest/v1/site_settings?key=eq.course_refund_policy&select=value', {
+                headers: { 'apikey': ANON_KEY }
+            });
+            if (rpRes.ok) {
+                const rpData = await rpRes.json();
+                if (rpData.length > 0) {
+                    let rp = rpData[0].value;
+                    if (typeof rp === 'string') { try { rp = JSON.parse(rp); } catch(e2) {} }
+                    if (typeof rp === 'object' && rp) {
+                        const g = document.getElementById('refund-rule-green');
+                        const y = document.getElementById('refund-rule-yellow');
+                        const r = document.getElementById('refund-rule-red');
+                        const w = document.getElementById('refund-after-warning');
+                        if (g && rp.rule_green) g.innerHTML = rp.rule_green;
+                        if (y && rp.rule_yellow) y.innerHTML = rp.rule_yellow;
+                        if (r && rp.rule_red) r.innerHTML = rp.rule_red;
+                        if (w && rp.warning) w.innerHTML = rp.warning;
+                    }
+                }
             }
         } catch(e) { console.error("Data fetch error:", e); }
 
