@@ -72,46 +72,53 @@ export default async function handler(req, res) {
         const success = obj.success === true || obj.success === 'true';
         const amountCents = obj.amount_cents;
         const orderId = obj.order?.id || obj.order;
-        const extras = obj.order?.extras || obj.extras || {};
-        const userId = extras.user_id;
-        const courseId = extras.course_id;
 
-        console.log(`Webhook received: txn=${transactionId}, success=${success}, user=${userId}, course=${courseId}`);
+        // Paymob Intention API stores extras as obj.extras OR obj.extra (singular) OR obj.order.extras
+        // We pass both keys in create-payment.js for compatibility — read all possible locations
+        const extras = obj.extras || obj.extra || obj.order?.extras || obj.order?.extra || {};
+        const userId       = extras.user_id;
+        const courseId     = extras.course_id;
+        const enrollmentId = extras.enrollment_id;
 
-        if (!userId || !courseId) {
-            // Try to find enrollment by amount and recent pending status
-            console.warn('Missing user_id or course_id in webhook extras');
-            return res.status(200).json({ received: true, note: 'No user/course mapping' });
-        }
+        console.log(`Webhook: txn=${transactionId}, success=${success}, enrollment=${enrollmentId}, user=${userId}, course=${courseId}`);
 
-        // Update enrollment status in Supabase
-        // Use 'paid' to match admin panel's expected status values
         const paymentStatus = success ? 'paid' : 'failed';
+        const patchBody = JSON.stringify({
+            payment_status: paymentStatus,
+            amount_paid: amountCents ? (amountCents / 100) : null,
+            notes: `Paymob txn: ${transactionId} | Order: ${orderId} | Status: ${paymentStatus}`
+        });
+        const patchHeaders = {
+            'apikey': SB_SERVICE_KEY,
+            'Authorization': `Bearer ${SB_SERVICE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        };
 
-        const updateRes = await fetch(
-            `${SB_URL}/rest/v1/enrollments?user_id=eq.${userId}&course_id=eq.${courseId}&payment_method=eq.paymob&payment_status=eq.pending&order=created_at.desc&limit=1`,
-            {
-                method: 'PATCH',
-                headers: {
-                    'apikey': SB_SERVICE_KEY,
-                    'Authorization': `Bearer ${SB_SERVICE_KEY}`,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
-                },
-                body: JSON.stringify({
-                    payment_status: paymentStatus,
-                    amount_paid: amountCents ? (amountCents / 100) : null,
-                    notes: `Paymob txn: ${transactionId} | Order: ${orderId} | Status: ${paymentStatus}`,
-                    updated_at: new Date().toISOString()
-                })
-            }
-        );
+        let updateRes;
+        if (enrollmentId) {
+            // Prefer direct lookup by enrollment_id — most reliable
+            updateRes = await fetch(
+                `${SB_URL}/rest/v1/enrollments?id=eq.${enrollmentId}`,
+                { method: 'PATCH', headers: patchHeaders, body: patchBody }
+            );
+        } else if (userId && courseId) {
+            // Fallback: find most recent pending Paymob enrollment for this user+course
+            updateRes = await fetch(
+                `${SB_URL}/rest/v1/enrollments?user_id=eq.${userId}&course_id=eq.${courseId}&payment_method=eq.paymob&payment_status=eq.pending&order=created_at.desc&limit=1`,
+                { method: 'PATCH', headers: patchHeaders, body: patchBody }
+            );
+        } else {
+            console.warn('Webhook missing enrollment_id, user_id, and course_id — cannot update enrollment');
+            return res.status(200).json({ received: true, note: 'No enrollment mapping found' });
+        }
 
         if (!updateRes.ok) {
             const errText = await updateRes.text();
-            console.error('Supabase update failed:', errText);
+            console.error('Supabase enrollment update failed:', errText);
         } else {
-            console.log(`Enrollment updated: user=${userId}, course=${courseId}, status=${paymentStatus}`);
+            const updated = await updateRes.json();
+            console.log(`Enrollment updated: status=${paymentStatus}, rows=${updated?.length ?? 0}`);
         }
 
         // Always return 200 to Paymob so they don't retry
