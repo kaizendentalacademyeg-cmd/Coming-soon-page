@@ -96,16 +96,17 @@ const KaizenAuth = {
                                     }
                                 });
                                 const logs = await res.json();
-                                if (logs && logs.length > 0 && logs[0].is_active) {
-                                    this._session = parsed;
-                                    this.startHeartbeat(); // Resume heartbeat
-                                } else {
-                                    // Stale or missing log — clear but DON'T return early
-                                    // so OAuth hash tokens below can still be processed
+                                // Only revoke if the DB explicitly says is_active: false (admin revoked).
+                                // If row is missing (heartbeat not yet written) or any other state,
+                                // trust the local JWT — its expiry was already checked above.
+                                if (Array.isArray(logs) && logs.length > 0 && logs[0].is_active === false) {
                                     await this._clearSession();
+                                } else {
+                                    this._session = parsed;
+                                    this.startHeartbeat();
                                 }
                             } catch (err) {
-                                // If network error, trust local for now but keep trying heartbeat
+                                // Network error — trust local JWT
                                 this._session = parsed;
                                 this.startHeartbeat();
                             }
