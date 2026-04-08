@@ -399,6 +399,7 @@
                 return '';
             };
             $('#settWhatsapp').value = val('whatsapp_number', 'number');
+            $('#settPhone').value = typeof map.contact_phone === 'string' ? map.contact_phone : '';
             $('#settEmail').value = val('contact_email', 'email');
             $('#settFacebook').value = typeof map.facebook_url === 'string' ? map.facebook_url : '';
             $('#settInstagram').value = typeof map.instagram_url === 'string' ? map.instagram_url : '';
@@ -418,6 +419,7 @@
     $('#saveSettingsBtn')?.addEventListener('click', async () => {
         const settings = {
             whatsapp_number: $('#settWhatsapp').value,
+            contact_phone: $('#settPhone').value,
             contact_email: $('#settEmail').value,
             facebook_url: $('#settFacebook').value,
             instagram_url: $('#settInstagram').value,

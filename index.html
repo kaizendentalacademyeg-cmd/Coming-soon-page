@@ -534,10 +534,20 @@
             <div class="contact-content">
                 <div class="contact-info">
                     <h3 data-en="Ready to enhance your skills?" data-ar="هل أنت مستعد لتطوير مهاراتك؟">Ready to enhance your skills?</h3>
-                    <p data-en="Join dentists from around the world in our journey of continuous improvement. Fill out the form and we'll get back to you shortly." 
+                    <p data-en="Join dentists from around the world in our journey of continuous improvement. Fill out the form and we'll get back to you shortly."
                        data-ar="انضم إلى أطباء الأسنان من جميع أنحاء العالم في رحلتنا للتحسين المستمر. املأ النموذج وسنعاود الاتصال بك قريبًا.">
                         Join dentists from around the world in our journey of continuous improvement. Fill out the form and we'll get back to you shortly.
                     </p>
+                    <div class="contact-details" style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.9rem">
+                        <a id="contactPhoneLink" href="tel:+201044490400" style="display:inline-flex;align-items:center;gap:0.6rem;color:rgba(255,255,255,0.8);text-decoration:none;font-size:1rem;font-weight:500;transition:color 0.2s" onmouseover="this.style.color='#e7af20'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#e7af20"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                            <span id="contactPhoneText">+20 104 449 0400</span>
+                        </a>
+                        <a id="contactEmailLink" href="mailto:kaizendentistry1@gmail.com" style="display:inline-flex;align-items:center;gap:0.6rem;color:rgba(255,255,255,0.8);text-decoration:none;font-size:1rem;font-weight:500;transition:color 0.2s" onmouseover="this.style.color='#e7af20'" onmouseout="this.style.color='rgba(255,255,255,0.8)'">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#e7af20"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <span id="contactEmailText">kaizendentistry1@gmail.com</span>
+                        </a>
+                    </div>
                 </div>
                 <form class="contact-form" id="contactForm">
                     <div class="form-row">
@@ -783,6 +793,35 @@
                 }
             });
         } catch (err) { console.error('Error syncing main cards:', err); }
+
+        // ── Load contact phone & email from site_settings ──
+        try {
+            if (typeof SUPABASE_URL !== 'undefined') {
+                const settRes = await fetch(SUPABASE_URL + '/rest/v1/site_settings?key=in.("contact_phone","contact_email")&select=key,value', {
+                    headers: { 'apikey': SUPABASE_ANON_KEY }
+                });
+                if (settRes.ok) {
+                    const settData = await settRes.json();
+                    const sm = {};
+                    settData.forEach(r => sm[r.key] = r.value);
+                    const phone = typeof sm.contact_phone === 'string' ? sm.contact_phone : '';
+                    const email = typeof sm.contact_email === 'string' ? sm.contact_email
+                        : (typeof sm.contact_email === 'object' ? sm.contact_email?.email || '' : '');
+                    if (phone) {
+                        const el = document.getElementById('contactPhoneLink');
+                        const tx = document.getElementById('contactPhoneText');
+                        if (el) el.href = 'tel:' + phone.replace(/\s/g, '');
+                        if (tx) tx.textContent = phone;
+                    }
+                    if (email) {
+                        const el = document.getElementById('contactEmailLink');
+                        const tx = document.getElementById('contactEmailText');
+                        if (el) el.href = 'mailto:' + email;
+                        if (tx) tx.textContent = email;
+                    }
+                }
+            }
+        } catch(e) { console.error('Error loading contact details:', e); }
     });
     </script>
     <script src="script.js" defer></script>
