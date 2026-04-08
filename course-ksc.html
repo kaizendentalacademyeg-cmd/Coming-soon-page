@@ -774,6 +774,16 @@
                         window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
                         return;
                     }
+                    // Don't allow admin/employee accounts to enroll — redirect to student login
+                    try {
+                        const pRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=role`, { headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } });
+                        const pData = await pRes.json();
+                        const role = pData[0]?.role;
+                        if (role === 'admin' || role === 'employee') {
+                            window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
+                            return;
+                        }
+                    } catch(e) { /* continue */ }
 
                     if (t && typeof fbq === 'function') fbq('track', 'InitiateCheckout', {
                         content_name: 'KSC - ' + (t.label || tierKey), content_ids: ['KSC'],

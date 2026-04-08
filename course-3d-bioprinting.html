@@ -1064,6 +1064,13 @@
                     if (!session?.access_token) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
                     const user = await KaizenAuth.getUser();
                     if (!user?.id) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                    // Don't allow admin/employee accounts to enroll — redirect to student login
+                    try {
+                        const pRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=role`, { headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } });
+                        const pData = await pRes.json();
+                        const role = pData[0]?.role;
+                        if (role === 'admin' || role === 'employee') { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                    } catch(e) { /* continue */ }
                     window.location.href = '/api/create-payment?course_id=' + courseData.id + '&user_id=' + user.id;
                 } catch(err) {
                     console.error('Payment redirect error:', err);
