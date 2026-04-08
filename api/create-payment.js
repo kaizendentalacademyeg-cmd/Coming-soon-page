@@ -155,10 +155,10 @@ export default async function handler(req, res) {
             return res.status(502).json({ error: 'Failed to create payment. Please try again or contact support.' });
         }
 
-        // Redirect user to Paymob checkout
+        // Return the checkout URL as JSON so the frontend can redirect
         const checkoutUrl = `https://accept.paymob.com/unifiedcheckout/?publicKey=${process.env.PAYMOB_PUBLIC_KEY}&clientSecret=${intention.client_secret}`;
 
-        return res.redirect(302, checkoutUrl);
+        return res.status(200).json({ payment_url: checkoutUrl });
 
     } catch (error) {
         console.error('Payment creation error:', error);

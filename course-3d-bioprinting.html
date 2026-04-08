@@ -827,8 +827,23 @@
                         </svg>
                     </button>
                 </form>
+
+                <!-- Paymob CTA (shown when Paymob mode is active) -->
+                <div id="paymob-cta" style="display:none;text-align:center;padding:3rem 1rem">
+                    <div style="max-width:480px;margin:0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:2.5rem">
+                        <div style="width:64px;height:64px;background:linear-gradient(135deg,rgba(199,113,17,0.2),rgba(199,113,17,0.05));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem">
+                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e7af20" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        </div>
+                        <h3 style="color:#fff;margin:0 0 0.75rem;font-size:1.4rem">Secure Online Payment</h3>
+                        <p style="color:rgba(255,255,255,0.6);margin:0 0 2rem;font-size:0.95rem">Pay securely with your card via Paymob. You'll be redirected to the payment page after logging in.</p>
+                        <button id="paymob-pay-btn" style="display:inline-flex;align-items:center;gap:0.75rem;padding:1rem 2.5rem;border:none;border-radius:50px;font-size:1.05rem;font-weight:700;font-family:inherit;cursor:pointer;background:linear-gradient(135deg,#c77111,#a85d0e);color:#fff;transition:all 0.3s;box-shadow:0 4px 20px rgba(199,113,17,0.35)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            <span>Pay Online</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-            
+
             <!-- WhatsApp Verification Section -->
             <div class="whatsapp-verification">
                 <div class="whatsapp-verification-icon">
@@ -1053,32 +1068,58 @@
         const instapayLink = settings.instapay_link || '';
         const payLink = document.querySelector('.payment-btn');
 
-        if (paymentMethod === 'paymob' && payLink) {
-            // Paymob: redirect to server-side payment creation (requires login)
-            payLink.href = '#';
-            payLink.addEventListener('click', async function(e) {
-                e.preventDefault();
-                try {
-                    if (typeof KaizenAuth === 'undefined') { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
-                    const session = await KaizenAuth.getSession();
-                    if (!session?.access_token) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
-                    const user = await KaizenAuth.getUser();
-                    if (!user?.id) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
-                    // Don't allow admin/employee accounts to enroll — redirect to student login
+        if (paymentMethod === 'paymob') {
+            // Layout change: hide enrollment form & WhatsApp verification, show Paymob CTA
+            const enrollForm = document.getElementById('enrollmentForm');
+            const whatsappSection = document.querySelector('.whatsapp-verification');
+            if (enrollForm) enrollForm.style.display = 'none';
+            if (whatsappSection) whatsappSection.style.display = 'none';
+            const paymobCta = document.getElementById('paymob-cta');
+            if (paymobCta) paymobCta.style.display = '';
+
+            const paymobBtn = document.getElementById('paymob-pay-btn');
+            if (paymobBtn) {
+                paymobBtn.addEventListener('click', async function() {
                     try {
-                        const pRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=role`, { headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } });
-                        const pData = await pRes.json();
-                        const role = pData[0]?.role;
-                        if (role === 'admin' || role === 'employee') { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
-                    } catch(e) { /* continue */ }
-                    window.location.href = '/api/create-payment?course_id=' + courseData.id + '&user_id=' + user.id;
-                } catch(err) {
-                    console.error('Payment redirect error:', err);
-                    window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href);
-                }
-            });
-            const spanEl = payLink.querySelector('span');
-            if (spanEl) spanEl.textContent = 'Pay Online';
+                        if (typeof KaizenAuth === 'undefined') { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                        const session = await KaizenAuth.getSession();
+                        if (!session?.access_token) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                        const user = await KaizenAuth.getUser();
+                        if (!user?.id) { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                        // Block admin/employee
+                        try {
+                            const pRes = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=role`, { headers: { 'apikey': ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } });
+                            const pData = await pRes.json();
+                            const role = pData[0]?.role;
+                            if (role === 'admin' || role === 'employee') { window.location.href = 'my-account.html?redirect=' + encodeURIComponent(window.location.href); return; }
+                        } catch(e) { /* continue */ }
+
+                        const span = this.querySelector('span');
+                        const origText = span?.textContent;
+                        if (span) span.textContent = 'Processing...';
+                        this.style.opacity = '0.7';
+                        this.style.pointerEvents = 'none';
+
+                        const courseId = courseData?.id;
+                        if (!courseId) { alert('Course not loaded. Please refresh and try again.'); return; }
+                        const res = await fetch(`/api/create-payment?course_id=${courseId}&user_id=${user.id}`, {
+                            headers: { 'Authorization': `Bearer ${session.access_token}` }
+                        });
+                        const data = await res.json();
+                        if (data.payment_url) {
+                            window.location.href = data.payment_url;
+                        } else {
+                            alert(data.error || 'Payment setup failed. Please contact support.');
+                            if (span && origText) span.textContent = origText;
+                            this.style.opacity = '';
+                            this.style.pointerEvents = '';
+                        }
+                    } catch(err) {
+                        console.error('Payment error:', err);
+                        alert('Connection error. Please try again.');
+                    }
+                });
+            }
         } else if (instapayLink && payLink) {
             payLink.href = instapayLink;
         }
