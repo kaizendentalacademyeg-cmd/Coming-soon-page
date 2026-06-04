@@ -120,9 +120,14 @@ export default async function handler(req, res) {
         if (Array.isArray(course.pricing_tiers) && course.pricing_tiers.length > 0) {
             let tier = course.pricing_tiers[0];
             if (selectedTier) {
-                const match = course.pricing_tiers.find(t =>
-                    t.name && t.name.toLowerCase().replace(/\s+/g, '_') === selectedTier.toLowerCase()
-                );
+                const normalise = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+                const selKey = normalise(selectedTier);
+                const match = course.pricing_tiers.find(t => {
+                    if (!t.name) return false;
+                    const nameKey = normalise(t.name);
+                    // Exact match, starts-with match, or contains match
+                    return nameKey === selKey || selKey.startsWith(nameKey) || nameKey.startsWith(selKey);
+                });
                 if (match) tier = match;
             }
             priceEGP = Number(tier.price) || 0;
