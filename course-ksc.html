@@ -804,8 +804,7 @@
                         if (data.payment_url) {
                             window.location.href = data.payment_url;
                         } else {
-                            const extra = data.paymob_error ? '\n\nPaymob details: ' + JSON.stringify(data.paymob_error) : '';
-                            alert((data.error || 'Payment setup failed.') + extra);
+                            alert(data.error || 'Payment setup failed. Please contact support.');
                         }
                     } catch (err) {
                         alert('Connection error. Please try again.');

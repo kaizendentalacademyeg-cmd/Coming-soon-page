@@ -16,9 +16,43 @@
  *   SITE_URL              - e.g. https://www.kaizendentalacademy.org
  */
 
+// ── Security: UUID format validator ──
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// ── Security: In-memory rate limiter (per serverless instance) ──
+const rateMap = new Map();
+const RATE_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT = 60; // max requests per window per IP
+
+function checkRateLimit(ip) {
+    const now = Date.now();
+    const entry = rateMap.get(ip);
+    if (!entry || now - entry.start > RATE_WINDOW_MS) {
+        rateMap.set(ip, { start: now, count: 1 });
+        return true;
+    }
+    entry.count++;
+    if (entry.count > RATE_LIMIT) return false;
+    return true;
+}
+
+// Clean up stale rate limit entries every 5 minutes
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, entry] of rateMap) {
+        if (now - entry.start > RATE_WINDOW_MS) rateMap.delete(ip);
+    }
+}, 5 * 60 * 1000).unref?.();
+
 export default async function handler(req, res) {
     if (req.method !== 'GET' && req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // ── Security: Rate limiting ──
+    const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+    if (!checkRateLimit(clientIp)) {
+        return res.status(429).json({ error: 'Too many payment requests. Please wait a few minutes.' });
     }
 
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
@@ -48,6 +82,11 @@ export default async function handler(req, res) {
 
         if (!courseId || !userId) {
             return res.status(400).json({ error: 'Missing course_id or user_id' });
+        }
+
+        // ── Security: Validate UUID format to prevent injection ──
+        if (!UUID_RE.test(courseId) || !UUID_RE.test(userId)) {
+            return res.status(400).json({ error: 'Invalid course or user identifier' });
         }
 
         // ── 2. Verify JWT belongs to the claimed user ──
@@ -221,7 +260,7 @@ export default async function handler(req, res) {
                 notification_url: `${SITE_URL}/api/paymob-webhook`
         };
 
-        console.log('Paymob intention request:', JSON.stringify({ amount: amountCents, integration: INTEGRATION_ID, email, tier: tierName }));
+        console.log('Paymob intention request:', JSON.stringify({ amount: amountCents, tier: tierName, courseId }));
 
         const intentionRes = await fetch('https://accept.paymob.com/v1/intention/', {
             method: 'POST',
@@ -248,11 +287,8 @@ export default async function handler(req, res) {
                     body: JSON.stringify({ payment_status: 'failed', notes: 'Paymob intention creation failed' })
                 });
             }
-            return res.status(502).json({
-                error: 'Failed to create payment. Please try again or contact support.',
-                paymob_status: intentionRes.status,
-                paymob_error: intention
-            });
+            // Security: only log details server-side, never expose to frontend
+            return res.status(502).json({ error: 'Failed to create payment. Please try again or contact support.' });
         }
 
         // ── 7. Return checkout URL ──
@@ -261,6 +297,7 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('Payment creation error:', error);
-        return res.status(500).json({ error: 'Internal server error', message: error.message });
+        // Security: never expose stack traces or error internals to the client
+        return res.status(500).json({ error: 'Internal server error' });
     }
 }

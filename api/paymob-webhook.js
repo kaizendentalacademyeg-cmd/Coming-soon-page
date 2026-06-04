@@ -126,7 +126,7 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('Webhook error:', error);
-        // Still return 200 to prevent Paymob retries
-        return res.status(200).json({ received: true, error: error.message });
+        // Still return 200 to prevent Paymob retries — never expose internals
+        return res.status(200).json({ received: true });
     }
 }
