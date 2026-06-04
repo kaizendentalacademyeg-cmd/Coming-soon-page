@@ -185,13 +185,7 @@ export default async function handler(req, res) {
         // ── 6. Create Paymob payment intention ──
         const amountCents = Math.round(priceEGP * 100);
 
-        const intentionRes = await fetch('https://accept.paymob.com/v1/intention/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Token ${PAYMOB_SECRET}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+        const intentionBody = {
                 amount: amountCents,
                 currency: 'EGP',
                 payment_methods: [parseInt(INTEGRATION_ID)],
@@ -225,13 +219,23 @@ export default async function handler(req, res) {
                 },
                 redirection_url: `${SITE_URL}/payment-callback.html`,
                 notification_url: `${SITE_URL}/api/paymob-webhook`
-            })
+        };
+
+        console.log('Paymob intention request:', JSON.stringify({ amount: amountCents, integration: INTEGRATION_ID, email, tier: tierName }));
+
+        const intentionRes = await fetch('https://accept.paymob.com/v1/intention/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Token ${PAYMOB_SECRET}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(intentionBody)
         });
 
         const intention = await intentionRes.json();
 
         if (!intentionRes.ok || !intention.client_secret) {
-            console.error('Paymob intention error:', JSON.stringify(intention));
+            console.error('Paymob intention failed:', intentionRes.status, JSON.stringify(intention));
             // Roll back the pending enrollment so user can retry cleanly
             if (enrollmentId) {
                 await fetch(`${SB_URL}/rest/v1/enrollments?id=eq.${enrollmentId}`, {
@@ -244,7 +248,11 @@ export default async function handler(req, res) {
                     body: JSON.stringify({ payment_status: 'failed', notes: 'Paymob intention creation failed' })
                 });
             }
-            return res.status(502).json({ error: 'Failed to create payment. Please try again or contact support.' });
+            return res.status(502).json({
+                error: 'Failed to create payment. Please try again or contact support.',
+                paymob_status: intentionRes.status,
+                paymob_error: intention
+            });
         }
 
         // ── 7. Return checkout URL ──
