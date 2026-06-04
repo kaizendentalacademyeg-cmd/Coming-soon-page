@@ -62,7 +62,7 @@ export default async function handler(req, res) {
             .update(hmacFields)
             .digest('hex');
 
-        if (calculatedHmac !== hmacHeader) {
+        if (calculatedHmac.toLowerCase() !== hmacHeader.toLowerCase()) {
             console.error('HMAC mismatch — rejecting webhook');
             return res.status(401).json({ error: 'Invalid signature' });
         }
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
 
         // Paymob Intention API stores extras as obj.extras OR obj.extra (singular) OR obj.order.extras
         // We pass both keys in create-payment.js for compatibility — read all possible locations
-        const extras = obj.extras || obj.extra || obj.order?.extras || obj.order?.extra || {};
+        const extras = obj.extras || obj.extra || body.extras || body.extra || obj.order?.extras || obj.order?.extra || {};
         const userId       = extras.user_id;
         const courseId     = extras.course_id;
         const enrollmentId = extras.enrollment_id;

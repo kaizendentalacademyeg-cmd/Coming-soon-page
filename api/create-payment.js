@@ -93,32 +93,68 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Course has no price configured' });
         }
 
-        // ── 4. Fetch user profile & email ──
-        const [profileRes, authInfoRes] = await Promise.all([
-            fetch(`${SB_URL}/rest/v1/profiles?id=eq.${userId}&select=first_name,last_name,phone`, {
-                headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` }
-            }),
-            fetch(`${SB_URL}/auth/v1/admin/users/${userId}`, {
-                headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` }
-            })
-        ]);
-        const profiles = await profileRes.json();
+        // ── 4. Fetch user profile ──
+        const profileRes = await fetch(`${SB_URL}/rest/v1/profiles?id=eq.${userId}&select=first_name,last_name,phone`, {
+            headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` }
+        });
+        const profiles = profileRes.ok ? await profileRes.json() : [];
         const profile = profiles?.[0] || {};
-        const authInfo = await authInfoRes.json();
-        const email = authInfo?.email || `student+${userId.slice(0,8)}@kaizendentalacademy.org`;
+        
+        const email = authUser?.email || `student+${userId.slice(0, 8)}@kaizendentalacademy.org`;
+        
+        // Clean up name and phone fields to comply with Paymob validation requirements
+        const cleanFirstName = (profile.first_name || authUser?.user_metadata?.full_name?.split(' ')[0] || authUser?.user_metadata?.first_name || 'Student').trim() || 'Student';
+        const cleanLastName  = (profile.last_name  || authUser?.user_metadata?.full_name?.split(' ').slice(1).join(' ') || authUser?.user_metadata?.last_name || 'Kaizen').trim() || 'Kaizen';
+        let cleanPhone = (profile.phone || authUser?.phone || '01000000000').trim().replace(/[^\d+]/g, '');
+        if (!cleanPhone) cleanPhone = '01000000000';
 
         // ── 5. Create or reuse pending enrollment row ──
-        // Prevents duplicate payments: if a pending Paymob enrollment exists, reuse it.
+        // Check if user already has an enrollment for this course
         const existingRes = await fetch(
-            `${SB_URL}/rest/v1/enrollments?user_id=eq.${userId}&course_id=eq.${courseId}&payment_method=eq.paymob&payment_status=eq.pending&select=id&limit=1`,
+            `${SB_URL}/rest/v1/enrollments?user_id=eq.${userId}&course_id=eq.${courseId}&select=id,payment_status`,
             { headers: { 'apikey': SB_SERVICE_KEY, 'Authorization': `Bearer ${SB_SERVICE_KEY}` } }
         );
-        const existing = await existingRes.json();
+        
+        if (!existingRes.ok) {
+            const errText = await existingRes.text();
+            console.error('Failed to check existing enrollment:', errText);
+            return res.status(500).json({ error: 'Failed to verify enrollment status' });
+        }
+        
+        const enrollments = await existingRes.json();
+        const existingEnrollment = enrollments?.[0];
 
         let enrollmentId;
-        if (existing?.length > 0) {
-            enrollmentId = existing[0].id;
+        if (existingEnrollment) {
+            if (existingEnrollment.payment_status === 'paid') {
+                return res.status(400).json({ error: 'You are already enrolled in this course' });
+            }
+            
+            // Reuse existing enrollment and update it to pending Paymob status
+            enrollmentId = existingEnrollment.id;
+            const updateRes = await fetch(`${SB_URL}/rest/v1/enrollments?id=eq.${enrollmentId}`, {
+                method: 'PATCH',
+                headers: {
+                    'apikey': SB_SERVICE_KEY,
+                    'Authorization': `Bearer ${SB_SERVICE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify({
+                    payment_method: 'paymob',
+                    payment_status: 'pending',
+                    pricing_tier: tierName,
+                    amount_paid: priceEGP,
+                    notes: `Paymob checkout re-initiated — tier: ${tierName}`
+                })
+            });
+            if (!updateRes.ok) {
+                const errText = await updateRes.text();
+                console.error('Failed to update enrollment:', errText);
+                return res.status(500).json({ error: 'Failed to update enrollment record' });
+            }
         } else {
+            // Create new enrollment row
             const insertRes = await fetch(`${SB_URL}/rest/v1/enrollments`, {
                 method: 'POST',
                 headers: {
@@ -166,10 +202,10 @@ export default async function handler(req, res) {
                     quantity: 1
                 }],
                 billing_data: {
-                    first_name: profile.first_name || authInfo?.user_metadata?.full_name?.split(' ')[0] || 'Student',
-                    last_name:  profile.last_name  || authInfo?.user_metadata?.full_name?.split(' ').slice(1).join(' ') || 'Kaizen',
+                    first_name: cleanFirstName,
+                    last_name:  cleanLastName,
                     email:      email,
-                    phone_number: profile.phone || '01000000000',
+                    phone_number: cleanPhone,
                     apartment: 'NA', floor: 'NA', street: 'NA', building: 'NA',
                     shipping_method: 'NA', postal_code: 'NA',
                     city: 'Cairo', country: 'EG', state: 'NA'
