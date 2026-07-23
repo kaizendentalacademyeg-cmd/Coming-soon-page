@@ -147,7 +147,7 @@
     }
 
     var WA = 'https://wa.me/201044490400?text=' + encodeURIComponent(
-        'مرحباً، لم أجد شهادتي في The Restorative Scientific Day. اسمي: ');
+        'Hello, I could not find my certificate for The Restorative Scientific Day. My name is: ');
 
     function render() {
         var raw = input.value;
@@ -157,7 +157,7 @@
 
         if (!qNorm) {
             results.innerHTML = '';
-            hint.textContent = 'اكتب اسمك بالإنجليزية زي ما هو مكتوب على الشهادة';
+            hint.textContent = 'Type your name as it appears on the certificate';
             return;
         }
 
@@ -176,16 +176,16 @@
 
         if (!ranked.length) {
             hint.textContent = '';
-            results.innerHTML = stateHtml('rtl', '🔎',
-                'مفيش نتيجة مطابقة',
-                'جرّب تكتب اسمك بشكل مختلف (الاسم الأول بس مثلاً)، وتأكد إنه بالإنجليزية.',
-                '<a class="wa" href="' + WA + '" target="_blank" rel="noopener">تواصل معنا على واتساب</a>');
+            results.innerHTML = stateHtml('', '🔎',
+                'No match found',
+                'Try a different spelling (your first name alone often works). Certificates are listed in English.',
+                '<a class="wa" href="' + WA + '" target="_blank" rel="noopener">Contact us on WhatsApp</a>');
             return;
         }
 
         hint.textContent = ranked.length === 1
-            ? 'لقينا شهادة واحدة'
-            : 'لقينا ' + ranked.length + ' نتيجة قريبة — دوّر على اسمك';
+            ? 'Found your certificate'
+            : 'Found ' + ranked.length + ' close matches — pick your name';
         results.innerHTML = ranked.map(function (x) { return cardHtml(x.d, qTokens); }).join('');
     }
 
@@ -193,10 +193,10 @@
     function expired() {
         if (input) { input.disabled = true; input.placeholder = ''; }
         if (hint) hint.textContent = '';
-        results.innerHTML = stateHtml('rtl', '📁',
-            'انتهت فترة إتاحة الشهادات',
-            'الشهادات كانت متاحة لفترة مؤقتة وتم إغلاقها. لو محتاج شهادتك، تواصل معنا.',
-            '<a class="wa" href="' + WA + '" target="_blank" rel="noopener">تواصل معنا على واتساب</a>');
+        results.innerHTML = stateHtml('', '📁',
+            'Certificates are no longer available',
+            'These certificates were available for a limited time and have now closed. If you still need yours, reach out to us.',
+            '<a class="wa" href="' + WA + '" target="_blank" rel="noopener">Contact us on WhatsApp</a>');
     }
 
     // ---- Wire up -----------------------------------------------------------
